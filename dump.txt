@@ -1,0 +1,7 @@
+/usr/bin/ld: /tmp/ccpzEHL2.o: in function `EtherDevice::EtherDevice(EthercatDrv&)':
+/home/ddan/Develop/TurbRegulator/EtherDevice.cpp:7: undefined reference to `vtable for EtherDevice'
+/usr/bin/ld: /tmp/cc78adP2.o: in function `DigitalDev::~DigitalDev()':
+/home/ddan/Develop/TurbRegulator/DigitalDev.h:10: undefined reference to `EtherDevice::~EtherDevice()'
+/usr/bin/ld: /tmp/cc78adP2.o:(.data.rel.ro._ZTI10DigitalDev[_ZTI10DigitalDev]+0x10): undefined reference to `typeinfo for EtherDevice'
+collect2: error: ld returned 1 exit status
+make: *** [makefile:8: all] Error 1
