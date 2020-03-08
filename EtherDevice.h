@@ -18,8 +18,9 @@ public:
 protected:
 	EthercatDrv* mtDrv;
 
-	bool writeIOmap(IOAddr const& addr, std::int32_t val);
-	bool readIOmap(IOAddr const& addr, std::int32_t & val);
+	bool writeDevice(IOAddr const& addr, std::int32_t val);
+	bool writeDeviceSync(IOAddr const& addr, std::int32_t val, std::uint32_t tTimeOut);
+	bool readDevice(IOAddr const& addr, std::int32_t & val);
 	static std::int64_t getMsSinceEpoch();
 };
 

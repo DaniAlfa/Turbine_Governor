@@ -10,6 +10,7 @@ enum QState{ OK = 0, OverRange = 1, UnderRange = 2, ComError = 3};
 
 class IOAddr{
 public:
+
 	std::uint8_t uiHeader;
 	std::uint8_t uiModule;
 	std::uint8_t uiChannel;
@@ -45,6 +46,13 @@ public:
 	}
 	double getPulseDur() const {return mdPulseDur;}
 	std::int64_t getPulseTimeS() const {return miPulseTimeS;}
+	float getHwMin() const {return mfHWMin;}
+	float getHwMax() const {return mfHWMax;}
+	void setHwMin(float fVal) {mfHWMin = fVal;}
+	void setHwMax(float fVal) {mfHWMax = fVal;}
+	void setQState(QState tState){mtQState = tState;}
+	QState getQState() const {return mtQState;}
+	std::uint32_t getID() const {return muiVarId;}
 
 private:
 	std::uint32_t muiVarId;

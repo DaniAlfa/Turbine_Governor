@@ -13,13 +13,17 @@ EtherDevice::~EtherDevice(){
 }
 
 
-bool EtherDevice::writeIOmap(IOAddr const& addr, std::int32_t val){
-	return mtDrv->writeIOmap(addr, val);
+bool EtherDevice::writeDevice(IOAddr const& addr, std::int32_t val){
+	return mtDrv->writeDevice(addr, val);
 }
 
 
-bool EtherDevice::readIOmap(IOAddr const& addr, std::int32_t & val){
-	return mtDrv->readIOmap(addr, val);
+bool EtherDevice::readDevice(IOAddr const& addr, std::int32_t & val){
+	return mtDrv->readDevice(addr, val);
+}
+
+bool EtherDevice::writeDeviceSync(IOAddr const& addr, std::int32_t val, std::uint32_t tTimeOut){
+	return mtDrv->writeDeviceSync(addr, val, tTimeOut);
 }
 
 std::int64_t EtherDevice::getMsSinceEpoch(){

@@ -1,20 +1,26 @@
 #include "EthercatDrv.h"
 #include "EtherDevice.h"
 #include <ethercat.h>
-#include <cmath>
 #include <chrono>
+#include <cstdlib>
+
+#include "DeviceFactory.h"
 
 
 #define RECIEVE_TIMEOUT 2000
+#define POOLING_DELAY_MILLIS 20
 
 #include "DigitalDev.h"
+#include "AnalogDev.h"
+#include "PulseDev.h"
 #include <iostream>
 
 
 using namespace std;
 
 EthercatDrv::EthercatDrv() : mbDrvEnd(false), mtDrvState(UnInit) {
-	
+	for(int i = 0; i < IOMAP_DEFAULT_SIZE; ++i)
+		mcIOmap[i] = 0;
 	mtDrvThread = new thread(&EthercatDrv::driverLoop, this);
 }
 
@@ -26,16 +32,12 @@ EthercatDrv::~EthercatDrv(){
 	eraseDrvConfig();
 }
 
-bool EthercatDrv::close(){//////////
-	if(mtDrvState == Stopped){
-		unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
-		mtDrvState = UnInit;
-		eraseDrvConfig();
-		mtWaitingStart.notify_one();
-		mutexDrvState.unlock();
-		return true;
-	}
-	return false;
+bool EthercatDrv::close(){
+	if(mtDrvState == UnInit) return true;
+	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
+	mtDrvState = UnInit;
+	eraseDrvConfig();
+	return true;
 }
 
 void EthercatDrv::eraseDrvConfig(){
@@ -75,33 +77,41 @@ void EthercatDrv::driverLoop(){
 			break;
 			case Running:
 				mutexDrvState.unlock();
-				this_thread::sleep_for(chrono::milliseconds(5));
+				this_thread::sleep_for(chrono::milliseconds(POOLING_DELAY_MILLIS));
 				mutexDrvState.lock();
 				updateDevices();
 				unique_lock<mutex> mutexIOMap(mtIOMapMutex);
 				ec_send_processdata();
 				ec_receive_processdata(RECIEVE_TIMEOUT);
+				//recepcion y envio ok
+				mtWaitingSend.notify_all();
 			break;
 		}
 	}
 }
 
 
-bool EthercatDrv::init(std::string const& strIfname, std::string & strError){
+bool EthercatDrv::init(std::string const& strConfigPath){
 	if(mtDrvState != UnInit){
-		strError = "Driver ya inicializado";
+		mstrLastError = "Driver ya inicializado";
 		return false;
 	}
+
+	if(!loadXMLConfig(strConfigPath)){
+		mstrLastError = "Error en archivo de configuracion";
+		return false;
+	}
+
 	/*Inicializacion de la biblioteca SOEM*/
 
-	if(!ec_init(strIfname.c_str())){
-		strError = "Interfaz de red invalida";
+	if(!ec_init(mstrIfname.c_str())){
+		mstrLastError = "Interfaz de red invalida";
 		return false;
 	}
 	//cout << "Interfaz de red inicializada con exito." << endl;
 	
 	if(!ec_config_init(FALSE)){
-		strError =  "No se pudieron configurar los esclavos, ec_config_init";
+		mstrLastError =  "No se pudieron configurar los esclavos, ec_config_init";
 		return false;
 	}
 
@@ -129,7 +139,7 @@ bool EthercatDrv::init(std::string const& strIfname, std::string & strError){
 
     //Cambio a modo seguro operacional 
     if(EC_STATE_SAFE_OP != ec_statecheck(0, EC_STATE_SAFE_OP,  8000000)){
-    	strError = "Los esclavos no pudieron cambiar a modo seguro operacional.";
+    	mstrLastError = "Los esclavos no pudieron cambiar a modo seguro operacional.";
     	return false;
     }
 
@@ -150,7 +160,7 @@ bool EthercatDrv::init(std::string const& strIfname, std::string & strError){
     }
     while (trys-- && (ec_slave[0].state != EC_STATE_OPERATIONAL));
     if(ec_slave[0].state != EC_STATE_OPERATIONAL){
-    	strError = "Los esclavos no pudieron cambiar a modo operacional.";
+    	mstrLastError = "Los esclavos no pudieron cambiar a modo operacional.";
     	return false;
     }
 
@@ -158,30 +168,130 @@ bool EthercatDrv::init(std::string const& strIfname, std::string & strError){
     
     /*Carga de archivo e inicializacion de dispositivos*/
     //En fallo ec_close();
-
-    IOAddr addr1;
-    addr1.uiHeader = 0;
-	addr1.uiModule = 2;
-	addr1.uiChannel = 0;
-	addr1.uiNumBits = 1;
-
-	EtherDevice* dev1 = new DigitalDev(*this, 1);
-	mDevices.insert({addr1, dev1});
-
-	IOAddr addr2;
-    addr2.uiHeader = 0;
-	addr2.uiModule = 3;
-	addr2.uiChannel = 7;
-	addr2.uiNumBits = 1;
-
-	EtherDevice* dev2 = new DigitalDev(*this);
-	mDevices.insert({addr2, dev2});
-
+    
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	mtDrvState = Stopped;
 	mtWaitingStart.notify_one();
     return true;
 }
+
+bool EthercatDrv::loadXMLConfig(std::string const& strConfigPath){
+	xmlParserCtxt* pParser; /* the parser context */
+    xmlDoc* pDocTree; /* the resulting document tree */
+
+    /* create a parser context */
+    pParser = xmlNewParserCtxt();
+    if (pParser == NULL) {
+       	mstrLastError = "No se pudo crear el parser xml.";
+		return false;
+    }
+    /* parse the file, activating the DTD validation option */
+    bool bOk = true;
+    pDocTree = xmlCtxtReadFile(pParser, strConfigPath.c_str(), NULL, 0);
+    /* check if parsing suceeded */
+    if (pDocTree == NULL) {
+        mstrLastError = std::string("Fallo al parsear el archivo ") + strConfigPath + ".";
+        bOk = false;
+    } else {
+		/* check if validation suceeded */
+        if (!pParser->valid){
+        	mstrLastError = std::string("Archivo ") + strConfigPath + " con formato invalido.";
+        	bOk = false;
+        }
+        else{
+        	xmlNode* root = xmlDocGetRootElement(pDocTree);
+        	bOk = readXMLConfig(pDocTree, root);
+        }
+	    
+		/* free up the resulting document */
+		xmlFreeDoc(pDocTree);
+    }
+    /* free up the parser context */
+    xmlFreeParserCtxt(pParser);
+
+    xmlCleanupParser();
+    return bOk;
+}
+
+bool EthercatDrv::readXMLConfig(xmlDoc* pDocTree, xmlNode* pRoot){
+	xmlChar *strAttr;
+	if(pRoot && xmlStrcmp(pRoot->name, (const xmlChar *)"FieldDriver") == 0){
+		strAttr = xmlGetProp(pRoot, (const xmlChar *)"ifname");
+		mstrIfname = std::string((const char*) strAttr);
+		xmlFree(strAttr);
+		xmlNode* pSibling = pRoot->xmlChildrenNode;
+		bool bOk = true;
+		bool bSlaveCnf = false;
+		bool bVars = false;
+		while(pSibling && bOk && (!bSlaveCnf || !bVars)){
+			if (!bSlaveCnf && xmlStrcmp(pSibling->name, (const xmlChar *)"SlaveConfig") == 0) {
+		    	bSlaveCnf = true;
+		    	bOk = readXMLSlaveCnf(pSibling);
+ 	    	}
+ 	    	else if(!bVars && xmlStrcmp(pSibling->name, (const xmlChar *)"Vars") == 0){
+ 	    		bVars = true;
+ 	    		bOk = readXMLVars(pDocTree, pSibling);
+ 	    	}
+ 	    	pSibling = pSibling->next;
+		}
+		return bOk;
+	}
+	return false; 
+}
+
+bool EthercatDrv::readXMLSlaveCnf(xmlNode* pNode){
+	return true;
+	
+}
+
+bool EthercatDrv::readXMLVars(xmlDoc* pDocTree, xmlNode* pNode){
+	if(pNode && xmlStrcmp(pNode->name, (const xmlChar *)"Vars") == 0){
+		xmlNode* pSibling = pNode->xmlChildrenNode;
+		xmlNode* pVarData;
+		bool bOk = true;
+		DeviceFactory* devFactory = new DeviceFactory();
+		while(pSibling && bOk){
+			if (xmlStrcmp(pSibling->name, (const xmlChar *)"Var") == 0) {
+		    	pVarData = pSibling->xmlChildrenNode;
+		    	IOAddr newAddr;
+		    	EtherDevice* dev = nullptr;
+		    	bool bAddr = false;
+		    	bool bVarType = false;
+		    	while(pVarData && bOk && (!bAddr || !bVarType)){
+		    		if (!bAddr && xmlStrcmp(pVarData->name, (const xmlChar *)"Addr") == 0) {
+		    			bAddr = true;
+		    			bOk = DeviceFactory::parseXMLAddr(pVarData, newAddr);
+ 	    			}
+		    		else if (!bVarType && xmlStrcmp(pVarData->name, (const xmlChar *)"VarType") == 0) {
+		    			bVarType = true;
+		    			dev = devFactory->getNewXMLDevice(pDocTree, pVarData, *this);
+		    			bOk = dev != nullptr;
+ 	    			}
+ 	    			pVarData = pVarData->next;
+		    	}
+		    	if(bOk && bAddr && bVarType){
+		    		mDevices.insert({newAddr, dev});
+		    	}
+		    	else{
+		    		if(dev != nullptr) delete dev;
+		    		bOk = false;
+		    	} 
+ 	    	}
+ 	    	pSibling = pSibling->next;
+		}
+		delete devFactory;
+		if(!bOk){
+			for(auto & var : mDevices){
+				delete var.second;
+			}
+			mDevices.clear();
+		}
+		return bOk;
+	}
+	return false; 
+}
+
+
 	
 
 bool EthercatDrv::read(IOVar & var){
@@ -204,17 +314,16 @@ void EthercatDrv::updateDevices(){
 
 
 
-bool EthercatDrv::writeIOmap(IOAddr const& addr, std::int32_t val){
-	std::uint8_t* pIOByte;
+bool EthercatDrv::writeIO(IOAddr const& addr, std::int32_t val, bool sync, std::uint32_t tTimeOut){
 	if(addr.uiModule < 1 || addr.uiModule > ec_slavecount) return false;
 	if(addr.uiNumBits < 8 && addr.uiNumBits > 0){ // Escritura de bits en byte
 		int iOffset = 7 - (addr.uiChannel % 8) - (addr.uiNumBits - 1); 
 		uint8_t cleanMask = 0; // Mascara para limpiar los bit a escribir
 		uint8_t maskVal; // Mascara con los bit a escribir
-		pIOByte = ((std::uint8_t*) ec_slave[addr.uiModule].outputs) + addr.uiChannel / 8;
+		std::uint8_t* pIOByte = ((std::uint8_t*) ec_slave[addr.uiModule].outputs) + (int) (addr.uiChannel / 8);
 
     	for(int i = 0; i < addr.uiNumBits; ++i)
-    		cleanMask += pow(2, i);
+    		cleanMask += (1 << i);
  
     	maskVal = ((uint8_t) val) & cleanMask;
     	cleanMask = cleanMask << iOffset;
@@ -222,31 +331,56 @@ bool EthercatDrv::writeIOmap(IOAddr const& addr, std::int32_t val){
     	maskVal = maskVal << iOffset;
     	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
     	*pIOByte = (*pIOByte & cleanMask) | maskVal;
+    	if(sync){
+    		if(mtWaitingSend.wait_for(mutexIOMap, std::chrono::duration<std::uint32_t,std::milli>(tTimeOut)) == std::cv_status::timeout) return false;
+    	}
     }
     else if(addr.uiNumBits >= 8 && addr.uiNumBits <= 32 && addr.uiNumBits % 8 == 0 && addr.uiChannel % 8 == 0){ // Escritura de bytes
+    	union {
+        	uint32_t* p32;
+        	uint16_t* p16;
+        	uint8_t* p8;
+    	} pIOByte, pValByte;
     	int iNumBytes = (int) addr.uiNumBits / 8;
-    	pIOByte = ((std::uint8_t*) ec_slave[addr.uiModule].outputs) + addr.uiChannel / 8;
-    	std::uint8_t* pValByte = (std::uint8_t*) &val;
-    	pValByte += 4 - iNumBytes;
+    	pIOByte.p8 = ((std::uint8_t*) ec_slave[addr.uiModule].outputs) + (int) (addr.uiChannel / 8);
+    	pValByte.p32 = (std::uint32_t*) &val;
     	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
-    	for(;iNumBytes > 0; --iNumBytes, ++pIOByte, ++pValByte)
-    		*pIOByte = *pValByte;
+    	if(iNumBytes == 1){
+    		*pIOByte.p8 = *pValByte.p8;
+    	}
+    	else if(iNumBytes == 2){
+    		*pIOByte.p16 = *pValByte.p16;
+    	}
+    	else if(iNumBytes == 4){
+    		*pIOByte.p32 = *pValByte.p32;
+    	}
+    	if(sync){
+    		if(mtWaitingSend.wait_for(mutexIOMap, std::chrono::duration<std::uint32_t,std::milli>(tTimeOut)) == std::cv_status::timeout) return false;
+    	}
     }
     else return false;
     return true;
 }
 
-bool EthercatDrv::readIOmap(IOAddr const& addr, std::int32_t & val){
-	std::uint8_t* pIOByte;
+bool EthercatDrv::writeDeviceSync(IOAddr const& addr, std::int32_t val, std::uint32_t tTimeOut){
+	return writeIO(addr, val, true, tTimeOut);
+}
+
+bool EthercatDrv::writeDevice(IOAddr const& addr, std::int32_t val){
+	return writeIO(addr, val, false, 0);
+}
+
+bool EthercatDrv::readDevice(IOAddr const& addr, std::int32_t & val){
+	val = 0;
 	if(addr.uiModule < 1 || addr.uiModule > ec_slavecount) return false;
 	if(addr.uiNumBits < 8 && addr.uiNumBits > 0){ // Lectura de bits
 		int iOffset = 7 - (addr.uiChannel % 8) - (addr.uiNumBits - 1); 
 		uint8_t readMask = 0; // Mascara seleccionar los bits a leer
 		uint8_t readedVal = 0; // Valor leido
-		pIOByte = ((std::uint8_t*) ec_slave[addr.uiModule].inputs) + addr.uiChannel / 8;
+		std::uint8_t* pIOByte = ((std::uint8_t*) ec_slave[addr.uiModule].inputs) + addr.uiChannel / 8;
 
     	for(int i = 0; i < addr.uiNumBits; ++i)
-    		readMask += pow(2, i);
+    		readMask += (1 << i);
  
     	readMask = readMask << iOffset;
     	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
@@ -254,13 +388,24 @@ bool EthercatDrv::readIOmap(IOAddr const& addr, std::int32_t & val){
     	val = readedVal;
     }
     else if(addr.uiNumBits >= 8 && addr.uiNumBits <= 32 && addr.uiNumBits % 8 == 0 && addr.uiChannel % 8 == 0){ // Lectura de bytes
+    	union {
+        	uint32_t* p32;
+        	uint16_t* p16;
+        	uint8_t* p8;
+    	} pIOByte, pValByte;
     	int iNumBytes = (int) addr.uiNumBits / 8;
-    	pIOByte = ((std::uint8_t*) ec_slave[addr.uiModule].inputs) + addr.uiChannel / 8;
-    	std::uint8_t* pValByte = (std::uint8_t*) &val;
-    	pValByte += 4 - iNumBytes;
+    	pIOByte.p8 = ((std::uint8_t*) ec_slave[addr.uiModule].inputs) + (addr.uiChannel / 8);
+    	pValByte.p32 = (std::uint32_t*) &val;
     	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
-    	for(;iNumBytes > 0; --iNumBytes, ++pIOByte, ++pValByte)
-    		*pValByte = *pIOByte;
+    	if(iNumBytes == 1){
+    		*pValByte.p8 = *pIOByte.p8;
+    	}
+    	else if(iNumBytes == 2){
+    		*pValByte.p16 = *pIOByte.p16;
+    	}
+    	else if(iNumBytes == 4){
+    		*pValByte.p32 = *pIOByte.p32;
+    	}
     }
     else return false;
     return true;
