@@ -36,8 +36,11 @@ public:
 	IOVar(std::uint32_t uiVarId, IOAddr tAddr) : muiVarId(uiVarId), mtAddr(tAddr) {}
 
 	IOAddr getAddr() const { return mtAddr; }
-	void setCurrentVal(float fCurrentVal) { mfCurrentVal = fCurrentVal; }
-	float getCurrentVal() const {return mfCurrentVal;}
+	void setCurrentVal(float fCurrentVal) { mfTrueVal = fCurrentVal; }
+	float getCurrentVal() const {return (mbForcedVal) ? mfForcedVal : mfTrueVal;}
+	float getTrueVal() const {return mfTrueVal;}
+	float getForcedVal() const {return mfForcedVal;}
+	void setForcedVal(float fForcedVal){mfForcedVal = fForcedVal;}
 	void setTimeS(std::int64_t const& iTimeS) { miTimeS = iTimeS;}
 	std::int64_t getTimeS() const {return miTimeS;}
 	void setPulseInfo(double const& dDur, std::int64_t const& iTimeS){ 
@@ -51,13 +54,15 @@ public:
 	void setHwMin(float fVal) {mfHWMin = fVal;}
 	void setHwMax(float fVal) {mfHWMax = fVal;}
 	void setQState(QState tState){mtQState = tState;}
+	void setForced(bool bForced) {mbForcedVal = bForced;}
 	QState getQState() const {return mtQState;}
 	std::uint32_t getID() const {return muiVarId;}
 
 private:
 	std::uint32_t muiVarId;
 	std::int64_t miTimeS;
-	float mfCurrentVal;
+	float mfTrueVal;
+	float mfForcedVal;
 	float mfEguMin;
 	float mfEguMax;
 	float mfHWMin;

@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <errno.h>
 
+//Especificos de linux
+#include <unistd.h>
 
 #define DIOFFSET 2
 #define DIADDRESS 10001
@@ -27,6 +29,9 @@
 using namespace std;
 
 ModbusSlaveDrv::ModbusSlaveDrv() : miServerSock(-1), mbDrvEnd(false), mtDrvState(UnInit) {
+	std::uint32_t iNum = 1;
+    std::uint8_t *pNum = (std::uint8_t*)&iNum;
+    mbArchLittleEnd = (*pNum == 1);
 	mtDrvThread = new thread(&ModbusSlaveDrv::driverLoop, this);
 }
 
@@ -95,7 +100,7 @@ void ModbusSlaveDrv::driverLoop(){
 					timeval tTimeOut;
 					tTimeOut.tv_sec = 0;
 					tTimeOut.tv_usec = 1000*WAITING_FOR_DATA_MILLIS;
-					int iRes = select(miFdmax+1, &mtReadset, NULL, NULL, tTimeOut);
+					int iRes = select(miFdmax+1, &mtReadset, NULL, NULL, &tTimeOut);
         			if (iRes == -1) {
             			mstrLastError = "Error en espera de comunicaciones";
 						mtDrvState = COMError;
@@ -111,6 +116,7 @@ void ModbusSlaveDrv::driverLoop(){
 						mtDrvState = Running;
 					}
 					else{
+						if(uiComErrors == 0) mfComErrorCallB();
 						if(++uiComErrors > MAX_COM_ERROR_TRYS) uiComErrors = MAX_COM_ERROR_TRYS;
 						mutexDrvState.unlock();
 						this_thread::sleep_for(chrono::milliseconds(COM_ERROR_MIN_TIMEOUT * uiComErrors));
@@ -133,10 +139,10 @@ void ModbusSlaveDrv::closeSockets(){
 		for(int iSocket = 0; iSocket <= miFdmax; ++iSocket){
 			if (FD_ISSET(iSocket, &mtRefset) && iSocket != miServerSock) {
             	FD_CLR(iSocket, &mtRefset);
-            	close(iSocket);
+            	::close(iSocket);
         	}
 		}
-		close(miServerSock);
+		::close(miServerSock);
 		FD_ZERO(&mtRefset);
 		muiNumConnections = 0;
 	}
@@ -171,7 +177,7 @@ void ModbusSlaveDrv::processPendingRequests(){
                 }
             }
             if (iRequest == -1 || iTransTrys >= MAX_TRANSMISSION_TRYS) {
-                close(iMasterSock);
+                ::close(iMasterSock);
                 FD_CLR(iMasterSock, &mtRefset);
                 --muiNumConnections;
                 if (iMasterSock == miFdmax) {
@@ -199,28 +205,28 @@ bool ModbusSlaveDrv::createServerSocket(){
 }
 
 
-bool ModbusSlaveDrv::init(std::string const& strConfigPath){
+bool ModbusSlaveDrv::init(std::string const& strConfigPath, std::function<void()> const& comErrorCallB){
 	if(mtDrvState != UnInit){
 		mstrLastError = "Driver ya inicializado";
 		return false;
 	}
 
-	//Leer Configuracion
-	mstrServerIp = "127.0.0.1";
-	miPort = MODBUS_TCP_DEFAULT_PORT;
-	muiNumVars = 50;
-
-	/*
 	if(!loadXMLConfig(strConfigPath)){
 		mstrLastError = "Error en archivo de configuracion";
 		return false;
 	}
-	*/
+	
+	if(miPort == -1) miPort = MODBUS_TCP_DEFAULT_PORT;
+	if(muiNumVars < 1){
+		mstrLastError = "El driver necesita al menos una variable en su mapa";
+		return false;
+	}
 
 	/*Inicializacion de la biblioteca*/
 	mpMBCtx = modbus_new_tcp(mstrServerIp.c_str(), miPort);
 	if(mpMBCtx == NULL){
 		mstrLastError = std::string(modbus_strerror(errno));
+		mFieldVars.clear();
 		return false;
 	}
 
@@ -229,10 +235,12 @@ bool ModbusSlaveDrv::init(std::string const& strConfigPath){
 
 	if(mpMBmapping == NULL) {
         mstrLastError = std::string(modbus_strerror(errno));
+        mFieldVars.clear();
         modbus_free(mpMBCtx);
         return false;
     }
     
+    mfComErrorCallB = comErrorCallB;
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	mtDrvState = Stopped;
 	uiComErrors = 0;
@@ -243,47 +251,105 @@ bool ModbusSlaveDrv::init(std::string const& strConfigPath){
 
 bool ModbusSlaveDrv::read(IOVar & var){
 	std::uint8_t uiNumVar = var.getAddr().uiChannel;
-	if(uiNumVar < 1 || uiNumVar > muiNumVars) return false;
+	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
+	if(uiNumVar < 1 || uiNumVar > muiNumVars || mtDrvState == UnInit) return false;
 	var.setCurrentVal(getCurrentVal(uiNumVar));
-
+	if(mtDrvState == COMError) var.setQState(QState::ComError);
+	mutexIOMap.unlock();
+	var.setTimeS(getMsSinceEpoch());
+	return true;
 }
 
 bool ModbusSlaveDrv::write(IOVar const& var){
-
+	std::uint8_t uiNumVar = var.getAddr().uiChannel;
+	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
+	if(uiNumVar < 1 || uiNumVar > muiNumVars || mtDrvState == UnInit) return false;
+	setCurrentVal(var.getTrueVal(), uiNumVar);
+	return true;
 }
 
-bool ModbusSlaveDrv::readFieldVar(IOVar & var){
-
+bool ModbusSlaveDrv::updateFieldVar(IOVar & var){
+	auto it = mFieldVars.find(var.getID());
+	if(it == mFieldVars.end()) return false;
+	std::uint8_t uiNumVar = it->second.uiChannel;
+	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
+	if(uiNumVar < 1 || uiNumVar > muiNumVars || mtDrvState == UnInit) return false;
+	var.setForcedVal(getForcedVal(uiNumVar));
+	var.setForced(getForced(uiNumVar));
+	setCurrentVal(var.getTrueVal(), uiNumVar);
+	setQState(var.getQState(), uiNumVar);
+	setTimeS(var.getTimeS(), uiNumVar);
+	return true;
 }
 
-bool ModbusSlaveDrv::writeFieldVar(IOVar & var){
+void ModbusSlaveDrv::setQState(QState tState, std::uint8_t uiVar){
+	std::uint8_t* pDi = (mpMBmapping->tab_input_bits + ((uiVar * DIOFFSET) - DIOFFSET));
+	std::uint8_t uiVal = tState;
+	std::uint8_t uiOffset = DIOFFSET - 1;
+	std::uint8_t uiMask = 1 << uiOffset;
+	for(int i = 0; i < DIOFFSET; ++i, --uiOffset, ++pDi){
+		*pDi = ((uiVal & uiMask) >> uiOffset);
+		uiMask = uiMask >> 1;
+	}
+}
 
+void ModbusSlaveDrv::setTimeS(std::int64_t const& iTimeS, std::uint8_t uiVar){
+	std::uint8_t* pMap = (std::uint8_t*) (mpMBmapping->tab_input_registers + ((uiVar * IROFFSET) - IROFFSET));
+	std::uint8_t* pVal = (std::uint8_t*) &iTimeS;
+	if(mbArchLittleEnd) pVal = pVal + 7;
+	for(int i = 0; i < 8; ++i){
+		*pMap = *pVal;
+		if(mbArchLittleEnd) --pVal;
+		else ++pVal;
+		++pMap;
+	}
+}
+
+
+bool ModbusSlaveDrv::getForced(std::uint8_t uiVar){
+	std::uint16_t valAddr = (uiVar * COILOFFSET) - COILOFFSET;
+	return (*(mpMBmapping->tab_bits + valAddr) >= 1);
 }
 
 float ModbusSlaveDrv::getCurrentVal(std::uint8_t uiVar){
-
+	std::uint16_t valAddr = (uiVar * HROFFSET) - HROFFSET;
+	return (mbArchLittleEnd) ? modbus_get_float_dcba(mpMBmapping->tab_registers + valAddr) : modbus_get_float_abcd(mpMBmapping->tab_registers + valAddr);
 }
 
+float ModbusSlaveDrv::getForcedVal(std::uint8_t uiVar){
+	std::uint16_t valAddr = (uiVar * HROFFSET) - HROFFSET + 2;
+	return (mbArchLittleEnd) ? modbus_get_float_dcba(mpMBmapping->tab_registers + valAddr) : modbus_get_float_abcd(mpMBmapping->tab_registers + valAddr);
+}
+
+void ModbusSlaveDrv::setCurrentVal(float fVal, std::uint8_t uiVar){
+	std::uint16_t valAddr = (uiVar * HROFFSET) - HROFFSET;
+	modbus_set_float_abcd(fVal, mpMBmapping->tab_registers + valAddr);
+}
+
+std::int64_t ModbusSlaveDrv::getMsSinceEpoch(){
+	using namespace std::chrono;
+	return duration_cast<duration<std::int64_t,std::milli>>(system_clock::now().time_since_epoch()).count();
+}
 
 bool ModbusSlaveDrv::loadXMLConfig(std::string const& strConfigPath){
-	xmlParserCtxt* pParser; /* the parser context */
-    xmlDoc* pDocTree; /* the resulting document tree */
+	xmlParserCtxt* pParser; 
+    xmlDoc* pDocTree; 
 
-    /* create a parser context */
+    
     pParser = xmlNewParserCtxt();
     if (pParser == NULL) {
        	mstrLastError = "No se pudo crear el parser xml.";
 		return false;
     }
-    /* parse the file, activating the DTD validation option */
+
     bool bOk = true;
-    pDocTree = xmlCtxtReadFile(pParser, strConfigPath.c_str(), NULL, 0);
-    /* check if parsing suceeded */
+    pDocTree = xmlCtxtReadFile(pParser, strConfigPath.c_str(), NULL, XML_PARSE_DTDVALID);
+    
     if (pDocTree == NULL) {
         mstrLastError = std::string("Fallo al parsear el archivo ") + strConfigPath + ".";
         bOk = false;
     } else {
-		/* check if validation suceeded */
+		
         if (!pParser->valid){
         	mstrLastError = std::string("Archivo ") + strConfigPath + " con formato invalido.";
         	bOk = false;
@@ -293,33 +359,36 @@ bool ModbusSlaveDrv::loadXMLConfig(std::string const& strConfigPath){
         	bOk = readXMLConfig(pDocTree, root);
         }
 	    
-		/* free up the resulting document */
+		
 		xmlFreeDoc(pDocTree);
     }
-    /* free up the parser context */
+   
     xmlFreeParserCtxt(pParser);
 
     xmlCleanupParser();
     return bOk;
 }
 
+
 bool ModbusSlaveDrv::readXMLConfig(xmlDoc* pDocTree, xmlNode* pRoot){
 	xmlChar *strAttr;
-	if(pRoot && xmlStrcmp(pRoot->name, (const xmlChar *)"FieldDriver") == 0){
-		strAttr = xmlGetProp(pRoot, (const xmlChar *)"ifname");
-		mstrIfname = std::string((const char*) strAttr);
+	if(pRoot && xmlStrcmp(pRoot->name, (const xmlChar *)"SlaveDriver") == 0){
+		strAttr = xmlGetProp(pRoot, (const xmlChar *)"IP");
+		if(!strAttr) return false;
+		mstrServerIp = std::string((const char*) strAttr);
+		xmlFree(strAttr);
+		strAttr = xmlGetProp(pRoot, (const xmlChar *)"Port");
+		if(!strAttr) return false;
+		miPort = atoi((const char*) strAttr);
+		xmlFree(strAttr);
+		strAttr = xmlGetProp(pRoot, (const xmlChar *)"NumVars");
+		if(!strAttr) return false;
+		muiNumVars = atoi((const char*) strAttr);
 		xmlFree(strAttr);
 		xmlNode* pSibling = pRoot->xmlChildrenNode;
 		bool bOk = true;
-		bool bSlaveCnf = false;
-		bool bVars = false;
-		while(pSibling && bOk && (!bSlaveCnf || !bVars)){
-			if (!bSlaveCnf && xmlStrcmp(pSibling->name, (const xmlChar *)"SlaveConfig") == 0) {
-		    	bSlaveCnf = true;
-		    	bOk = readXMLSlaveCnf(pSibling);
- 	    	}
- 	    	else if(!bVars && xmlStrcmp(pSibling->name, (const xmlChar *)"Vars") == 0){
- 	    		bVars = true;
+		while(pSibling && bOk){
+ 	    	if(xmlStrcmp(pSibling->name, (const xmlChar *)"FieldVars") == 0){
  	    		bOk = readXMLVars(pDocTree, pSibling);
  	    	}
  	    	pSibling = pSibling->next;
@@ -329,54 +398,57 @@ bool ModbusSlaveDrv::readXMLConfig(xmlDoc* pDocTree, xmlNode* pRoot){
 	return false; 
 }
 
-bool ModbusSlaveDrv::readXMLSlaveCnf(xmlNode* pNode){
-	return true;
-	
-}
+
 
 bool ModbusSlaveDrv::readXMLVars(xmlDoc* pDocTree, xmlNode* pNode){
-	if(pNode && xmlStrcmp(pNode->name, (const xmlChar *)"Vars") == 0){
+	if(pNode && xmlStrcmp(pNode->name, (const xmlChar *)"FieldVars") == 0){
 		xmlNode* pSibling = pNode->xmlChildrenNode;
 		xmlNode* pVarData;
 		bool bOk = true;
-		DeviceFactory* devFactory = new DeviceFactory();
 		while(pSibling && bOk){
-			if (xmlStrcmp(pSibling->name, (const xmlChar *)"Var") == 0) {
+			if (xmlStrcmp(pSibling->name, (const xmlChar *)"FieldVar") == 0) {
+				bool bAddr = false;
 		    	pVarData = pSibling->xmlChildrenNode;
 		    	IOAddr newAddr;
-		    	EtherDevice* dev = nullptr;
-		    	bool bAddr = false;
-		    	bool bVarType = false;
-		    	while(pVarData && bOk && (!bAddr || !bVarType)){
-		    		if (!bAddr && xmlStrcmp(pVarData->name, (const xmlChar *)"Addr") == 0) {
+		  		xmlChar* strAttr = xmlGetProp(pSibling, (const xmlChar *)"ID");
+				if(!strAttr) return false;
+				std::uint32_t uiVarID = atoi((const char*) strAttr);
+				xmlFree(strAttr);
+		    	while(pVarData && bOk){
+		    		if (xmlStrcmp(pVarData->name, (const xmlChar *)"Addr") == 0) {
 		    			bAddr = true;
-		    			bOk = DeviceFactory::parseXMLAddr(pVarData, newAddr);
- 	    			}
-		    		else if (!bVarType && xmlStrcmp(pVarData->name, (const xmlChar *)"VarType") == 0) {
-		    			bVarType = true;
-		    			dev = devFactory->getNewXMLDevice(pDocTree, pVarData, *this);
-		    			bOk = dev != nullptr;
+		    			bOk = parseXMLAddr(pVarData, newAddr);
  	    			}
  	    			pVarData = pVarData->next;
 		    	}
-		    	if(bOk && bAddr && bVarType){
-		    		mDevices.insert({newAddr, dev});
+		    	if(bOk && bAddr){
+		    		mFieldVars.insert({uiVarID, newAddr});
 		    	}
-		    	else{
-		    		if(dev != nullptr) delete dev;
-		    		bOk = false;
-		    	} 
+		    	else bOk = false; 
  	    	}
  	    	pSibling = pSibling->next;
 		}
-		delete devFactory;
 		if(!bOk){
-			for(auto & var : mDevices){
-				delete var.second;
-			}
-			mDevices.clear();
+			mFieldVars.clear();
 		}
 		return bOk;
 	}
 	return false; 
+}
+
+bool ModbusSlaveDrv::parseXMLAddr(xmlNode* pNode, IOAddr & addr){
+	return parseXML8bitIntAttr(pNode, "Head", addr.uiHeader) && parseXML8bitIntAttr(pNode, "Mod", addr.uiModule) && parseXML8bitIntAttr(pNode, "Ch", addr.uiChannel) && 
+	parseXML8bitIntAttr(pNode, "Prec", addr.uiNumBits);
+}
+
+bool ModbusSlaveDrv::parseXML8bitIntAttr(xmlNode* pNode, const char* attr, std::uint8_t & iVal){
+	if(!pNode) return false;
+	xmlChar *strAttr;
+	strAttr = xmlGetProp(pNode, (const xmlChar *) attr);
+	if(strAttr){
+		iVal = atoi((const char*) strAttr);
+		xmlFree(strAttr);
+		return true;
+	}
+	return false;
 }

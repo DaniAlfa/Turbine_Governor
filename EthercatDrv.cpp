@@ -1,6 +1,6 @@
 #include "EthercatDrv.h"
 #include "EtherDevice.h"
-#include <ethercat.h>
+#include <libsoem/ethercat.h>
 #include <chrono>
 #include <cstdlib>
 
@@ -187,7 +187,7 @@ bool EthercatDrv::loadXMLConfig(std::string const& strConfigPath){
     }
     /* parse the file, activating the DTD validation option */
     bool bOk = true;
-    pDocTree = xmlCtxtReadFile(pParser, strConfigPath.c_str(), NULL, 0);
+    pDocTree = xmlCtxtReadFile(pParser, strConfigPath.c_str(), NULL, XML_PARSE_DTDVALID);
     /* check if parsing suceeded */
     if (pDocTree == NULL) {
         mstrLastError = std::string("Fallo al parsear el archivo ") + strConfigPath + ".";

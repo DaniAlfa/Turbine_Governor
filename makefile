@@ -1,7 +1,7 @@
 CFLAGS  = -Wall -g 
-SRC = EthercatDrv.cpp EtherDevice.cpp DigitalDev.cpp AnalogDev.cpp  PulseDev.cpp DeviceFactory.cpp main.cpp 
+SRC = EthercatDrv.cpp EtherDevice.cpp DigitalDev.cpp AnalogDev.cpp  PulseDev.cpp DeviceFactory.cpp ModbusSlaveDrv.cpp main.cpp 
 LIBS = -L./libs -lsoem -lxml2 -lz -llzma -lm -lmodbus -lpthread
-INCLUDES = -I./includes -I./includes/libsoem
+INCLUDES = -I./includes
 PROG   = drvTest
 COMPILER = g++
 

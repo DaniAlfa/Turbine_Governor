@@ -57,9 +57,12 @@ private:
 
 
 	bool writeIO(IOAddr const& addr, std::int32_t val, bool sync, std::uint32_t tTimeOut);
+	void updateDevices();
+
 	void driverLoop();
 	void eraseDrvConfig();
-	void updateDevices();
+
+
 	bool loadXMLConfig(std::string const& strConfigPath);
 	bool readXMLConfig(xmlDoc* pDocTree, xmlNode* pRoot);
 	bool readXMLSlaveCnf(xmlNode* pNode);

@@ -7,9 +7,10 @@
 #include <condition_variable>
 #include <thread>
 #include <string>
+#include <functional>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-#include <modbus.h>
+#include <libmodbus/modbus.h>
 
 #include "CommonTypes.h"
 #include "IOSlaveDrv.h"
@@ -23,7 +24,7 @@ public:
 	ModbusSlaveDrv();
 	~ModbusSlaveDrv();
 
-	bool init(std::string const& strConfigPath);
+	bool init(std::string const& strConfigPath, std::function<void()> const& comErrorCallB = []{});
 	bool close();
 	bool start();
 	bool stop();
@@ -32,10 +33,11 @@ public:
 
 	bool read(IOVar & var);
 	bool write(IOVar const& var);
-	bool readFieldVar(IOVar & var);
-	bool writeFieldVar(IOVar & var);
+	bool updateFieldVar(IOVar & var);
 
 private:
+	bool mbArchLittleEnd;
+
 	std::unordered_map<std::uint32_t, IOAddr> mFieldVars;
 
 	//Configuracion
@@ -54,6 +56,7 @@ private:
     int miFdmax;
     std::uint32_t muiNumConnections;
    	std::uint32_t uiComErrors;
+   	std::function<void()> mfComErrorCallB;
 
 
 	bool mbDrvEnd;
@@ -72,13 +75,19 @@ private:
 	void eraseDrvConfig();
 
 	float getCurrentVal(std::uint8_t uiVar);
+	float getForcedVal(std::uint8_t uiVar);
+	bool getForced(std::uint8_t uiVar);
+	void setCurrentVal(float fVal, std::uint8_t uiVar);
+	void setQState(QState tState, std::uint8_t uiVar);
+	void setTimeS(std::int64_t const& iTimeS, std::uint8_t uiVar);
+	static std::int64_t getMsSinceEpoch();
 
 
 	bool loadXMLConfig(std::string const& strConfigPath);
 	bool readXMLConfig(xmlDoc* pDocTree, xmlNode* pRoot);
-	bool readXMLSlaveCnf(xmlNode* pNode);
 	bool readXMLVars(xmlDoc* pDocTree, xmlNode* pNode);
-	
+	static bool parseXML8bitIntAttr(xmlNode* pNode, const char* attr, std::uint8_t & iVal);
+	static bool parseXMLAddr(xmlNode* pNode, IOAddr & addr);
 };
 
 

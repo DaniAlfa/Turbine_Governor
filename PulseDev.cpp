@@ -30,5 +30,5 @@ bool PulseDev::write(IOVar const& var){
 
 
 bool PulseDev::parametersOk(ControlWord const& control){
-	return control.tAddr.uiNumBits > 0 && control.tAddr.uiNumBits <= 32 && control.tAddr.uiNumBits % 8 == 0 && control.tAddr.uiNumBits != 24 && control.uiSetBit >= 0 && uiSetBit <= control.tAddr.uiNumBits - 1;
+	return control.tAddr.uiNumBits > 0 && control.tAddr.uiNumBits <= 32 && control.tAddr.uiNumBits % 8 == 0 && control.tAddr.uiNumBits != 24 && control.uiSetBit >= 0 && control.uiSetBit <= control.tAddr.uiNumBits - 1;
 }
