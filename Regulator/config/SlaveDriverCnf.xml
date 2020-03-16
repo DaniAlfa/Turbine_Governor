@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE SlaveDriver [
+<!ELEMENT SlaveDriver (FieldVars)>
+<!ATTLIST SlaveDriver
+  xmlns CDATA #FIXED ''
+  IP NMTOKEN #REQUIRED
+  NumVars CDATA #REQUIRED
+  Port CDATA #REQUIRED>
+
+<!ELEMENT FieldVars (FieldVar)>
+<!ATTLIST FieldVars
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT FieldVar (Addr)>
+<!ATTLIST FieldVar
+  xmlns CDATA #FIXED ''
+  ID CDATA #REQUIRED>
+
+<!ELEMENT Addr EMPTY>
+<!ATTLIST Addr
+  xmlns CDATA #FIXED ''
+  Ch CDATA #REQUIRED
+  Head CDATA #REQUIRED
+  Mod CDATA #REQUIRED
+  Prec CDATA #REQUIRED>
+]>
+
+<SlaveDriver IP="192.168.1.38" Port="-1" NumVars="10">
+ 	<FieldVars>
+ 		<FieldVar ID="0">
+ 			<Addr Head="0" Mod="0" Ch="1" Prec="1"/>
+ 		</FieldVar>
+ 	</FieldVars>
+</SlaveDriver> 

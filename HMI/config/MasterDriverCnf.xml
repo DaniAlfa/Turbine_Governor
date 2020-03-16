@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<MasterDriver IP="192.168.1.38" Port="-1" NumVars="10">
+ 	<FieldUpdates>
+ 	</FieldUpdates>
+ 	<SlaveUpdates>
+ 		<Addr Head="0" Mod="0" Ch="6" Prec="1"/>
+ 	</SlaveUpdates>
+</MasterDriver> 

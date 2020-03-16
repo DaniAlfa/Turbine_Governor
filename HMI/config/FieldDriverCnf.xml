@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE FieldDriver [
+<!ELEMENT FieldDriver (SlaveConfig,Vars)>
+<!ATTLIST FieldDriver
+  xmlns CDATA #FIXED ''
+  ifname NMTOKEN #REQUIRED>
+<!ELEMENT SlaveConfig (#PCDATA)>
+<!ATTLIST SlaveConfig
+  xmlns CDATA #FIXED ''>
+<!ELEMENT Vars (Var)+>
+<!ATTLIST Vars
+  xmlns CDATA #FIXED ''>
+<!ELEMENT Var (Addr,VarType)>
+<!ATTLIST Var
+  xmlns CDATA #FIXED ''>
+<!ELEMENT VarType (ControlWord|PulseMeasure|(StatusWord,BitRepr))>
+<!ATTLIST VarType
+  xmlns CDATA #FIXED ''
+  Type NMTOKEN #REQUIRED>
+<!ELEMENT ControlWord (Addr,SetBit)>
+<!ATTLIST ControlWord
+  xmlns CDATA #FIXED ''>
+<!ELEMENT PulseMeasure (#PCDATA)>
+<!ATTLIST PulseMeasure
+  xmlns CDATA #FIXED ''>
+<!ELEMENT StatusWord (Addr,UnderRangeBit,OverRangeBit)>
+<!ATTLIST StatusWord
+  xmlns CDATA #FIXED ''>
+<!ELEMENT BitRepr EMPTY>
+<!ATTLIST BitRepr
+  xmlns CDATA #FIXED ''
+  NumBits CDATA #REQUIRED
+  Type NMTOKEN #REQUIRED>
+<!ELEMENT SetBit (#PCDATA)>
+<!ATTLIST SetBit
+  xmlns CDATA #FIXED ''>
+<!ELEMENT UnderRangeBit (#PCDATA)>
+<!ATTLIST UnderRangeBit
+  xmlns CDATA #FIXED ''>
+<!ELEMENT OverRangeBit (#PCDATA)>
+<!ATTLIST OverRangeBit
+  xmlns CDATA #FIXED ''>
+<!ELEMENT Addr EMPTY>
+<!ATTLIST Addr
+  xmlns CDATA #FIXED ''
+  Ch CDATA #REQUIRED
+  Head CDATA #REQUIRED
+  Mod CDATA #REQUIRED
+  Prec CDATA #REQUIRED>
+]>
+
+<FieldDriver ifname="enp10s0">
+ 	<SlaveConfig>99</SlaveConfig>
+ 	<Vars>
+ 		<Var>
+ 			<Addr Head="0" Mod="2" Ch="0" Prec="1"/>
+ 			<VarType Type="DigitalDev">
+ 				<PulseMeasure>1</PulseMeasure>
+ 			</VarType>
+ 		</Var>
+ 		<Var>
+ 			<Addr Head="0" Mod="3" Ch="7" Prec="1"/>
+ 			<VarType Type="DigitalDev">
+ 				<PulseMeasure>-1</PulseMeasure>
+ 			</VarType>
+ 		</Var>
+ 		<Var>
+ 			<Addr Head="0" Mod="4" Ch="32" Prec="16"/>
+ 			<VarType Type="AnalogDev">
+ 				<StatusWord>
+ 					<Addr Head="0" Mod="4" Ch="24" Prec="8"/>
+ 					<UnderRangeBit>7</UnderRangeBit>
+ 					<OverRangeBit>6</OverRangeBit>
+ 				</StatusWord>
+ 				<BitRepr Type="HalfSigned" NumBits="16"/>
+ 			</VarType>
+ 		</Var>
+ 		<Var>
+ 			<Addr Head="0" Mod="5" Ch="32" Prec="16"/>
+ 			<VarType Type="PulseDev">
+ 				<ControlWord>
+ 					<Addr Head="0" Mod="5" Ch="16" Prec="8"/>
+ 					<SetBit>2</SetBit>
+ 				</ControlWord>
+ 			</VarType>
+ 		</Var>
+ 	</Vars>
+</FieldDriver> 
