@@ -20,9 +20,6 @@ static void interruptTest(int){
 	exit(0);
 }
 
-static void writeTimeOut(IOAddr addr){
-	cout << endl << "TimeOut en direccion " << addr.uiChannel << endl;
-}
 
 int main(int argc, char* argv[]){
 	const char* strConfigPath = (argc == 2) ? argv[1] : "";
@@ -30,7 +27,7 @@ int main(int argc, char* argv[]){
 	IOMasterDrv* drv = new ModbusMasterDrv();
 	signal(SIGINT, interruptTest);
 	signal(SIGTSTP, interruptTest);
-	if(!drv->init(strConfigPath, writeTimeOut, []{})){ 
+	if(!drv->init(strConfigPath, [](IOAddr addr){cout << "TimeOut en direccion " << (unsigned) addr.uiChannel << endl;}, []{})){ 
 		cout << "Error: " << drv->getLastErrorInfo() << endl;
 		return -1;
 	}
@@ -75,7 +72,7 @@ int main(int argc, char* argv[]){
 			digitalOut.setCurrentVal(0);
 		}
 		else digitalOut.setCurrentVal(1);
-		if(!drv->write(digitalOut,50000))
+		if(!drv->write(digitalOut,1000))
 			cout << "Error de escritura digital en ID: " <<  digitalOut.getID() << endl;
 		if(drv->read(digitalInput)){
 			std::uint32_t uiVal = digitalInput.getCurrentVal();
