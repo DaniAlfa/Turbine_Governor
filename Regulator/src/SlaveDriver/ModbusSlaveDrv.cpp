@@ -248,6 +248,8 @@ bool ModbusSlaveDrv::init(std::string const& strConfigPath, std::function<void()
         mpMBCtx = NULL;
         return false;
     }
+
+    initMapping();
     
     mfComErrorCallB = comErrorCallB;
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
@@ -255,6 +257,14 @@ bool ModbusSlaveDrv::init(std::string const& strConfigPath, std::function<void()
 	uiComErrors = 0;
 	mtWaitingStart.notify_one();
     return true;
+}
+
+void ModbusSlaveDrv::initMapping(){
+	std::uint8_t uiNumVar;
+	for(auto & var : mFieldVars){
+		uiNumVar = var.second.uiChannel;
+		setForced(uiNumVar, false);
+	}
 }
 
 
@@ -318,6 +328,12 @@ void ModbusSlaveDrv::setTimeS(std::int64_t const& iTimeS, std::uint8_t uiVar){
 bool ModbusSlaveDrv::getForced(std::uint8_t uiVar){
 	std::uint16_t valAddr = (uiVar * COILOFFSET) - COILOFFSET;
 	return (*(mpMBmapping->tab_bits + valAddr) >= 1);
+}
+
+void ModbusSlaveDrv::setForced(std::uint8_t uiVar, bool bState){
+	std::uint16_t valAddr = (uiVar * COILOFFSET) - COILOFFSET;
+	if(bState) *(mpMBmapping->tab_bits + valAddr) = 1;
+	else *(mpMBmapping->tab_bits + valAddr) = 0;
 }
 
 float ModbusSlaveDrv::getCurrentVal(std::uint8_t uiVar){

@@ -77,11 +77,13 @@ private:
 	float getCurrentVal(std::uint8_t uiVar);
 	float getForcedVal(std::uint8_t uiVar);
 	bool getForced(std::uint8_t uiVar);
+	void setForced(std::uint8_t uiVar, bool bState);
 	void setCurrentVal(float fVal, std::uint8_t uiVar);
 	void setQState(QState tState, std::uint8_t uiVar);
 	void setTimeS(std::int64_t const& iTimeS, std::uint8_t uiVar);
 	static std::int64_t getMsSinceEpoch();
 
+	void initMapping();
 
 	bool loadXMLConfig(std::string const& strConfigPath);
 	bool readXMLConfig(xmlDoc* pDocTree, xmlNode* pRoot);
