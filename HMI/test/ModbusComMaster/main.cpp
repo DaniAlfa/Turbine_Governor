@@ -20,13 +20,17 @@ static void interruptTest(int){
 	exit(0);
 }
 
+static void writeTimeOut(IOAddr addr){
+	cout << endl << "TimeOut en direccion " << addr.uiChannel << endl;
+}
+
 int main(int argc, char* argv[]){
 	const char* strConfigPath = (argc == 2) ? argv[1] : "";
 
 	IOMasterDrv* drv = new ModbusMasterDrv();
 	signal(SIGINT, interruptTest);
 	signal(SIGTSTP, interruptTest);
-	if(!drv->init(strConfigPath, [](IOAddr addr){}, []{})){ 
+	if(!drv->init(strConfigPath, writeTimeOut, []{})){ 
 		cout << "Error: " << drv->getLastErrorInfo() << endl;
 		return -1;
 	}

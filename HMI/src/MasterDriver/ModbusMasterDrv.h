@@ -14,8 +14,8 @@
 #include <libxml/tree.h>
 #include <libmodbus/modbus.h>
 
-#include "CommonTypes.h"
-#include "IOMasterDrv.h"
+#include <CommonTypes.h>
+#include <IOMasterDrv.h>
 
 
 class ModbusMasterDrv : public IOMasterDrv {
@@ -32,9 +32,7 @@ public:
 
 	bool read(RegVar & var);
 	bool write(RegVar const& var, std::uint32_t tWriteTimeOut);
-
-	bool readFieldVar(RegVar & var);
-	bool forceFieldVar(RegVar const& var, std::uint32_t tWriteTimeOut);
+	bool force(RegVar const& var, std::uint32_t tWriteTimeOut);
 
 private:
 	bool mbArchLittleEnd;
@@ -120,9 +118,10 @@ private:
 	void eraseDrvConfig();
 	void eraseVars();
 
-
-	void getTimeS(std::int64_t & iReadTs, std::uint16_t const uiTS[4]);
-	QState getQState(std::uint8_t const uiQstate[2]);
+	void readModbusVar(RegVar & var, std::unordered_map<IOAddr, ModbusData*>::const_iterator it);
+	void readFieldVar(RegVar & var, std::unordered_map<IOAddr, FieldData*>::const_iterator it);
+	void getTimeS(std::int64_t & iReadTs, std::uint16_t const uiTS[4]) const;
+	QState getQState(std::uint8_t const uiQstate[2]) const;
 	static std::int64_t getMsSinceEpoch();
 
 

@@ -227,7 +227,7 @@ bool ModbusMasterDrv::processRead(IOAddr tAddr, ModbusData* pMBVar){
 	return true;
 }
 
-void ModbusMasterDrv::getTimeS(std::int64_t & iReadTs, std::uint16_t const uiTS[4]){
+void ModbusMasterDrv::getTimeS(std::int64_t & iReadTs, std::uint16_t const uiTS[4]) const{
 	std::uint8_t* pMap = (std::uint8_t*) uiTS;
 	std::uint8_t* pVal = (std::uint8_t*) &iReadTs;
 	if(mbArchLittleEnd) pVal = pVal + 7;
@@ -239,7 +239,7 @@ void ModbusMasterDrv::getTimeS(std::int64_t & iReadTs, std::uint16_t const uiTS[
 	}
 }
 
-QState ModbusMasterDrv::getQState(std::uint8_t const uiQstate[2]){
+QState ModbusMasterDrv::getQState(std::uint8_t const uiQstate[2]) const{
 	std::uint8_t const* pDi = uiQstate;
 	std::uint8_t uiVal = 0;
 	std::uint8_t uiOffset = DIOFFSET - 1;
@@ -346,26 +346,31 @@ bool ModbusMasterDrv::init(std::string const& strConfigPath, std::function<void(
 
 bool ModbusMasterDrv::read(RegVar & var){
 	auto it = mModbusVars.find(var.getAddr());
-	if(it == mModbusVars.end()) return false;
-	ModbusData* tVarData = it->second;
+	if(it == mModbusVars.end()){
+		auto it2 = mFieldVars.find(var.getAddr());
+		if(it2 == mFieldVars.end()) return false;
+		readFieldVar(var, it2);
+	}
+	else readModbusVar(var, it);
+	return true;
+}
+
+void ModbusMasterDrv::readModbusVar(RegVar & var, std::unordered_map<IOAddr, ModbusData*>::const_iterator it){
+	ModbusData const * tVarData = it->second;
 	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
 	var.setCurrentVal(tVarData->mfCurrentVal);
 	var.setTimeS(tVarData->miTimeS);
 	var.setQState(((mtDrvState == COMError) ? ComError : tVarData->mtQState));
-	return true;
 }
-
-bool ModbusMasterDrv::readFieldVar(RegVar & var){
-	auto it = mFieldVars.find(var.getAddr());
-	if(it == mFieldVars.end()) return false;
-	FieldData* tVarData = it->second;
+	
+void ModbusMasterDrv::readFieldVar(RegVar & var, std::unordered_map<IOAddr, FieldData*>::const_iterator it){
+	FieldData const * tVarData = it->second;
 	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
 	var.setCurrentVal(tVarData->mfTrueVal);
 	var.setForcedVal(tVarData->mfForcedVal);
 	var.setForced(tVarData->mbForced);
 	var.setTimeS(tVarData->miTimeS);
 	var.setQState(tVarData->mtQState);
-	return true;
 }
 
 bool ModbusMasterDrv::write(RegVar const& var, std::uint32_t tWriteTimeOut){
@@ -387,7 +392,7 @@ bool ModbusMasterDrv::write(RegVar const& var, std::uint32_t tWriteTimeOut){
 }
 
 
-bool ModbusMasterDrv::forceFieldVar(RegVar const& var, std::uint32_t tWriteTimeOut){
+bool ModbusMasterDrv::force(RegVar const& var, std::uint32_t tWriteTimeOut){
 	std::uint8_t uiNumVar = var.getAddr().uiChannel;
 	if(uiNumVar < 1 || uiNumVar > muiNumVars) return false;
 	WriteReq* writeReq = new WriteReq();

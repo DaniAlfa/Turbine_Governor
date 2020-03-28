@@ -2,7 +2,7 @@
 #define IOMASTERDRV_H
 #include <string>
 #include <functional>
-#include "CommonTypes.h"
+#include <CommonTypes.h>
 
 class IOMasterDrv{
 public:
@@ -16,9 +16,7 @@ public:
 	
 	virtual bool read(RegVar & var) = 0;
 	virtual bool write(RegVar const& var, std::uint32_t tWriteTimeOut) = 0;
-
-	virtual bool readFieldVar(RegVar & var) = 0;
-	virtual bool forceFieldVar(RegVar const& var, std::uint32_t tWriteTimeOut) = 0;
+	virtual bool force(RegVar const& var, std::uint32_t tWriteTimeOut) = 0;
 	
 };
 
