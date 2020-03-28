@@ -89,8 +89,8 @@ int main(int argc, char* argv[]){
 		elapsedTime = chrono::duration<double, std::milli>(endTime - startTime).count();
 	}
 	cout << "Fin de la prueba con exito" << endl;
-	drv->stop();
-	drv->close();
+	//drv->stop();
+	//drv->close();
 	delete drv;
 	return 0;
 } 

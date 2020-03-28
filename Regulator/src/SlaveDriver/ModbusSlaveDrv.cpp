@@ -37,8 +37,10 @@ ModbusSlaveDrv::ModbusSlaveDrv() : mpMBCtx(NULL), mpMBmapping(NULL), miServerSoc
 }
 
 ModbusSlaveDrv::~ModbusSlaveDrv(){
+	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	mbDrvEnd = true;
 	mtWaitingStart.notify_one();
+	mutexDrvState.unlock();
 	mtDrvThread->join();
 	delete mtDrvThread;
 	closeSockets();
@@ -150,6 +152,7 @@ void ModbusSlaveDrv::closeSockets(){
 		modbus_close(mpMBCtx);
 		FD_ZERO(&mtRefset);
 		muiNumConnections = 0;
+		miServerSock = -1;
 	}
 }
 
