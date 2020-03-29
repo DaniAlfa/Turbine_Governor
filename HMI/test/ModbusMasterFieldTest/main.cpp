@@ -47,7 +47,7 @@ int main(int argc, char* argv[]){
     addr2.uiHeader = 0;
 	addr2.uiModule = 0;
 	addr2.uiChannel = 2;
-	addr2.uiNumBits = 1;
+	addr2.uiNumBits = 16;
 
 	RegVar AnalogInput(uiInID, addr2);
 	AnalogInput.setEguMin(0);
@@ -66,11 +66,14 @@ int main(int argc, char* argv[]){
 	auto startTime = chrono::high_resolution_clock::now();
 	auto endTime = chrono::high_resolution_clock::now();
 	double elapsedTime = 0;
-	int scanTime = 100;
+	double lastForcedInterval = 0;
+	int scanTime = 40;
+	int forceInterval = 1000;
 	while(elapsedTime < 100000){
 		this_thread::sleep_for(chrono::milliseconds(scanTime));
 		if(elapsedTime < 50000){
-			if(elapsedTime > 10000){
+			if(elapsedTime > 10000 && elapsedTime - lastForcedInterval >= forceInterval){
+				lastForcedInterval = elapsedTime;
 				AnalogInput.setForced(true);
 				fForcedVal += 5;
 				fForcedVal = ((int) fForcedVal % 100);
@@ -79,14 +82,15 @@ int main(int argc, char* argv[]){
 			}
 			if(drv->read(AnalogInput)){
 				cout << "Entrada Analogica Ethercat--Valor verdadero: " << AnalogInput.getTrueVal() << " ,Valor forzado: " << AnalogInput.getForcedVal();
-				cout << "Variable forzada: " << ((AnalogInput.getForced()) ? "SI" : "NO") <<" ,TimeStamp: ";
+				cout << " Variable forzada: " << ((AnalogInput.getForced()) ? "SI" : "NO") <<" ,TimeStamp: ";
 				cout << AnalogInput.getTimeS() << " OverRange: " << ((AnalogInput.getQState() == OverRange) ? "SI" : "NO");
 				cout << " UnderRange: " << ((AnalogInput.getQState() == UnderRange) ? "SI" : "NO") << endl;
 			}
 			else cout << "Error de lectura analogica en ID: " << AnalogInput.getID() << endl;
 		}
 		else{
-			if(elapsedTime > 60000){
+			if(elapsedTime > 60000 && elapsedTime - lastForcedInterval >= forceInterval){
+				lastForcedInterval = elapsedTime;
 				digitalOut.setForced(true);
 				state = !state;
 				if(!state){
@@ -97,7 +101,7 @@ int main(int argc, char* argv[]){
 			}
 			if(drv->read(digitalOut)){
 				cout << "Salida Digital Ethercat--Valor verdadero: " << digitalOut.getTrueVal() << " ,Valor forzado: " << digitalOut.getForcedVal();
-				cout << "Variable forzada: " << ((digitalOut.getForced()) ? "SI" : "NO") << endl;
+				cout << " Variable forzada: " << ((digitalOut.getForced()) ? "SI" : "NO") << endl;
 			}
 			else cout << "Error de lectura digital ethercat en ID: " << digitalOut.getID() << endl;
 		}

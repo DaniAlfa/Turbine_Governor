@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <errno.h>
+#include <iostream>
 
 #define DIOFFSET 2
 #define DIADDRESS 10001
@@ -346,9 +347,9 @@ bool ModbusMasterDrv::init(std::string const& strConfigPath, std::function<void(
 
 bool ModbusMasterDrv::read(RegVar & var){
 	auto it = mModbusVars.find(var.getAddr());
-	if(it == mModbusVars.end()){
+	if(it == mModbusVars.cend()){
 		auto it2 = mFieldVars.find(var.getAddr());
-		if(it2 == mFieldVars.end()) return false;
+		if(it2 == mFieldVars.cend()) return false;
 		readFieldVar(var, it2);
 	}
 	else readModbusVar(var, it);
