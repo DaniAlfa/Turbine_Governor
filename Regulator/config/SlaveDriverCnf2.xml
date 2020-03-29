@@ -8,7 +8,7 @@
   NumVars CDATA #REQUIRED
   Port CDATA #REQUIRED>
 
-<!ELEMENT FieldVars (FieldVar)>
+<!ELEMENT FieldVars (FieldVar)+>
 <!ATTLIST FieldVars
   xmlns CDATA #FIXED ''>
 

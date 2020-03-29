@@ -83,7 +83,7 @@ int main(int argc, char* argv[]){
 		cout << "El driver modbus no pudo arrancar" << endl;
 		return -1;
 	}
-	cout << "Driver mosbus arrancado con exito" << endl;
+	cout << "Driver modbus arrancado con exito" << endl;
 	sleep(2);
 
 	bool state = false;
@@ -112,7 +112,8 @@ int main(int argc, char* argv[]){
 			else digitalOut.setCurrentVal(1);
 			if(slaveDrv->updateFieldVar(digitalOut)){
 				if(fieldDrv->write(digitalOut)){
-					cout << "Salida digital--Valor verdadero: " << digitalOut.getTrueVal() << " ,Valor forzado: " << digitalOut.getForcedVal() << endl;
+					cout << "Salida digital--Valor verdadero: " << digitalOut.getTrueVal() << " ,Valor forzado: " << digitalOut.getForcedVal();
+					cout << " Variable forzada: " << ((digitalOut.getForced()) ? "SI" : "NO") << endl;
 				}
 				else cout << "Error de escritura digital ethercat en ID: " <<  digitalOut.getID() << endl;
 			}
