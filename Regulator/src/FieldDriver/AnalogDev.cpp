@@ -51,8 +51,29 @@ bool AnalogDev::write(IOVar const& var){
 }
 	
 void AnalogDev::updateDevice(IOAddr const& addr){
-
-	//Gestion errores
+	QState currState = OK;
+	if(!isModuleOk(addr)){
+		currState = ComError;
+	}
+	else{
+		currState = getVarQState(mtStatusW);
+	}
+	if(currState != OK){
+		if(mbInError){
+			if(mtLastQState != currState)
+				newVarError(addr, currState);
+		}
+		else newVarError(addr, currState);
+		mbInError = true;
+		mtLastQState = currState;
+	}
+	else{
+		if(mbInError){
+			mbInError = false;
+			mtLastQState = OK;
+			clearVarError(addr);
+		}
+	}
 }
 
 

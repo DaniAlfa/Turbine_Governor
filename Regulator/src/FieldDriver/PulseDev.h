@@ -22,6 +22,7 @@ public:
 	bool write(IOVar const& var);
 
 	static bool parametersOk(ControlWord const& control);
+	void updateDevice(IOAddr const& addr);
 
 protected:
 	ControlWord mtControlB;

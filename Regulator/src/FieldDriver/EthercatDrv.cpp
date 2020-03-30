@@ -7,6 +7,8 @@
 
 #define RECIEVE_TIMEOUT 2000
 #define POOLING_DELAY_MILLIS 20
+#define SLAVE_SYNC_TRYS 2
+#define EC_TIMEOUT_RECOVERY 500
 
 
 using namespace std;
@@ -68,30 +70,121 @@ void EthercatDrv::driverLoop(){
 					mtWaitingStart.wait(mutexDrvState);
 				}
 			break;
+			case COMError:
+			case VarError:
 			case Running:
 				mutexDrvState.unlock();
 				this_thread::sleep_for(chrono::milliseconds(POOLING_DELAY_MILLIS));
 				mutexDrvState.lock();
-				if(mtDrvState != Running) break;
-				updateDevices();
+				if(mtDrvState == Stopped || mtDrvState == UnInit) break;
 				unique_lock<mutex> mutexIOMap(mtIOMapMutex);
 				ec_send_processdata();
-				ec_receive_processdata(RECIEVE_TIMEOUT);
-				//recepcion y envio ok
+				int iWorkCount = ec_receive_processdata(RECIEVE_TIMEOUT);
 				mtWaitingSend.notify_all();
+				mutexIOMap.unlock();
+				checkSlavesWKC(iWorkCount);
+				if(mModuleErrors.size() == (unsigned) ec_slavecount){
+					if(mtDrvState != COMError){
+						mtDrvState = COMError;
+						mferrorCallB();
+					} 
+					else mtDrvState = COMError;
+					break;
+				}
+				updateDevices();
+				if(!mModuleErrors.empty() || !mVarErrors.empty()){
+					if(mtDrvState != VarError){
+						mtDrvState = VarError;
+						mferrorCallB();
+					} 
+					else mtDrvState = VarError;
+				}
+				else mtDrvState = Running;
 			break;
 		}
 	}
 }
-	
+
+void EthercatDrv::checkSlavesWKC(int iWorkCounter){
+	int expectedWKC = (ec_group[0].outputsWKC * 2) + ec_group[0].inputsWKC;
+	if(iWorkCounter < expectedWKC) {
+		/* one ore more slaves are not responding */
+		bool bSlaveError;
+		ec_readstate();
+		for (int iSlave = 1; iSlave <= ec_slavecount; ++iSlave){
+	       if (ec_slave[iSlave].state != EC_STATE_OPERATIONAL) {
+	       		bSlaveError = true;
+	          	if (ec_slave[iSlave].state == (EC_STATE_SAFE_OP + EC_STATE_ERROR)) { //Error de sincronizacion
+	             	//printf("ERROR : slave %d is in SAFE_OP + ERROR, attempting ack.\n", slave);
+	             	ec_slave[iSlave].state = (EC_STATE_SAFE_OP + EC_STATE_ACK);
+	             	ec_writestate(iSlave);
+	             	bSlaveError = (mSlavesComTrys[iSlave]++ >= SLAVE_SYNC_TRYS);
+	          	}
+	          	else if(ec_slave[iSlave].state == EC_STATE_SAFE_OP) { //Posible error de sincronizacion o recuperacion de perdida
+	            	//printf("WARNING : slave %d is in SAFE_OP, change to OPERATIONAL.\n", slave);
+	            	ec_slave[iSlave].state = EC_STATE_OPERATIONAL;
+	            	ec_writestate(iSlave);
+	            	bSlaveError = (mSlavesComTrys[iSlave]++ >= SLAVE_SYNC_TRYS);   
+	          	}
+	          	else if(ec_slave[iSlave].state > EC_STATE_NONE) { //Esclavo en recuperacion (estado init, preOP)
+	        		if (ec_reconfig_slave(iSlave, EC_TIMEOUT_RECOVERY)) {
+	               		ec_slave[iSlave].islost = FALSE;
+	               		//printf("MESSAGE : slave %d reconfigured\n",slave);   
+	            	}
+	          	} 
+	          	else if(!ec_slave[iSlave].islost) { //en STATE_NONE pero sin estar perdido
+	            	/* re-check state */
+	            	ec_statecheck(iSlave, EC_STATE_OPERATIONAL, EC_TIMEOUTRET);
+	            	if (ec_slave[iSlave].state == EC_STATE_NONE) {
+	              		ec_slave[iSlave].islost = TRUE;
+	              		//printf("ERROR : slave %d lost\n",slave);   
+	            	}
+	          	}
+	          	if(bSlaveError)
+	          		mModuleErrors.insert(iSlave);
+	          	if (ec_slave[iSlave].islost) {
+	         		if(ec_slave[iSlave].state == EC_STATE_NONE) {
+	           			if (ec_recover_slave(iSlave, EC_TIMEOUT_RECOVERY)) {
+	             			ec_slave[iSlave].islost = FALSE;
+	             			//printf("MESSAGE : slave %d recovered\n",slave);   
+	           			}
+	         		}
+	        		else {
+	           			ec_slave[iSlave].islost = FALSE;
+	           			//printf("MESSAGE : slave %d found\n",slave);   
+	        		}
+	       		}
+	       	}
+	       	else{
+	      		mModuleErrors.erase(iSlave);
+	      		mSlavesComTrys[iSlave] = 0;
+	       	}
+	    }
+	}
+	else{
+		for(auto iSlave : mModuleErrors){
+			mSlavesComTrys[iSlave] = 0;
+		}
+		mModuleErrors.clear();
+	} 
+}
+
+void EthercatDrv::getVarErrors(std::unordered_map<IOAddr, QState> & mErrors){
+	unique_lock<mutex> mutexVarError(mtVarErrorsMutex);
+	mErrors = mVarErrors;
+}
 
 bool EthercatDrv::read(IOVar & var){
+	if(mtDrvState == UnInit) return false;
 	auto it = mDevices.find(var.getAddr());
-	if(it == mDevices.end()) return false;
-	return it->second->read(var);
+	if(it == mDevices.end() || !it->second->read(var)) return false;
+	if(mtDrvState == COMError)
+		var.setQState(ComError);
+	return true;
 }
 	
 bool EthercatDrv::write(IOVar const& var){
+	if(mtDrvState == UnInit) return false;
 	auto it = mDevices.find(var.getAddr());
 	if(it == mDevices.end()) return false;
 	return it->second->write(var);
@@ -201,7 +294,22 @@ bool EthercatDrv::readDevice(IOAddr const& addr, std::uint32_t & uiVal){
 
 }
 
-bool EthercatDrv::init(std::string const& strConfigPath){
+bool EthercatDrv::isModuleOk(IOAddr const& addr) const{
+	std::uint8_t uiModule = addr.uiModule;
+	return mModuleErrors.find(uiModule) == mModuleErrors.end();
+}
+
+void EthercatDrv::newVarError(IOAddr const& addr, QState eState){
+	unique_lock<mutex> mutexVarError(mtVarErrorsMutex);
+	mVarErrors[addr] = eState;
+}
+
+void EthercatDrv::clearVarError(IOAddr const& addr){
+	unique_lock<mutex> mutexVarError(mtVarErrorsMutex);
+	mVarErrors.erase(addr);
+}
+
+bool EthercatDrv::init(std::string const& strConfigPath, std::function<void()> const& errorCallB){
 	if(mtDrvState != UnInit){
 		mstrLastError = "Driver ya inicializado";
 		return false;
@@ -284,7 +392,8 @@ bool EthercatDrv::init(std::string const& strConfigPath){
     
     /*Carga de archivo e inicializacion de dispositivos*/
     //En fallo ec_close();
-    
+    mSlavesComTrys = std::vector<std::uint8_t>(ec_slavecount, 0);
+    mferrorCallB = errorCallB;
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	mtDrvState = Stopped;
 	mtWaitingStart.notify_one();

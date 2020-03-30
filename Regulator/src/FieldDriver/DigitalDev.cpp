@@ -24,6 +24,18 @@ bool DigitalDev::write(IOVar const& var){
 
 
 void DigitalDev::updateDevice(IOAddr const& addr){
+	if(!isModuleOk(addr)){
+		if(!mbInError) newVarError(addr, QState::ComError);
+		mbInError = true;
+		mtLastQState = QState::ComError;
+		return;
+	}
+	else if(mbInError){
+		mbInError = false;
+		mtLastQState = OK;
+		clearVarError(addr);
+	} 
+	
 	using namespace std::chrono;
 	if(miPulseMeasureOpt == -1) return;
 	std::uint32_t readedVal;

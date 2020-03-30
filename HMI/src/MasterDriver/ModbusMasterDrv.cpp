@@ -371,7 +371,7 @@ void ModbusMasterDrv::readFieldVar(RegVar & var, std::unordered_map<IOAddr, Fiel
 	var.setForcedVal(tVarData->mfForcedVal);
 	var.setForced(tVarData->mbForced);
 	var.setTimeS(tVarData->miTimeS);
-	var.setQState(tVarData->mtQState);
+	var.setQState(((mtDrvState == COMError) ? ComError : tVarData->mtQState));
 }
 
 bool ModbusMasterDrv::write(RegVar const& var, std::uint32_t tWriteTimeOut){

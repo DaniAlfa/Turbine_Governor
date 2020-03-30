@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <cstdint>
 #include <string>
-
+#include <unordered_map>
 #include <EthercatDrv.h>
 
 #include <signal.h>
@@ -22,13 +22,39 @@ static void interruptTest(int){
 	exit(0);
 }
 
+static void errorCallBack(){
+	DrvState st = drv->getState();
+	cout << "Error en driver: ";
+	if(st == COMError){
+		cout << "COM Error" << endl;
+	}
+	else if(st == VarError){
+		cout << "Var Error" << endl;
+		std::unordered_map<IOAddr, QState> mErrors;
+		drv->getVarErrors(mErrors);
+		for(auto it : mErrors){
+			cout << "Addr: Esclavo " << (unsigned) (it.first.uiModule) << " Canal " << (unsigned) (it.first.uiChannel) << endl;
+			cout << "QState: ";
+			if(it.second == ComError){
+				cout << "ComError" << endl;
+			}
+			else if(it.second == OverRange){
+				cout << "OverRange" << endl;
+			}
+			else if(it.second == UnderRange){
+				cout << "UnderRange" << endl;
+			}
+		}
+	}
+}
+
 int main(int argc, char* argv[]){
 	const char* strConfigPath = (argc == 2) ? argv[1] : "";
 
 	drv = new EthercatDrv();
 	signal(SIGINT, interruptTest);
 	signal(SIGTSTP, interruptTest);
-	if(!drv->init(strConfigPath)){ 
+	if(!drv->init(strConfigPath, errorCallBack)){ 
 		cout << "Error: " << drv->getLastErrorInfo() << endl;
 		delete drv;
 		return -1;

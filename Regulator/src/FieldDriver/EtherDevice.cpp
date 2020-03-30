@@ -4,7 +4,7 @@
 #include <chrono>
 #include "EthercatDrv.h"
 
-EtherDevice::EtherDevice(EthercatDrv & drv) : mtDrv(&drv) {}
+EtherDevice::EtherDevice(EthercatDrv & drv) : mtDrv(&drv), mbInError(false), mtLastQState(OK) {}
 
 EtherDevice::~EtherDevice(){}
 
@@ -79,4 +79,17 @@ EtherDevice::BitRepr EtherDevice::getBitRepr(std::string strRepr){
 	else if(strRepr == "HalfSigned") return HalfSigned;
 	else if(strRepr == "Signed") return Signed;
 	return Invalid;
+}
+
+
+bool EtherDevice::isModuleOk(IOAddr const& addr) const{
+	return mtDrv->isModuleOk(addr);
+}
+
+void EtherDevice::newVarError(IOAddr const& addr, QState eState){
+	mtDrv->newVarError(addr, eState);
+}
+
+void EtherDevice::clearVarError(IOAddr const& addr){
+	mtDrv->clearVarError(addr);
 }

@@ -30,3 +30,17 @@ bool PulseDev::write(IOVar const& var){
 bool PulseDev::parametersOk(ControlWord const& control){
 	return control.tAddr.uiNumBits > 0 && control.tAddr.uiNumBits <= 32 && control.tAddr.uiNumBits % 8 == 0 && control.tAddr.uiNumBits != 24 && control.uiSetBit >= 0 && control.uiSetBit <= control.tAddr.uiNumBits - 1;
 }
+
+void PulseDev::updateDevice(IOAddr const& addr){
+	if(!isModuleOk(addr)){
+		if(!mbInError) newVarError(addr, QState::ComError);
+		mbInError = true;
+		mtLastQState = QState::ComError;
+		return;
+	}
+	else if(mbInError){
+		mbInError = false;
+		mtLastQState = OK;
+		clearVarError(addr);
+	} 
+}

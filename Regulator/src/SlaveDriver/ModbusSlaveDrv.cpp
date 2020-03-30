@@ -274,6 +274,7 @@ bool ModbusSlaveDrv::read(IOVar & var){
 	if(uiNumVar < 1 || uiNumVar > muiNumVars || mtDrvState == UnInit) return false;
 	var.setCurrentVal(getCurrentVal(uiNumVar));
 	if(mtDrvState == COMError) var.setQState(QState::ComError);
+	else var.setQState(QState::OK);
 	mutexIOMap.unlock();
 	var.setTimeS(getMsSinceEpoch());
 	return true;
