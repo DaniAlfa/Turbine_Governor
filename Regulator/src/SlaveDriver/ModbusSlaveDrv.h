@@ -34,6 +34,7 @@ public:
 	bool read(IOVar & var);
 	bool write(IOVar const& var);
 	bool updateFieldVar(IOVar & var);
+	bool writeRO(std::uint32_t iVal, IOAddr addr);
 
 private:
 	bool mbArchLittleEnd;
@@ -43,7 +44,8 @@ private:
 	//Configuracion
 	std::string mstrServerIp;
 	int miPort;
-	std::uint32_t muiNumVars;
+	std::uint32_t muiNumIOVars;
+	std::uint32_t muiNumROInts;
 
     modbus_t * mpMBCtx;
     modbus_mapping_t * mpMBmapping;

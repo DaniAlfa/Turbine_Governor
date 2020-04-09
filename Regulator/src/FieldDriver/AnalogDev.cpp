@@ -34,7 +34,7 @@ bool AnalogDev::read(IOVar & var){
 
 	var.setCurrentVal(scaleValue(var.getEguMin(), var.getEguMax(), fHwMin, fHwMax, convertBytes(uiReadedVal, mtBitRepr, var.getAddr().uiNumBits)));
 	var.setTimeS(getMsSinceEpoch());
-	var.setQState(getVarQState(mtStatusW));
+	var.setQState(mtLastQState);
 	return true;
 }
 

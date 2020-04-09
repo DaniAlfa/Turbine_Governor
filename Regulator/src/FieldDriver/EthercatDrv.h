@@ -34,6 +34,7 @@ public:
 	bool read(IOVar & var);
 	bool write(IOVar const& var);
 	void getVarErrors(std::unordered_map<IOAddr, QState> & mErrors);
+	void updateQState(IOVar & var);
 
 protected:
 	friend class EtherDevice;

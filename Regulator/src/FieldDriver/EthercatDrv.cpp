@@ -190,6 +190,16 @@ bool EthercatDrv::write(IOVar const& var){
 	return it->second->write(var);
 }
 
+void updateQState(IOVar & var){
+	if(mtDrvState == UnInit) return;
+	auto it = mDevices.find(var.getAddr());
+	if(it == mDevices.end()) return;
+	if(mtDrvState == COMError)
+		var.setQState(ComError);
+	else
+		var.setQState(it->second->getCurrentQState());
+}
+
 void EthercatDrv::updateDevices(){
 	for(auto & var : mDevices){
 		var.second->updateDevice(var.first);

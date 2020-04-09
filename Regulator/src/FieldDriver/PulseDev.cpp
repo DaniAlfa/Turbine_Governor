@@ -11,6 +11,7 @@ bool PulseDev::read(IOVar & var){
 
 	var.setCurrentVal(convertBytes(uiReadedVal, Unsigned, var.getAddr().uiNumBits)); //Ampliable a representacion con signo
 	var.setTimeS(getMsSinceEpoch());
+	var.setQState(mtLastQState);
 	return true;
 }
 

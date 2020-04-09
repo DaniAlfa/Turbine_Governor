@@ -27,6 +27,11 @@ public:
     IOVar& at(std::uint32_t uiID);
     IOVar const& at(std::uint32_t uiID) const;
 
+    DrvState getFieldDrvState() const;
+    DrvState getSlaveDrvState() const;
+
+    void getFldErrors(std::unordered_map<std::uint32_t, QState> & mErrors);
+
 private:
 	IOFieldDrv* mptFieldDrv;
 	IOSlaveDrv* mptSlaveDrv;
@@ -35,6 +40,8 @@ private:
 	IOVar* mFieldOut[FLD_OUT_VARS];
 	IOVar* mSlaveIn[SLV_IN_VARS];
 	IOVar* mSlaveOut[SLV_OUT_VARS];
+
+	std::unordered_map<IOAddr, IOVar*> mMFieldAddrIndex;
 
 }
 

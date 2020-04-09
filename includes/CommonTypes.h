@@ -59,7 +59,7 @@ public:
 	void setEguMin(float fVal) {mfEguMin = fVal;}
 	void setEguMax(float fVal) {mfEguMax = fVal;}
 	void setQState(QState tState){mtQState = tState;}
-	QState getQState() const {return mtQState;}
+	QState getQState() const {return (mbForcedVal) ? OK : mtQState;}
 	void setForced(bool bForced) {mbForcedVal = bForced;}
 	bool getForced() const {return mbForcedVal;}
 	

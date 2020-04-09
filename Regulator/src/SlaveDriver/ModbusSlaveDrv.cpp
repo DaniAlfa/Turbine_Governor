@@ -7,7 +7,7 @@
 //Especificos de linux
 #include <unistd.h>
 
-#define DIOFFSET 2
+#define DIOFFSET 2 //Numero de DI en IOVar
 #define DIADDRESS 10001
 #define COILOFFSET 1
 #define COILADDRESS 1
@@ -62,7 +62,8 @@ void ModbusSlaveDrv::eraseDrvConfig(){
     if(mpMBmapping != NULL) modbus_mapping_free(mpMBmapping);
     mpMBmapping = NULL;
     mFieldVars.clear();
-    muiNumVars = 0;
+    muiNumIOVars = 0;
+    muiNumROInts = 0;
     uiComErrors = 0;
 }
 
@@ -225,7 +226,7 @@ bool ModbusSlaveDrv::init(std::string const& strConfigPath, std::function<void()
 	}
 	
 	if(miPort == -1) miPort = MODBUS_TCP_DEFAULT_PORT;
-	if(muiNumVars < 1){
+	if(muiNumIOVars < 1 && muiNumROInts < 1){
 		mstrLastError = "El driver necesita al menos una variable en su mapa";
 		return false;
 	}
@@ -238,8 +239,8 @@ bool ModbusSlaveDrv::init(std::string const& strConfigPath, std::function<void()
 		return false;
 	}
 
-	mpMBmapping = modbus_mapping_new_start_address(COILADDRESS, muiNumVars* COILOFFSET, DIADDRESS, muiNumVars* DIOFFSET,
-        HRADDRESS, muiNumVars * HROFFSET, IRADDRESS, muiNumVars * IROFFSET);
+	mpMBmapping = modbus_mapping_new_start_address(COILADDRESS, muiNumIOVars* COILOFFSET, DIADDRESS, muiNumIOVars* DIOFFSET,
+        HRADDRESS, muiNumIOVars * HROFFSET, IRADDRESS, muiNumIOVars * IROFFSET + muiNumROInts * 2);
 
 	if(mpMBmapping == NULL) {
         mstrLastError = std::string(modbus_strerror(errno));
@@ -269,9 +270,9 @@ void ModbusSlaveDrv::initMapping(){
 
 
 bool ModbusSlaveDrv::read(IOVar & var){
-	std::uint8_t uiNumVar = var.getAddr().uiChannel;
+	std::uint8_t uiNumVar = var.getAddr().uiChannel - muiNumROInts;
 	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
-	if(uiNumVar < 1 || uiNumVar > muiNumVars || mtDrvState == UnInit) return false;
+	if(uiNumVar < 1 || uiNumVar > muiNumIOVars || mtDrvState == UnInit) return false;
 	var.setCurrentVal(getCurrentVal(uiNumVar));
 	if(mtDrvState == COMError) var.setQState(QState::ComError);
 	else var.setQState(QState::OK);
@@ -281,9 +282,9 @@ bool ModbusSlaveDrv::read(IOVar & var){
 }
 
 bool ModbusSlaveDrv::write(IOVar const& var){
-	std::uint8_t uiNumVar = var.getAddr().uiChannel;
+	std::uint8_t uiNumVar = var.getAddr().uiChannel - muiNumROInts;
 	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
-	if(uiNumVar < 1 || uiNumVar > muiNumVars || mtDrvState == UnInit) return false;
+	if(uiNumVar < 1 || uiNumVar > muiNumIOVars || mtDrvState == UnInit) return false;
 	setCurrentVal(var.getTrueVal(), uiNumVar);
 	return true;
 }
@@ -291,15 +292,30 @@ bool ModbusSlaveDrv::write(IOVar const& var){
 bool ModbusSlaveDrv::updateFieldVar(IOVar & var){
 	auto it = mFieldVars.find(var.getID());
 	if(it == mFieldVars.end()) return false;
-	std::uint8_t uiNumVar = it->second.uiChannel;
+	std::uint8_t uiNumVar = it->second.uiChannel-muiNumROInts;
 	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
-	if(uiNumVar < 1 || uiNumVar > muiNumVars || mtDrvState == UnInit) return false;
+	if(uiNumVar < 1 || uiNumVar > muiNumIOVars || mtDrvState == UnInit) return false;
 	var.setForcedVal(getForcedVal(uiNumVar));
 	var.setForced(getForced(uiNumVar));
 	setCurrentVal(var.getTrueVal(), uiNumVar);
 	setQState(var.getQState(), uiNumVar);
 	setTimeS(var.getTimeS(), uiNumVar);
 	return true;
+}
+
+bool ModbusSlaveDrv::writeRO(std::uint32_t iVal, IOAddr addr){
+	std::uint8_t uiNumVar = addr.uiChannel;
+	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
+	if(uiNumVar < 1 || uiNumVar > muiNumROInts || mtDrvState == UnInit) return false;
+	std::uint8_t* pMap = (std::uint8_t*) (mpMBmapping->tab_input_registers + ((uiNumVar - 1) * 2));
+	std::uint8_t* pVal = (std::uint8_t*) &iVal;
+	if(mbArchLittleEnd) pVal = pVal + 3;
+	for(int i = 0; i < 4; ++i){
+		*pMap = *pVal;
+		if(mbArchLittleEnd) --pVal;
+		else ++pVal;
+		++pMap;
+	}
 }
 
 void ModbusSlaveDrv::setQState(QState tState, std::uint8_t uiVar){
@@ -314,7 +330,7 @@ void ModbusSlaveDrv::setQState(QState tState, std::uint8_t uiVar){
 }
 
 void ModbusSlaveDrv::setTimeS(std::int64_t const& iTimeS, std::uint8_t uiVar){
-	std::uint8_t* pMap = (std::uint8_t*) (mpMBmapping->tab_input_registers + ((uiVar * IROFFSET) - IROFFSET));
+	std::uint8_t* pMap = (std::uint8_t*) (mpMBmapping->tab_input_registers + ((uiVar * IROFFSET) - IROFFSET) + muiNumROInts*2);
 	std::uint8_t* pVal = (std::uint8_t*) &iTimeS;
 	if(mbArchLittleEnd) pVal = pVal + 7;
 	for(int i = 0; i < 8; ++i){
@@ -407,9 +423,13 @@ bool ModbusSlaveDrv::readXMLConfig(xmlDoc* pDocTree, xmlNode* pRoot){
 		if(!strAttr) return false;
 		miPort = atoi((const char*) strAttr);
 		xmlFree(strAttr);
-		strAttr = xmlGetProp(pRoot, (const xmlChar *)"NumVars");
+		strAttr = xmlGetProp(pRoot, (const xmlChar *)"NumROInts");
 		if(!strAttr) return false;
-		muiNumVars = atoi((const char*) strAttr);
+		muiNumROInts = atoi((const char*) strAttr);
+		xmlFree(strAttr);
+		strAttr = xmlGetProp(pRoot, (const xmlChar *)"NumIOVars");
+		if(!strAttr) return false;
+		muiNumIOVars = atoi((const char*) strAttr);
 		xmlFree(strAttr);
 		xmlNode* pSibling = pRoot->xmlChildrenNode;
 		bool bOk = true;

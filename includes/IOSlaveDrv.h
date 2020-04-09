@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 #include <CommonTypes.h>
+#include <cstdint>
 
 class IOSlaveDrv{
 public:
@@ -17,7 +18,7 @@ public:
 	virtual bool read(IOVar & var) = 0;
 	virtual bool write(IOVar const& var) = 0;
 	virtual bool updateFieldVar(IOVar & var) = 0;
-	
+	virtual bool writeRO(std::uint32_t iVal, IOAddr addr) = 0;
 };
 
 

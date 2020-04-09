@@ -19,6 +19,8 @@ public:
 	enum BitRepr{Signed, Unsigned, HalfSigned, Invalid};
 	static EtherDevice::BitRepr getBitRepr(std::string strRepr);
 
+	QState getCurrentQState() const {return mtLastQState};
+
 private:
 	EthercatDrv* mtDrv;
 

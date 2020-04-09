@@ -14,6 +14,7 @@ bool DigitalDev::read(IOVar & var){
 	var.setCurrentVal((readedVal > 0) ? 1 : 0);
 	var.setTimeS(getMsSinceEpoch());
 	var.setPulseInfo(mdPulseDur, miPulseTimeS);
+	var.setQState(mtLastQState);
 	return true;
 }
 

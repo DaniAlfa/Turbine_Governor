@@ -18,7 +18,7 @@ public:
 	virtual bool read(IOVar & var) = 0;
 	virtual bool write(IOVar const& var) = 0;
 	virtual void getVarErrors(std::unordered_map<IOAddr, QState> & mErrors) = 0;
-	
+	virtual void updateQState(IOVar & var) = 0;
 };
 
 
