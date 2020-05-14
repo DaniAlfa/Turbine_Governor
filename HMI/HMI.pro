@@ -70,18 +70,30 @@ SOURCES += \
     ./src/MainWindow.cpp \
     ./src/MasterDriver/ModbusMasterDrv.cpp \
     ./src/ControlWdg.cpp \
-    ./src/ControlOptWdg.cpp
+    ./src/ControlOptWdg.cpp \
+    ./src/AlarmsWdg.cpp \
+    ./src/TurbineViewWdg.cpp \
+    ./src/TendencyWdg.cpp \
+    ./src/VarsViewWdg.cpp
 
 HEADERS += \
     ./src/MainWindow.h \
     ./src/MasterDriver/ModbusMasterDrv.h \
     ./src/ControlWdg.h \
-    ./src/ControlOptWdg.h
+    ./src/ControlOptWdg.h \
+    ./src/AlarmsWdg.h \
+    ./src/TurbineViewWdg.h \
+    ./src/TendencyWdg.h \
+    ./src/VarsViewWdg.h
 
 FORMS += \
     ./src/MainWindow.ui \
     ./src/ControlWdg.ui \
-    ./src/ControlOptWdg.ui
+    ./src/ControlOptWdg.ui \
+    ./src/AlarmsWdg.ui \
+    ./src/TurbineViewWdg.ui \
+    ./src/TendencyWdg.ui \
+    ./src/VarsViewWdg.ui
 
 
 

@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>   
+	<file alias="main_style">./resources/Main_Style_Ux.qss</file>
 	
 </qresource>
 </RCC>
