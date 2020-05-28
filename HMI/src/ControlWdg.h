@@ -15,9 +15,12 @@ public:
 
 private slots:
 	void regTypeButtonClicked(int id);
+	void frecButtonClicked(int id);
+	void speedTypeButtonClicked(int id);
+	void pwButtonClicked(int id);
 
 private:
-	QButtonGroup mRegTypeGrp;
+	QButtonGroup mRegTypeGrp, mFrecWdgGrp, mSpeedWdgGrp, mPwWdgGrp;
 
 };
 #endif // CONTROLWDG_H
