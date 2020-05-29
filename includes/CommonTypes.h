@@ -102,7 +102,8 @@ public:
 	QState getQState() const {return mtQState;}
 	void setForced(bool bForced) {mbForcedVal = bForced;}
 	bool getForced() const {return mbForcedVal;}
-	
+	void setUnits(std::string strUnits) {mstrUnits = strUnits;}
+	std::string getUnits() const {return mstrUnits;}
 
 private:
 	std::uint32_t muiVarId;
@@ -114,6 +115,26 @@ private:
 	IOAddr mtAddr;
 	QState mtQState;
 	bool mbForcedVal;
+	std::string mstrUnits;
+};
+
+class RegWOVar{
+public:
+	RegWOVar(std::uint32_t uiVarId, IOAddr tAddr) : muiVarId(uiVarId), mtAddr(tAddr) {}
+
+	std::uint32_t getID() const {return muiVarId;}
+	IOAddr getAddr() const { return mtAddr; }
+	float getEguMin() const {return mfEguMin;}
+	float getEguMax() const {return mfEguMax;}
+	void setEguMin(float fVal) {mfEguMin = fVal;}
+	void setEguMax(float fVal) {mfEguMax = fVal;}
+	
+
+private:
+	std::uint32_t muiVarId;
+	float mfEguMin;
+	float mfEguMax;
+	IOAddr mtAddr;
 };
 
 #endif

@@ -3,11 +3,12 @@
 #include <string>
 #include <functional>
 #include <CommonTypes.h>
+#include <unordered_set>
 
 class IOMasterDrv{
 public:
 	virtual ~IOMasterDrv(){}
-	virtual bool init(std::string const& strConfigPath, std::function<void(IOAddr)> const& writeTimeOutCallB, std::function<void()> const& comErrorCallB) = 0;
+	virtual bool init(std::string const& strConfigPath, std::unordered_set<IOAddr> const& slaveVarsToUpdate, std::unordered_set<IOAddr> const& fieldVarsToUpdate, std::function<void()> const& comErrorCallB) = 0;
 	virtual bool close() = 0;
 	virtual bool start() = 0;
 	virtual bool stop() = 0;
@@ -15,8 +16,16 @@ public:
 	virtual std::string getLastErrorInfo() const = 0;
 	
 	virtual bool read(RegVar & var) = 0;
-	virtual bool write(RegVar const& var, std::uint32_t tWriteTimeOut) = 0;
-	virtual bool force(RegVar const& var, std::uint32_t tWriteTimeOut) = 0;
+	virtual bool force(RegVar const& var, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut) = 0;
+	virtual bool write(RegVar const& var, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut) = 0;
+
+	virtual bool write(float const fVal, IOAddr const& tAddr, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut) = 0;
+	virtual bool force(float const fVal, IOAddr const& tAddr, bool bForceBitVal, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut) = 0;
+	
+	virtual bool read(std::uint32_t & uiVal, IOAddr tAddt); 
+
+
+	virtual void getChangedVars(std::unordered_set<IOAddr> & usChanges) = 0;
 	
 };
 

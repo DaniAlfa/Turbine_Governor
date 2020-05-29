@@ -2,8 +2,8 @@
 
 #include <chrono>
 #include <cstdlib>
+#include <utility>
 #include <errno.h>
-#include <iostream>
 
 #define DIOFFSET 2
 #define DIADDRESS 10001
@@ -59,7 +59,8 @@ void ModbusMasterDrv::eraseDrvConfig(){
     mutexIOMap.unlock();
     mFieldIt = mFieldVars.begin();
     mModbusIt = mModbusVars.begin();
-    muiNumVars = 0;
+    muiNumIOVars = 0;
+    muiNumROInts = 0;
     uiComErrors = 0;
 }
 
@@ -173,7 +174,7 @@ bool ModbusMasterDrv::processNextRead(){
 }
 
 bool ModbusMasterDrv::processRead(IOAddr tAddr, FieldData* pFieldVar){
-	int uiNumVar = tAddr.uiChannel;
+	int uiNumVar = tAddr.uiChannel - muiNumROInts;
 	bool bVals, bTS, bQstate, bforced;
 	unsigned iNumTrys = 0; 
 	bVals = bTS = bQstate = bforced = false;
@@ -186,7 +187,7 @@ bool ModbusMasterDrv::processRead(IOAddr tAddr, FieldData* pFieldVar){
 			bVals = modbus_read_registers(mpMBCtx, (HRADDRESS + ((uiNumVar * HROFFSET) - HROFFSET)), 4, uiVals) == 4;
 		}
 		if(bVals && !bTS){
-			bTS = modbus_read_input_registers(mpMBCtx, (IRADDRESS + ((uiNumVar * IROFFSET) - IROFFSET)), 4, uiTS) == 4;
+			bTS = modbus_read_input_registers(mpMBCtx, (IRADDRESS + ((uiNumVar * IROFFSET) - IROFFSET) + muiNumROInts*2), 4, uiTS) == 4;
 		}
 		if(bVals && bTS && !bQstate){
 			bQstate = modbus_read_input_bits(mpMBCtx, (DIADDRESS + ((uiNumVar * DIOFFSET) - DIOFFSET)), 2, uiQstate) == 2;
@@ -202,29 +203,67 @@ bool ModbusMasterDrv::processRead(IOAddr tAddr, FieldData* pFieldVar){
 		mstrLastError = std::string(modbus_strerror(errno));
 		return false;
 	}
+	float fTrueVal = modbus_get_float_abcd(uiVals);
+	float fForcedVal = modbus_get_float_abcd(uiVals + 2);
+	QState tqstate = getQState(uiQstate);
+	bool bForced = (uiForced >= 1);
+	if(pFieldVar->mbForceChangeDetection || fTrueVal != pFieldVar->mfTrueVal || pFieldVar->mfForcedVal != fForcedVal || tqstate != pFieldVar->mtQState || pFieldVar->mbForced != bForced){
+		unique_lock<mutex> mutexChagesSet(mtChagesSetMutex);
+		musChangedVars.insert(tAddr);
+		pFieldVar->mbForceChangeDetection = false;
+	}
 	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
-	pFieldVar->mfTrueVal = modbus_get_float_abcd(uiVals);
-	pFieldVar->mfForcedVal = modbus_get_float_abcd(uiVals + 2);
+	pFieldVar->mfTrueVal = fTrueVal;
+	pFieldVar->mfForcedVal = fForcedVal;
 	getTimeS(pFieldVar->miTimeS, uiTS);
-	pFieldVar->mtQState = getQState(uiQstate);
-	pFieldVar->mbForced = (uiForced >= 1);
+	pFieldVar->mtQState = tqstate;
+	pFieldVar->mbForced = bForced;
 	return true;
 }
 
 bool ModbusMasterDrv::processRead(IOAddr tAddr, ModbusData* pMBVar){
-	int varAddr = HRADDRESS + ((tAddr.uiChannel * HROFFSET) - HROFFSET);
-	std::uint16_t uiCurrentVal[2];
-	unsigned iNumTrys = 0; 
-	while(iNumTrys++ < MAX_TRANSMISSION_TRYS && modbus_read_registers(mpMBCtx, varAddr, 2, uiCurrentVal) == -1) 
-		this_thread::sleep_for(chrono::milliseconds(TRANSMISSION_TRYS_TIME));
-	if(iNumTrys >= MAX_TRANSMISSION_TRYS + 1){
-		mstrLastError = std::string(modbus_strerror(errno));
-		return false;
+	if(tAddr.uiChannel >= 1 && tAddr.uiChannel <= muiNumROInts){
+		int varAddr = (IRADDRESS + ((uiNumVar - 1) * 2));
+		std::uint16_t uiROInt[2];
+		unsigned iNumTrys = 0; 
+		while(iNumTrys++ < MAX_TRANSMISSION_TRYS && modbus_read_input_registers(mpMBCtx, varAddr, 2, uiROInt) == -1) 
+			this_thread::sleep_for(chrono::milliseconds(TRANSMISSION_TRYS_TIME));
+		if(iNumTrys >= MAX_TRANSMISSION_TRYS + 1){
+			mstrLastError = std::string(modbus_strerror(errno));
+			return false;
+		}
+		std::uint32_t uiCurrentVal = getInt(uiROInt);
+		if(pMBVar->mbForceChangeDetection || uiCurrentVal != pMBVar->muiCurrentVal || pMBVar->mtQState != OK){
+			unique_lock<mutex> mutexChagesSet(mtChagesSetMutex);
+			musChangedVars.insert(tAddr);
+			pMBVar->mbForceChangeDetection = false;
+		}
+		unique_lock<mutex> mutexIOMap(mtIOMapMutex);
+		pMBVar->muiCurrentVal = uiCurrentVal;
+		pMBVar->miTimeS = getMsSinceEpoch();
+		pMBVar->mtQState = OK;
 	}
-	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
-	pMBVar->mfCurrentVal = modbus_get_float_abcd(uiCurrentVal);
-	pMBVar->miTimeS = getMsSinceEpoch();
-	pMBVar->mtQState = OK;
+	else{
+		int varAddr = HRADDRESS + (((tAddr.uiChannel- muiNumROInts) * HROFFSET) - HROFFSET);
+		std::uint16_t uiCurrentVal[2];
+		unsigned iNumTrys = 0; 
+		while(iNumTrys++ < MAX_TRANSMISSION_TRYS && modbus_read_registers(mpMBCtx, varAddr, 2, uiCurrentVal) == -1) 
+			this_thread::sleep_for(chrono::milliseconds(TRANSMISSION_TRYS_TIME));
+		if(iNumTrys >= MAX_TRANSMISSION_TRYS + 1){
+			mstrLastError = std::string(modbus_strerror(errno));
+			return false;
+		}
+		float fCurrentVal = modbus_get_float_abcd(uiCurrentVal);
+		if(pMBVar->mbForceChangeDetection || pMBVar->mfCurrentVal != fCurrentVal || pMBVar->mtQState != OK){
+			unique_lock<mutex> mutexChagesSet(mtChagesSetMutex);
+			musChangedVars.insert(tAddr);
+			pMBVar->mbForceChangeDetection = false;
+		}
+		unique_lock<mutex> mutexIOMap(mtIOMapMutex);
+		pMBVar->mfCurrentVal = fCurrentVal;
+		pMBVar->miTimeS = getMsSinceEpoch();
+		pMBVar->mtQState = OK;
+	}
 	return true;
 }
 
@@ -238,6 +277,20 @@ void ModbusMasterDrv::getTimeS(std::int64_t & iReadTs, std::uint16_t const uiTS[
 		else ++pVal;
 		++pMap;
 	}
+}
+
+std::uint32_t ModbusMasterDrv::getInt(std::uint16_t const uiInt[2]) const{
+	std::uint32_t iVal = 0;
+	std::uint8_t* pMap = (std::uint8_t*) uiInt;
+	std::uint8_t* pVal = (std::uint8_t*) &iVal;
+	if(mbArchLittleEnd) pVal = pVal + 3;
+	for(int i = 0; i < 4; ++i){
+		*pVal = *pMap;
+		if(mbArchLittleEnd) --pVal;
+		else ++pVal;
+		++pMap;
+	}
+	return iVal;
 }
 
 QState ModbusMasterDrv::getQState(std::uint8_t const uiQstate[2]) const{
@@ -254,7 +307,7 @@ bool ModbusMasterDrv::processNextWrite(){
 	cleanWriteRequests();
 	if(mPendingWrites.empty()) return true;
 	WriteReq* writeReq = mPendingWrites.top();
-	std::uint16_t uiAddr = HRADDRESS + ((writeReq->mtAddr.uiChannel * HROFFSET) - HROFFSET);
+	std::uint16_t uiAddr = HRADDRESS + (((writeReq->mtAddr.uiChannel - muiNumROInts) * HROFFSET) - HROFFSET);
 	if(writeReq->mbForce) uiAddr += 2;
 	std::uint16_t uiWriteVal[2];
 	modbus_set_float_abcd(writeReq->mfWriteVal, uiWriteVal);
@@ -263,7 +316,7 @@ bool ModbusMasterDrv::processNextWrite(){
 	bool bWriteVal = writeReq->mbForce && !writeReq->mbForcedVal;
 	while(iNumTrys++ < MAX_TRANSMISSION_TRYS && (!bForced || !bWriteVal)){
 		if(!bForced){
-			bForced = modbus_write_bit(mpMBCtx, (COILADDRESS + ((writeReq->mtAddr.uiChannel * COILOFFSET) - COILOFFSET)), writeReq->mbForcedVal) == 1;
+			bForced = modbus_write_bit(mpMBCtx, (COILADDRESS + (((writeReq->mtAddr.uiChannel - muiNumROInts) * COILOFFSET) - COILOFFSET)), writeReq->mbForcedVal) == 1;
 		}
 		if(bForced && !bWriteVal){
 			bWriteVal = modbus_write_registers(mpMBCtx, uiAddr, 2, uiWriteVal) == 2;
@@ -277,6 +330,9 @@ bool ModbusMasterDrv::processNextWrite(){
 		return false;
 	}
 	mPendingWrites.pop();
+	if(writeReq->mpfWriteSuccess != nullptr){
+		*(writeReq->mpfWriteSuccess)(writeReq->mtAddr);
+	}
 	delete writeReq;
 	return true;
 }
@@ -288,7 +344,9 @@ void ModbusMasterDrv::cleanWriteRequests(bool bAll){
 		writeReq = mPendingWrites.top();
 		if(iTimeS - writeReq->mTimeS > writeReq->mtWriteTimeOut || bAll){
 			mPendingWrites.pop();
-			mfWriteTimeOutCallB(writeReq->mtAddr);
+			if(writeReq->mpfWriteTimeOut != nullptr){
+				*(writeReq->mpfWriteTimeOut)(writeReq->mtAddr);
+			}
 			delete writeReq;
 		} 
 		else break;
@@ -308,8 +366,7 @@ bool ModbusMasterDrv::createConnection(){
 	return true;
 }
 
-
-bool ModbusMasterDrv::init(std::string const& strConfigPath, std::function<void(IOAddr)> const& writeTimeOutCallB, std::function<void()> const& comErrorCallB){
+bool ModbusMasterDrv::init(std::string const& strConfigPath, std::unordered_set<IOAddr> const& slaveVarsToUpdate, std::unordered_set<IOAddr> const& fieldVarsToUpdate, std::function<void()> const& comErrorCallB){
 	if(mtDrvState != UnInit){
 		mstrLastError = "Driver ya inicializado";
 		return false;
@@ -318,12 +375,23 @@ bool ModbusMasterDrv::init(std::string const& strConfigPath, std::function<void(
 	if(!loadXMLConfig(strConfigPath)){
 		return false;
 	}
-	
+
 	if(miPort == -1) miPort = MODBUS_TCP_DEFAULT_PORT;
-	if(muiNumVars < 1){
+	if(muiNumIOVars + muiNumROInts < 1){
 		mstrLastError = "El driver necesita al menos una variable en su mapa";
 		return false;
 	}
+
+	for(IOAddr addr : slaveVarsToUpdate){
+		if(addr.uiChannel < 1 || addr.uiChannel > muiNumIOVars + muiNumROInts) continue;
+		mModbusVars.insert({newAddr, new ModbusData()});
+	}
+
+	for(IOAddr addr : fieldVarsToUpdate){
+		if(addr.uiChannel <= muiNumROInts || addr.uiChannel > muiNumIOVars + muiNumROInts) continue;
+		mFieldVars.insert({newAddr, new FieldData()});
+	}
+
 
 	/*Inicializacion de la biblioteca*/
 	mpMBCtx = modbus_new_tcp(mstrServerIp.c_str(), miPort);
@@ -333,9 +401,7 @@ bool ModbusMasterDrv::init(std::string const& strConfigPath, std::function<void(
 		return false;
 	}
 
-    
-    mfComErrorCallB = comErrorCallB;
-    mfWriteTimeOutCallB = writeTimeOutCallB;
+	mfComErrorCallB = comErrorCallB;
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	mtDrvState = Stopped;
 	uiComErrors = 0;
@@ -374,14 +440,25 @@ void ModbusMasterDrv::readFieldVar(RegVar & var, std::unordered_map<IOAddr, Fiel
 	var.setQState(((mtDrvState == COMError) ? ComError : tVarData->mtQState));
 }
 
-bool ModbusMasterDrv::write(RegVar const& var, std::uint32_t tWriteTimeOut){
-	std::uint8_t uiNumVar = var.getAddr().uiChannel;
-	if(uiNumVar < 1 || uiNumVar > muiNumVars) return false;
+bool ModbusMasterDrv::write(RegVar const& var, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut){
+	return write(var.getTrueVal(), var.getAddr(), writeSuccess, timeOut, tWriteTimeOut);
+}
+
+
+bool ModbusMasterDrv::force(RegVar const& var, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut){
+	return force(var.getForcedVal(), var.getAddr(), var.getForced(), writeSuccess, timeOut, tWriteTimeOut);
+}
+
+bool ModbusMasterDrv::write(float const fVal, IOAddr const& tAddr, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut){
+	std::uint8_t uiNumVar = tAddr.uiChannel;
+	if(uiNumVar <= muiNumROInts || uiNumVar > muiNumIOVars + muiNumROInts) return false;
 	WriteReq* writeReq = new WriteReq();
-	writeReq->mtAddr = var.getAddr();
+	writeReq->mtAddr = tAddr;
 	writeReq->mbForce = false;
-	writeReq->mfWriteVal = var.getTrueVal();
+	writeReq->mfWriteVal = fVal;
 	writeReq->mtWriteTimeOut = tWriteTimeOut;
+	writeReq->mpfWriteSuccess = writeSuccess;
+	writeReq->mpfWriteTimeOut = timeOut;
 	writeReq->mTimeS = getMsSinceEpoch();
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	if(mtDrvState != Stopped && mtDrvState != UnInit){
@@ -392,16 +469,17 @@ bool ModbusMasterDrv::write(RegVar const& var, std::uint32_t tWriteTimeOut){
 	return false;
 }
 
-
-bool ModbusMasterDrv::force(RegVar const& var, std::uint32_t tWriteTimeOut){
-	std::uint8_t uiNumVar = var.getAddr().uiChannel;
-	if(uiNumVar < 1 || uiNumVar > muiNumVars) return false;
+bool ModbusMasterDrv::force(float const fVal, IOAddr const& tAddr, bool bForceBitVal, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut){
+	std::uint8_t uiNumVar = tAddr.uiChannel;
+	if(uiNumVar <= muiNumROInts || uiNumVar > muiNumIOVars + muiNumROInts) return false;
 	WriteReq* writeReq = new WriteReq();
 	writeReq->mtAddr = var.getAddr();
 	writeReq->mbForce = true;
-	writeReq->mfWriteVal = var.getForcedVal();
-	writeReq->mbForcedVal = var.getForced();
+	writeReq->mfWriteVal = fVal;
+	writeReq->mbForcedVal = bForceBitVal;
 	writeReq->mtWriteTimeOut = tWriteTimeOut;
+	writeReq->mpfWriteSuccess = writeSuccess;
+	writeReq->mpfWriteTimeOut = timeOut;
 	writeReq->mTimeS = getMsSinceEpoch();
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	if(mtDrvState != Stopped && mtDrvState != UnInit){
@@ -410,6 +488,22 @@ bool ModbusMasterDrv::force(RegVar const& var, std::uint32_t tWriteTimeOut){
 	}
 	delete writeReq;
 	return false;
+}
+
+bool ModbusMasterDrv::read(std::uint32_t & uiVal, IOAddr tAddt){
+	auto it = mModbusVars.find(var.getAddr());
+	if(it == mModbusVars.cend()){
+		return false;
+	}
+	ModbusData const * tVarData = it->second;
+	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
+	uiVal = tVarData->muiCurrentVal;
+	return true;
+}
+
+void ModbusMasterDrv::getChangedVars(std::unordered_set<IOAddr> & usChanges){
+	unique_lock<mutex> mutexChagesSet(mtChagesSetMutex);
+	usChanges = std::move(musChangedVars);
 }
 
 
@@ -469,68 +563,17 @@ bool ModbusMasterDrv::readXMLConfig(xmlDoc* pDocTree, xmlNode* pRoot){
 		if(!strAttr) return false;
 		miPort = atoi((const char*) strAttr);
 		xmlFree(strAttr);
-		strAttr = xmlGetProp(pRoot, (const xmlChar *)"NumVars");
+		strAttr = xmlGetProp(pRoot, (const xmlChar *)"NumROInts");
 		if(!strAttr) return false;
-		muiNumVars = atoi((const char*) strAttr);
+		muiNumROInts = atoi((const char*) strAttr);
 		xmlFree(strAttr);
-		xmlNode* pSibling = pRoot->xmlChildrenNode;
-		bool bOk = true;
-		while(pSibling && bOk){
- 	    	if(xmlStrcmp(pSibling->name, (const xmlChar *)"FieldUpdates") == 0){
- 	    		bOk = readXMLVars(pDocTree, pSibling, true);
- 	    	}
- 	    	else if(xmlStrcmp(pSibling->name, (const xmlChar *)"SlaveUpdates") == 0){
- 	    		bOk = readXMLVars(pDocTree, pSibling, false);
- 	    	}
- 	    	pSibling = pSibling->next;
-		}
-		return bOk;
-	}
-	return false; 
-}
-
-
-
-bool ModbusMasterDrv::readXMLVars(xmlDoc* pDocTree, xmlNode* pNode, bool bField){
-	if(pNode && xmlStrcmp(pNode->name, (const xmlChar *)((bField) ? "FieldUpdates" : "SlaveUpdates")) == 0){
-		xmlNode* pSibling = pNode->xmlChildrenNode;
-		bool bOk = true;
-		IOAddr newAddr;
-		while(pSibling && bOk){
-			if (xmlStrcmp(pSibling->name, (const xmlChar *)"Addr") == 0) {
-		    	bOk = parseXMLAddr(pSibling, newAddr);
-		    	if(bOk){
-		    		if(bField){
-		    			mFieldVars.insert({newAddr, new FieldData()});
-		    		}
-		    		else mModbusVars.insert({newAddr, new ModbusData()});
-		    	}
- 	    	}
- 	    	pSibling = pSibling->next;
-		}
-		if(!bOk){
-			eraseVars();
-		}
-		return bOk;
-	}
-	return false; 
-}
-
-bool ModbusMasterDrv::parseXMLAddr(xmlNode* pNode, IOAddr & addr){
-	return parseXML8bitIntAttr(pNode, "Head", addr.uiHeader) && parseXML8bitIntAttr(pNode, "Mod", addr.uiModule) && parseXML8bitIntAttr(pNode, "Ch", addr.uiChannel) && 
-	parseXML8bitIntAttr(pNode, "Prec", addr.uiNumBits);
-}
-
-bool ModbusMasterDrv::parseXML8bitIntAttr(xmlNode* pNode, const char* attr, std::uint8_t & iVal){
-	if(!pNode) return false;
-	xmlChar *strAttr;
-	strAttr = xmlGetProp(pNode, (const xmlChar *) attr);
-	if(strAttr){
-		iVal = atoi((const char*) strAttr);
+		strAttr = xmlGetProp(pRoot, (const xmlChar *)"NumIOVars");
+		if(!strAttr) return false;
+		muiNumIOVars = atoi((const char*) strAttr);
 		xmlFree(strAttr);
 		return true;
 	}
-	return false;
+	return false; 
 }
 
 
