@@ -14,8 +14,8 @@
 #include <libxml/tree.h>
 #include <libmodbus/modbus.h>
 
-#include <CommonTypes.h>
-#include <IOMasterDrv.h>
+#include "CommonHMITypes.h"
+#include "IOMasterDrv.h"
 
 
 class ModbusMasterDrv : public IOMasterDrv {
@@ -24,21 +24,19 @@ public:
 	~ModbusMasterDrv();
 
 	//bool init(std::string const& strConfigPath, std::function<void(IOAddr)> const& writeTimeOutCallB, std::function<void()> const& comErrorCallB);
-	bool init(std::string const& strConfigPath, std::unordered_set<IOAddr> const& slaveVarsToUpdate, std::unordered_set<IOAddr> const& fieldVarsToUpdate, std::function<void()> const& comErrorCallB);
+	bool init(std::string const& strConfigPath, std::unordered_set<IOAddr> const& slaveVarsToUpdate, std::unordered_set<IOAddr> const& fieldVarsToUpdate, std::function<void()> const& comErrorCallB, std::function<void()> const& recoveredFromErrorCallB);
 	bool close();
 	bool start();
 	bool stop();
 	DrvState getState() const {return mtDrvState;}
 	std::string getLastErrorInfo() const {return mstrLastError;};
 
-	bool read(RegVar & var); //Para leer variables fisicas y modbus
-	bool force(RegVar const& var, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut); //Para forzar en variables fisicas
-	bool write(RegVar const& var, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut); //Para escribir en variables modbus
+	bool read(VarImage & var, IOAddr const tAddr); //Para leer variables fisicas y modbus
 
 	bool write(float const val, IOAddr const& tAddr, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut); //Para escribr en variables modbus o fisicas representadas como solo escritura
 	bool force(float const fVal, IOAddr const& tAddr, bool bForceBitVal, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut);
 	
-	bool read(std::uint32_t & uiVal, IOAddr tAddt); //Lectura de enteros con bitstrings
+	bool read(std::uint32_t & uiVal, IOAddr const tAddr); //Lectura de enteros con bitstrings
 
 	void getChangedVars(std::unordered_set<IOAddr> & usChanges);
 
@@ -110,6 +108,7 @@ private:
     bool bLastOpRead;
    	std::uint32_t uiComErrors;
    	std::function<void()> mfComErrorCallB;
+   	std::function<void()> mfRecoveredFromErrorCallB;
 
 
 	bool mbDrvEnd;
@@ -133,8 +132,8 @@ private:
 	void eraseDrvConfig();
 	void eraseVars();
 
-	void readModbusVar(RegVar & var, std::unordered_map<IOAddr, ModbusData*>::const_iterator it);
-	void readFieldVar(RegVar & var, std::unordered_map<IOAddr, FieldData*>::const_iterator it);
+	void readModbusVar(VarImage & var, std::unordered_map<IOAddr, ModbusData*>::const_iterator it);
+	void readFieldVar(VarImage & var, std::unordered_map<IOAddr, FieldData*>::const_iterator it);
 	void getTimeS(std::int64_t & iReadTs, std::uint16_t const uiTS[4]) const;
 	std::uint32_t getInt(std::uint16_t const uiInt[2]) const;
 	QState getQState(std::uint8_t const uiQstate[2]) const;

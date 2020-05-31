@@ -75,7 +75,7 @@ bool ModbusMasterDrv::start(){
 }
 
 bool ModbusMasterDrv::stop(){
-	if(mtDrvState == UnInit) return false;
+	if(mtDrvState == UnInit) return true;
 	if(mtDrvState == Stopped) return true;
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	cleanWriteRequests(true);
@@ -123,6 +123,7 @@ void ModbusMasterDrv::driverLoop(){
 				if(!bConnected){
 					if(createConnection()){
 						mtDrvState = Running;
+						mfRecoveredFromErrorCallB();
 					}
 					else{
 						if(uiComErrors == 0) mfComErrorCallB();
@@ -366,7 +367,7 @@ bool ModbusMasterDrv::createConnection(){
 	return true;
 }
 
-bool ModbusMasterDrv::init(std::string const& strConfigPath, std::unordered_set<IOAddr> const& slaveVarsToUpdate, std::unordered_set<IOAddr> const& fieldVarsToUpdate, std::function<void()> const& comErrorCallB){
+bool ModbusMasterDrv::init(std::string const& strConfigPath, std::unordered_set<IOAddr> const& slaveVarsToUpdate, std::unordered_set<IOAddr> const& fieldVarsToUpdate, std::function<void()> const& comErrorCallB, std::function<void()> const& recoveredFromErrorCallB){
 	if(mtDrvState != UnInit){
 		mstrLastError = "Driver ya inicializado";
 		return false;
@@ -402,6 +403,7 @@ bool ModbusMasterDrv::init(std::string const& strConfigPath, std::unordered_set<
 	}
 
 	mfComErrorCallB = comErrorCallB;
+	mfRecoveredFromErrorCallB = recoveredFromErrorCallB;
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	mtDrvState = Stopped;
 	uiComErrors = 0;
@@ -411,10 +413,10 @@ bool ModbusMasterDrv::init(std::string const& strConfigPath, std::unordered_set<
     return true;
 }
 
-bool ModbusMasterDrv::read(RegVar & var){
-	auto it = mModbusVars.find(var.getAddr());
+bool ModbusMasterDrv::read(VarImage & var, IOAddr const tAddr){
+	auto it = mModbusVars.find(tAddr);
 	if(it == mModbusVars.cend()){
-		auto it2 = mFieldVars.find(var.getAddr());
+		auto it2 = mFieldVars.find(tAddr);
 		if(it2 == mFieldVars.cend()) return false;
 		readFieldVar(var, it2);
 	}
@@ -422,7 +424,7 @@ bool ModbusMasterDrv::read(RegVar & var){
 	return true;
 }
 
-void ModbusMasterDrv::readModbusVar(RegVar & var, std::unordered_map<IOAddr, ModbusData*>::const_iterator it){
+void ModbusMasterDrv::readModbusVar(VarImage & var, std::unordered_map<IOAddr, ModbusData*>::const_iterator it){
 	ModbusData const * tVarData = it->second;
 	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
 	var.setCurrentVal(tVarData->mfCurrentVal);
@@ -430,7 +432,7 @@ void ModbusMasterDrv::readModbusVar(RegVar & var, std::unordered_map<IOAddr, Mod
 	var.setQState(((mtDrvState == COMError) ? ComError : tVarData->mtQState));
 }
 	
-void ModbusMasterDrv::readFieldVar(RegVar & var, std::unordered_map<IOAddr, FieldData*>::const_iterator it){
+void ModbusMasterDrv::readFieldVar(VarImage & var, std::unordered_map<IOAddr, FieldData*>::const_iterator it){
 	FieldData const * tVarData = it->second;
 	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
 	var.setCurrentVal(tVarData->mfTrueVal);
@@ -440,13 +442,15 @@ void ModbusMasterDrv::readFieldVar(RegVar & var, std::unordered_map<IOAddr, Fiel
 	var.setQState(((mtDrvState == COMError) ? ComError : tVarData->mtQState));
 }
 
-bool ModbusMasterDrv::write(RegVar const& var, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut){
-	return write(var.getTrueVal(), var.getAddr(), writeSuccess, timeOut, tWriteTimeOut);
-}
-
-
-bool ModbusMasterDrv::force(RegVar const& var, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut){
-	return force(var.getForcedVal(), var.getAddr(), var.getForced(), writeSuccess, timeOut, tWriteTimeOut);
+bool ModbusMasterDrv::read(std::uint32_t & uiVal, IOAddr tAddt){
+	auto it = mModbusVars.find(var.getAddr());
+	if(it == mModbusVars.cend()){
+		return false;
+	}
+	ModbusData const * tVarData = it->second;
+	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
+	uiVal = tVarData->muiCurrentVal;
+	return true;
 }
 
 bool ModbusMasterDrv::write(float const fVal, IOAddr const& tAddr, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut){
@@ -488,17 +492,6 @@ bool ModbusMasterDrv::force(float const fVal, IOAddr const& tAddr, bool bForceBi
 	}
 	delete writeReq;
 	return false;
-}
-
-bool ModbusMasterDrv::read(std::uint32_t & uiVal, IOAddr tAddt){
-	auto it = mModbusVars.find(var.getAddr());
-	if(it == mModbusVars.cend()){
-		return false;
-	}
-	ModbusData const * tVarData = it->second;
-	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
-	uiVal = tVarData->muiCurrentVal;
-	return true;
 }
 
 void ModbusMasterDrv::getChangedVars(std::unordered_set<IOAddr> & usChanges){

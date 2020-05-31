@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QString>
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
@@ -13,10 +14,14 @@ int main(int argc, char *argv[])
     fStyle.open(QFile::ReadOnly);
     QString strStyle(fStyle.readAll());
     fStyle.close();
-
     app.setStyleSheet(strStyle);
 
-    MainWindow w;
-    w.show();
+    RegImage img;
+    if(!img.init("RegIOInfo.xml", "RegConfig.xml")){
+    	std::cout << "Error en los archivos de inicializacion" << std::endl;
+    	return -1;
+    }
+    MainWindow w(img);
+    //w.show();
     return app.exec();
 }
