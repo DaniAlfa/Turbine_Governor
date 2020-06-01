@@ -3,7 +3,6 @@
 #include <unordered_set>
 #include <QtXml>
 #include <QFile>
-#include <cstdint>
 #include <Alarms.h>
 #include <RegIDS.h>
 #include <cmath>
@@ -23,7 +22,7 @@ RegImage::~RegImage(){
 	if(usLastVarChanges != nullptr) delete usLastVarChanges;
 }
 
-bool RegImage::init(std::string const& regIOInfo, std::string const& regConfigFile, std::string const& masterDrvConfig, std::string* strErrorInfo){
+bool RegImage::init(QString const& regIOInfo, QString const& regConfigFile, QString const& masterDrvConfig, QString* strErrorInfo){
 	std::unordered_set<IOAddr> usSlaveVarsToUpdate, usFieldVarsToUpdate;
 
 	if(!parseRegIOInfo(regIOInfo, usSlaveVarsToUpdate, usFieldVarsToUpdate)){
@@ -46,7 +45,7 @@ bool RegImage::init(std::string const& regIOInfo, std::string const& regConfigFi
 		usSlaveVarsToUpdate.insert(tAddr);
 	}
 
-	if(!mMasterDrv->init(masterDrvConfig, usSlaveVarsToUpdate, usFieldVarsToUpdate, RegImage::driverComError, RegImage::driverRecovered)){
+	if(!mMasterDrv->init(masterDrvConfig.toStdString(), usSlaveVarsToUpdate, usFieldVarsToUpdate, RegImage::driverComError, RegImage::driverRecovered)){
 		if(strErrorInfo != nullptr) *strErrorInfo = "Error en la inicializacion del driver";
 		deleteRegVars();
 		return false;
@@ -216,7 +215,7 @@ void RegImage::driverWriteSuccess(IOAddr tAddr){
 }
 
 
-bool RegImage::parseRegIOInfo(std::string const& regIOInfo, std::unordered_set<IOAddr> & slaveVarsToUpdate, std::unordered_set<IOAddr> & fieldVarsToUpdate){
+bool RegImage::parseRegIOInfo(QString const& regIOInfo, std::unordered_set<IOAddr> & slaveVarsToUpdate, std::unordered_set<IOAddr> & fieldVarsToUpdate){
 	QFile infoF(regIOInfo);
 	if(!infoF.open(QFile::ReadOnly | QFile::Text)) return false;
 
@@ -290,7 +289,7 @@ bool RegImage::parseXmlVar(QXmlStreamReader reader, std::unordered_set<IOAddr> &
 	return false;
 }
 
-bool RegImage::parseRegConfigFile(std::string const& regConfigFile){
+bool RegImage::parseRegConfigFile(QString const& regConfigFile){
 	//Se leen los limites de las variables y sus unidades
 	//Se leen las configuraciones del regulador
 }

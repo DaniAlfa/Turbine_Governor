@@ -6,15 +6,18 @@
 #include "TendencyWdg.h"
 #include "VarsViewWdg.h"
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
+
+#define IMAGE_UPDATE_MILLIS 200
+
+MainWindow::MainWindow(RegImage & regImg, QWidget *parent) : QMainWindow(parent), mpRegImg(&img){
     setupUi(this);
     
-    StkWidget->insertWidget(0, new ControlWdg(this));
-    StkWidget->insertWidget(1, new ControlOptWdg(this));
-    StkWidget->insertWidget(2, new TurbineViewWdg(this));
-    StkWidget->insertWidget(3, new AlarmsWdg(this));
-    StkWidget->insertWidget(4, new TendencyWdg(this));
-    StkWidget->insertWidget(5, new VarsViewWdg(this));
+    StkWidget->insertWidget(0, new ControlWdg(regImg, this));
+    StkWidget->insertWidget(1, new ControlOptWdg(regImg, this));
+    StkWidget->insertWidget(2, new TurbineViewWdg(regImg, this));
+    StkWidget->insertWidget(3, new AlarmsWdg(regImg, this));
+    StkWidget->insertWidget(4, new TendencyWdg(regImg, this));
+    StkWidget->insertWidget(5, new VarsViewWdg(regImg, this));
     StkWidget->setCurrentIndex(0);
 
     mMainBtnGrp.addButton(cmdControl, 0);
@@ -24,16 +27,44 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent){
     mMainBtnGrp.addButton(cmdTenden, 4);
     mMainBtnGrp.addButton(cmdTest, 5);
     cmdControl->setChecked(true);
-
     connect(&mMainBtnGrp, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &MainWindow::mainButtonClicked);
+
+
+    connect(&regImg, &RegImage::allVarsUpdated, this, &MainWindow::imageVarsInitialized);
+    connect(&regImg, &RegImage::comError, this, &MainWindow::comError);
+    connect(&regImg, &RegImage::recoveredFromComError, this, &MainWindow::recoveredFromComError);
+    connect(&regImg, &RegImage::writeError, this, &MainWindow::writeError);
+
+   	regImg.start();
+   	startTimer(IMAGE_UPDATE_MILLIS);
 }
 
 MainWindow::~MainWindow(){
-    
+    mpRegImg->stop();
+}
+
+void MainWindow::timerEvent(QTimerEvent *event){
+	mpRegImg->updateImage();
+}
+
+void MainWindow::imageVarsInitialized(){
+	this->show();
 }
 
 
 
 void MainWindow::mainButtonClicked(int id){
 	StkWidget->setCurrentIndex(id);
+}
+
+void MainWindow::comError(){
+
+}
+	
+void MainWindow::recoveredFromComError(){
+
+}
+
+void MainWindow::writeError(std::uint32_t const varID){
+
 }

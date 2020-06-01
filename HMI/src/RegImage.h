@@ -2,7 +2,6 @@
 #define REGIMAGE_H
 
 #include <QObject>
-#include <string>
 #include <QString>
 #include <cstdint>
 #include <mutex>
@@ -15,11 +14,12 @@ class RegImage : QObject{
 public:
 	RegImage();
 	~RegImage();
-	bool init(std::string const& regIOInfo, std::string const& regConfigFile, std::string const& masterDrvConfig, std::string* strErrorInfo = nullptr);
+	bool init(QString const& regIOInfo, QString const& regConfigFile, QString const& masterDrvConfig, QString* strErrorInfo = nullptr);
 	bool start();
 	bool stop();
 
 	void updateImage();
+	
 	float getVarMinVal(std::uint32_t const varID) const;
 	float getVarMaxVal(std::uint32_t const varID) const;
 	QString getVarUnits(std::uint32_t const varID) const;

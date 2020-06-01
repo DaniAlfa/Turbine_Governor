@@ -61,6 +61,8 @@ private:
 };
 
 
+enum RegState{Parado, Arrancando, Parando, Descargando, RegVacio, RegIsla, RegPotencia, RegApertura};
+
 
 
 
