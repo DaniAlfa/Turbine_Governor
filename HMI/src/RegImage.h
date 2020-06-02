@@ -29,6 +29,10 @@ public:
 
 	bool writeVarAsButton(std::uint32_t const varID, bool val);
 
+
+	int getNoOfSpeedSensors() const{ return 3;}
+	int getNoOfPowerSensors() const{ return 2;}
+
 signals:
 	void allVarsUpdated(); //Indica al inicio cuando se han leido todas las variables al menos una vez
 	void comError();

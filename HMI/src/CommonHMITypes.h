@@ -12,6 +12,10 @@ public:
 	std::uint32_t getID() const {return muiVarId;}
 	void setCurrentVal(float fCurrentVal) { mfTrueVal = fCurrentVal; }
 	float getCurrentVal() const {return (mbForcedVal) ? mfForcedVal : mfTrueVal;}
+	float getCurrentValLin() const{
+		float fVal = (mbForcedVal) ? mfForcedVal : mfTrueVal;
+		return (((fVal - mfEguMin) * 100) / (mfEguMax - mfEguMin));
+	}
 	float getTrueVal() const {return mfTrueVal;}
 	float getForcedVal() const {return mfForcedVal;}
 	void setForcedVal(float fForcedVal){mfForcedVal = fForcedVal;}
@@ -25,7 +29,8 @@ public:
 	QState getQState() const {return mtQState;}
 	void setForced(bool bForced) {mbForcedVal = bForced;}
 	bool getForced() const {return mbForcedVal;}
-	
+	void setUnits(std::string strUnits) {mstrUnits = strUnits;}
+	std::string getUnits() const {return mstrUnits;}
 
 private:
 	std::uint32_t muiVarId;
@@ -36,6 +41,7 @@ private:
 	float mfEguMax;
 	QState mtQState;
 	bool mbForcedVal;
+	std::string mstrUnits;
 };
 Q_DECLARE_METATYPE(VarImage)
 

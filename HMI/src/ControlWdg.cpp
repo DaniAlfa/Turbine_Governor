@@ -12,20 +12,37 @@ ControlWdg::ControlWdg(RegImage & regImg, QWidget *parent) : QWidget(parent), mp
     connect(&mRegTypeGrp, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &ControlWdg::regTypeButtonClicked);
 
     cmdF1->setChecked(true);
+    cmdN1->setChecked(true);
     mFrecWdgGrp.addButton(cmdF1, 0);
-    mFrecWdgGrp.addButton(cmdF2, 1);
-	mFrecWdgGrp.addButton(cmdF3, 2);
-	connect(&mFrecWdgGrp, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &ControlWdg::frecButtonClicked);
-
-	cmdN1->setChecked(true);
     mSpeedWdgGrp.addButton(cmdN1, 0);
-    mSpeedWdgGrp.addButton(cmdN2, 1);
-    mSpeedWdgGrp.addButton(cmdN3, 2);
+    int NoSpeeds = mpRegImg->getNoOfSpeedSensors();
+    if(NoSpeeds > 1){
+    	mFrecWdgGrp.addButton(cmdF2, 1);
+    	mSpeedWdgGrp.addButton(cmdN2, 1);
+    	if(NoSpeeds > 2){
+    		mFrecWdgGrp.addButton(cmdF3, 2);
+    		mSpeedWdgGrp.addButton(cmdN3, 2);
+    	}
+    	else{
+    		cmdF3->setVisible(false);
+    		cmdN3->setVisible(false);
+    	} 
+    }else{
+    	cmdF2->setVisible(false);
+    	cmdF3->setVisible(false);
+    	cmdN2->setVisible(false);
+    	cmdN3->setVisible(false);
+    }
+	connect(&mFrecWdgGrp, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &ControlWdg::frecButtonClicked);
     connect(&mSpeedWdgGrp, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &ControlWdg::speedTypeButtonClicked);
 
     cmdP1->setChecked(true);
     mPwWdgGrp.addButton(cmdP1, 0);
-    mPwWdgGrp.addButton(cmdP2, 1);
+    if(getNoOfPowerSensors() > 1){
+    	mPwWdgGrp.addButton(cmdP2, 1);
+    }else{
+    	cmdP2->setVisible(false);
+    }
     connect(&mPwWdgGrp, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &ControlWdg::pwButtonClicked);
 
 
@@ -72,15 +89,127 @@ void ControlWdg::varChanged(VarImage const& var){
 		if(bCurrVal){ //local
 			changeLabelProperty(lbIndLoc, "state", "on");
 			changeLabelProperty(lbIndRem, "state", "no");
+			mbRegInLoc = true;
 		}else{
 			changeLabelProperty(lbIndLoc, "state", "no");
 			changeLabelProperty(lbIndRem, "state", "on");
+			mbRegInLoc = false;
 		}
+		updateSPState();
+		updateRegChangeButtons();
+		enableControlButtons(!mbRegInLoc);
+		break;
+	case ZC_REG_PWSP: //Cambio en sp de potencia
+		mfLastPWSP = fCurrVal;
+		updateSPDisplayTxt();
+		break;
+	case ZC_REG_OPSP: //Cambio en sp de apertura
+		mfLastOPSP = fCurrVal;
+		updateSPDisplayTxt();
+		break;
+	case ZC_REG_SSP: //Cambio en sp de frecuencia
+		mfLastFrecSP = fCurrVal;
+		updateSPDisplayTxt();
+		break;
+	case JE_GEN_P1: //Medida de potencia 1
+		dplP1->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplP1P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
+		break;
+	case JE_GEN_P2:
+		dplP2->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplP2P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
+		break;
+	case SE_REG_F1: //Medida de frecuencia 1
+		dplF1->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplF1P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
+		dplN1->setText(QString::number(fCurrVal * 60, 'f', 1) + "Rmp");
+		dplN1P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
+		break;
+	case SE_REG_F2: //Medida de frecuencia 2
+		dplF2->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplF2P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
+		dplN2->setText(QString::number(fCurrVal * 60, 'f', 1) + "Rmp");
+		dplN2P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
+		break;
+	case SE_REG_F3: //Medida de frecuencia 3
+		dplF3->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplF3P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
+		dplN3->setText(QString::number(fCurrVal * 60, 'f', 1) + "Rmp");
+		dplN3P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
 		break;
 	}
 }
 
+
+void ControlWdg::enableControlButtons(bool bEnable){
+	cmdStart->setEnabled(bEnable);
+	cmdStop->setEnabled(bEnable);
+	cmdTrip->setEnabled(bEnable);
+	cmdUnl->setEnabled(bEnable);
+}
+
+void ControlWdg::on_cmdStart_clicked(){
+	mpRegImg->writeVarAsButton(HMSM_REG_STR, true);
+}
+
+void ControlWdg::on_cmdStop_clicked(){
+	mpRegImg->writeVarAsButton(HMSM_REG_STP, true);
+}
+
+void ControlWdg::on_cmdTrip_clicked(){
+	mpRegImg->writeVarAsButton(HMSM_REG_TRIP, true);
+}
+
+void ControlWdg::on_cmdUnl_clicked(){
+	mpRegImg->writeVarAsButton(HMSM_REG_UNL, true);
+}
+
+void ControlWdg::updateSPDisplayTxt(){
+	if(mtLastRegSt < 4){ //si no esta en reg
+		txtSP->setText("");
+	}
+	else if(mtLastRegSt == RegVacio || mtLastRegSt == RegIsla){
+		txtSP->setText(QString::number(mfLastFrecSP, 'f', 1) + " " + mpRegImg->getVarUnits(ZC_REG_SSP));
+	}
+	else if(mtLastRegSt == RegPotencia){
+		txtSP->setText(QString::number(mfLastPWSP, 'f', 1) + " " + mpRegImg->getVarUnits(ZC_REG_PWSP));
+	}
+	else{
+		txtSP->setText(QString::number(mfLastOPSP, 'f', 1) + " " + mpRegImg->getVarUnits(ZC_REG_OPSP));
+	}
+}
+void ControlWdg::updateSPState(){
+	bool enableSPSend = (mtLastRegSt > 5) && !mbRegInLoc;
+	txtSPIn->setEnabled(enableSPSend);
+	cmdSendSP->setEnabled(enableSPSend);
+	if(enableSPSend){
+		std::uint32_t spVarID = ZC_REG_PWSP;
+		if(mtLastRegSt == RegApertura){
+			spVarID = ZC_REG_OPSP;
+		}
+		spSPIn->setMinimum(mpRegImg->getVarMinVal(spVarID));
+		spSPIn->setMaximum(mpRegImg->getVarMaxVal(spVarID));
+		spSPIn->setValue(mpRegImg->getVarMinVal(spVarID));
+	}
+}
+
+void updateRegChangeButtons(){
+	cmdRegTypeA->setEnabled(!mbRegInLoc);
+	cmdRegTypeP->setEnabled(!mbRegInLoc);
+	if(!mbRegInLoc){
+		cmdRegTypeA->setChecked(mtLastRegSt == RegPotencia);
+		cmdRegTypeP->setChecked(mtLastRegSt == RegApertura);
+	}
+	
+}
+
+void ControlWdg::on_cmdSendSP_clicked(){
+	if(mpRegImg->writeVar((mtLastRegSt == RegPotencia) ? ZR_REG_PWSP : ZR_REG_OPSP, spSPIn->value()))
+		mpRegImg->writeVarAsButton(HMSM_REG_SPOK, true);
+}
+
 void ControlWdg::setRegState(RegState st){
+	mtLastRegSt = st;
 	switch (st){
 	case Parado: txtState->setText("Parado"); break;
 	case Arrancando: txtState->setText("Arrancando"); break;
@@ -92,6 +221,9 @@ void ControlWdg::setRegState(RegState st){
 	case RegApertura: txtState->setText("Reg.Apertura"); break;
 	default: txtState->setText("NULL");
 	}
+	updateSPState();
+	updateSPDisplayTxt();
+	updateRegChangeButtons();
 }
 
 void ControlWdg::changeLabelProperty(QLabel* label, QString const& strPr, QString const& strPrVal){
@@ -101,8 +233,13 @@ void ControlWdg::changeLabelProperty(QLabel* label, QString const& strPr, QStrin
 }
 
 
-void ControlWdg::regTypeButtonClicked(int id){
-
+void ControlWdg::regTypeButtonClicked(int id){ //Id 0 potencia, 1 apertura
+	if(id == 0){
+		mpRegImg->writeVarAsButton(HMSM_REG_PWREG, true);
+	}
+	else{
+		mpRegImg->writeVarAsButton(HMSM_REG_OPREG, true);
+	}
 }
 
 

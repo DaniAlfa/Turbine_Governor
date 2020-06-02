@@ -85,6 +85,7 @@ void RegImage::updateImage(){
 			VarImage vImage(regVar->getID());
 			vImage.setEguMin(regVar->getEguMin());
 			vImage.setEguMax(regVar->getEguMax());
+			vImage.setUnits(regVar->getUnits());
 			if(mMasterDrv->read(vImage, tAddr)){
 				emit varChanged(vImage);
 				newVarUpdated(tAddr);

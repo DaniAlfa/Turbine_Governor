@@ -19,6 +19,11 @@ private slots:
 	void frecButtonClicked(int id);
 	void speedTypeButtonClicked(int id);
 	void pwButtonClicked(int id);
+	void on_cmdSendSP_clicked();
+	void on_cmdStart_clicked();
+	void on_cmdStop_clicked();
+	void on_cmdTrip_clicked();
+	void on_cmdUnl_clicked();
 
 	void varChanged(VarImage const& var);
 
@@ -27,8 +32,17 @@ private:
 
 	RegImage* mpRegImg;
 
+	float mfLastFrecSP, mfLastPWSP, mfLastOPSP;
+	RegState mtLastRegSt;
+	bool mbRegInLoc;
+
 	void setRegState(RegState st);
 	void changeLabelProperty(QString const& strPr, QString const& strPrVal);
+	void updateSPDisplayTxt();
+	void updateSPState();
+	void updateRegChangeButtons();
+	void enableControlButtons(bool bEnable);
+
 
 };
 #endif // CONTROLWDG_H

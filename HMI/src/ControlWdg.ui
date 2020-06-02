@@ -327,90 +327,6 @@
            </property>
           </spacer>
          </item>
-         <item row="0" column="0" rowspan="3">
-          <widget class="QStackedWidget" name="StkP">
-           <property name="currentIndex">
-            <number>0</number>
-           </property>
-           <widget class="QWidget" name="page_3">
-            <layout class="QGridLayout" name="gridLayout_9">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <property name="spacing">
-              <number>6</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Potencia Activa 1</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLCDNumber" name="lcdNumber_7">
-               <property name="value" stdset="0">
-                <double>100.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0" colspan="2">
-              <widget class="QLCDNumber" name="lcdNumber_9">
-               <property name="intValue" stdset="0">
-                <number>60</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-           <widget class="QWidget" name="page_4">
-            <layout class="QGridLayout" name="gridLayout_15">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_11">
-               <property name="text">
-                <string>Potencia Activa 2</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLCDNumber" name="lcdNumber_18">
-               <property name="value" stdset="0">
-                <double>100.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0" colspan="2">
-              <widget class="QLCDNumber" name="lcdNumber_19">
-               <property name="intValue" stdset="0">
-                <number>60</number>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="QPushButton" name="cmdP1">
            <property name="maximumSize">
@@ -443,11 +359,191 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="0" rowspan="3">
+          <widget class="QStackedWidget" name="StkP">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="page_3">
+            <layout class="QGridLayout" name="gridLayout_9">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <property name="spacing">
+              <number>6</number>
+             </property>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="dplP1P">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>100%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="minimumSize">
+                <size>
+                 <width>112</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>Potencia Activa 1</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="QLineEdit" name="dplP1">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>4456.2MW</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_4">
+            <layout class="QGridLayout" name="gridLayout_14">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Potencia Activa 2</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="dplP2P">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>100%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0" colspan="2">
+              <widget class="QLineEdit" name="dplP2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>4456.2MW</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
       <item row="0" column="0">
        <widget class="QFrame" name="frame_5">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -461,38 +557,6 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="2" column="1">
-          <widget class="QPushButton" name="cmdF3">
-           <property name="maximumSize">
-            <size>
-             <width>40</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>3</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="cmdF1">
-           <property name="maximumSize">
-            <size>
-             <width>40</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>1</string>
-           </property>
-           <property name="checkable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="1">
           <widget class="QPushButton" name="cmdF2">
            <property name="maximumSize">
@@ -509,18 +573,21 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <spacer name="verticalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
+         <item row="2" column="1">
+          <widget class="QPushButton" name="cmdF3">
+           <property name="maximumSize">
             <size>
-             <width>20</width>
-             <height>40</height>
+             <width>40</width>
+             <height>16777215</height>
             </size>
            </property>
-          </spacer>
+           <property name="text">
+            <string>3</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
          <item row="0" column="0" rowspan="4">
           <widget class="QStackedWidget" name="StkF">
@@ -546,29 +613,71 @@
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_3">
+               <property name="minimumSize">
+                <size>
+                 <width>112</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Frecuencia 1</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLCDNumber" name="lcdNumber_5">
-               <property name="value" stdset="0">
-                <double>100.000000000000000</double>
+              <widget class="QLineEdit" name="dplF1P">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>100%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
              <item row="1" column="0" colspan="2">
-              <widget class="QLCDNumber" name="lcdNumber_6">
-               <property name="intValue" stdset="0">
-                <number>60</number>
+              <widget class="QLineEdit" name="dplF1">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>60Hz</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
             </layout>
            </widget>
            <widget class="QWidget" name="page_6">
-            <layout class="QGridLayout" name="gridLayout_13">
+            <layout class="QGridLayout" name="gridLayout_6">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -583,29 +692,71 @@
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_9">
+               <property name="minimumSize">
+                <size>
+                 <width>112</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Frecuencia 2</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLCDNumber" name="lcdNumber_15">
-               <property name="value" stdset="0">
-                <double>100.000000000000000</double>
+              <widget class="QLineEdit" name="dplF2P">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>100%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
              <item row="1" column="0" colspan="2">
-              <widget class="QLCDNumber" name="lcdNumber_14">
-               <property name="intValue" stdset="0">
-                <number>60</number>
+              <widget class="QLineEdit" name="dplF2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>60Hz</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
             </layout>
            </widget>
            <widget class="QWidget" name="page_8">
-            <layout class="QGridLayout" name="gridLayout_14">
+            <layout class="QGridLayout" name="gridLayout_13">
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -620,22 +771,64 @@
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_10">
+               <property name="minimumSize">
+                <size>
+                 <width>112</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Frecuencia 3</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLCDNumber" name="lcdNumber_17">
-               <property name="value" stdset="0">
-                <double>100.000000000000000</double>
+              <widget class="QLineEdit" name="dplF3P">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>100%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
              <item row="1" column="0" colspan="2">
-              <widget class="QLCDNumber" name="lcdNumber_16">
-               <property name="intValue" stdset="0">
-                <number>60</number>
+              <widget class="QLineEdit" name="dplF3">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>60Hz</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -643,11 +836,46 @@
            </widget>
           </widget>
          </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="cmdF1">
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>1</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <spacer name="verticalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </widget>
       </item>
       <item row="0" column="1">
        <widget class="QFrame" name="frame_4">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
@@ -744,24 +972,78 @@
              <property name="spacing">
               <number>6</number>
              </property>
+             <item row="1" column="0" colspan="2">
+              <widget class="QLineEdit" name="dplN1">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>4438Rpm</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="0">
               <widget class="QLabel" name="label_2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>112</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Velocidad 1</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLCDNumber" name="lcdNumber_3">
-               <property name="value" stdset="0">
-                <double>100.000000000000000</double>
+              <widget class="QLineEdit" name="dplN1P">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
                </property>
-              </widget>
-             </item>
-             <item row="1" column="0" colspan="2">
-              <widget class="QLCDNumber" name="lcdNumber_4">
-               <property name="intValue" stdset="0">
-                <number>60</number>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>100%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -783,22 +1065,70 @@
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_7">
+               <property name="minimumSize">
+                <size>
+                 <width>112</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Velocidad 2</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLCDNumber" name="lcdNumber_11">
-               <property name="value" stdset="0">
-                <double>100.000000000000000</double>
+              <widget class="QLineEdit" name="dplN2P">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>100%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item row="1" column="0" colspan="2">
-              <widget class="QLCDNumber" name="lcdNumber_10">
-               <property name="intValue" stdset="0">
-                <number>60</number>
+              <widget class="QLineEdit" name="dplN2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>4438Rpm</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -820,22 +1150,70 @@
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_8">
+               <property name="minimumSize">
+                <size>
+                 <width>112</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
                 <string>Velocidad 3</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLCDNumber" name="lcdNumber_13">
-               <property name="value" stdset="0">
-                <double>100.000000000000000</double>
+              <widget class="QLineEdit" name="dplN3P">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>100%</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item row="1" column="0" colspan="2">
-              <widget class="QLCDNumber" name="lcdNumber_12">
-               <property name="intValue" stdset="0">
-                <number>60</number>
+              <widget class="QLineEdit" name="dplN3">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">font: 87 31pt &quot;Noto Sans&quot;;</string>
+               </property>
+               <property name="text">
+                <string>4438Rpm</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -1016,12 +1394,12 @@
             </size>
            </property>
            <property name="title">
-            <string>Tipo regulacion</string>
+            <string>Cambio de regulación</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignBottom|Qt::AlignHCenter</set>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
             <property name="spacing">
              <number>1</number>
             </property>
@@ -1038,57 +1416,23 @@
              <number>1</number>
             </property>
             <item>
-             <widget class="QLineEdit" name="txtRegType">
-              <property name="readOnly">
+             <widget class="QPushButton" name="cmdRegTypeP">
+              <property name="text">
+               <string>Potencia</string>
+              </property>
+              <property name="checkable">
                <bool>true</bool>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QFrame" name="frame_3">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+             <widget class="QPushButton" name="cmdRegTypeA">
+              <property name="text">
+               <string>Apertura</string>
               </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+              <property name="checkable">
+               <bool>true</bool>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
-               <property name="spacing">
-                <number>1</number>
-               </property>
-               <property name="leftMargin">
-                <number>1</number>
-               </property>
-               <property name="topMargin">
-                <number>1</number>
-               </property>
-               <property name="rightMargin">
-                <number>1</number>
-               </property>
-               <property name="bottomMargin">
-                <number>1</number>
-               </property>
-               <item>
-                <widget class="QPushButton" name="cmdRegTypeP">
-                 <property name="text">
-                  <string>Potencia</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="cmdRegTypeA">
-                 <property name="text">
-                  <string>Apertura</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </widget>
             </item>
            </layout>
@@ -1151,7 +1495,7 @@
           <number>1</number>
          </property>
          <item>
-          <widget class="QLineEdit" name="lineEdit_3">
+          <widget class="QLineEdit" name="txtSP">
            <property name="alignment">
             <set>Qt::AlignCenter</set>
            </property>
@@ -1185,14 +1529,24 @@
              <number>1</number>
             </property>
             <item>
-             <widget class="QPushButton" name="pushButton_4">
+             <widget class="QPushButton" name="cmdSendSP">
               <property name="text">
                <string>Enviar</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QDoubleSpinBox" name="spSPIn">
+              <property name="wrapping">
+               <bool>false</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::PlusMinus</enum>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1244,21 +1598,21 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="cmdStart">
            <property name="text">
             <string>Arranque</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="cmdStop">
            <property name="text">
             <string>Parada</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="cmdUnl">
            <property name="text">
             <string>Descarga</string>
            </property>
@@ -1272,7 +1626,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_6">
+          <widget class="QPushButton" name="cmdTrip">
            <property name="text">
             <string>Disparo</string>
            </property>

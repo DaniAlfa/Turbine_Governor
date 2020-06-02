@@ -121,634 +121,624 @@
 			<RemAddr Head="0" Mod="0" Ch="44"/>
 			<HMI Use="WO"/>
 		</Var>
-		<Var Tag="HMSM_REG_PWR" ID="2000000006" Type="DI" FR="R">
-			<Info Descr="CAMBIO REGULACION POTENCIA" Turb="A"/>
+		<Var Tag="HMSM_REG_SYNCUP" ID="2000000006" Type="DI" FR="R">
+			<Info Descr="PULSO DE SUBIDA DE SP" Turb="A"/>
 			<RemAddr Head="0" Mod="0" Ch="45"/>
 			<HMI Use="WO"/>
 		</Var>
-		<Var Tag="HMSM_REG_OPENR" ID="2000000007" Type="DI" FR="R">
-			<Info Descr="CAMBIO REGULACION APERTURA" Turb="A"/>
+		<Var Tag="HMSM_REG_SYNCDW" ID="2000000007" Type="DI" FR="R">
+			<Info Descr="PULSO DE BAJADA SP" Turb="A"/>
 			<RemAddr Head="0" Mod="0" Ch="46"/>
 			<HMI Use="WO"/>
 		</Var>
-		<Var Tag="HMSM_REG_SYNCUP" ID="2000000008" Type="DI" FR="R">
-			<Info Descr="PULSO DE SUBIDA DE SP" Turb="A"/>
+		<Var Tag="HMSM_REG_SPOK" ID="2000000008" Type="DI" FR="R">
+			<Info Descr="CONFIRMACION DE CONSIGNA" Turb="A"/>
 			<RemAddr Head="0" Mod="0" Ch="47"/>
 			<HMI Use="WO"/>
 		</Var>
-		<Var Tag="HMSM_REG_SYNCDW" ID="2000000009" Type="DI" FR="R">
-			<Info Descr="PULSO DE BAJADA SP" Turb="A"/>
+		<Var Tag="HMSM_REG_PWREG" ID="2000000009" Type="DI" FR="R">
+			<Info Descr="CAMBIO A REGULACION DE POTENCIA" Turb="A"/>
 			<RemAddr Head="0" Mod="0" Ch="48"/>
 			<HMI Use="WO"/>
 		</Var>
-		<Var Tag="HMSM_REG_SPOK" ID="2000000010" Type="DI" FR="R">
-			<Info Descr="CONFIRMACION DE CONSIGNA" Turb="A"/>
+		<Var Tag="HMSM_REG_OPREG" ID="2000000010" Type="DI" FR="R">
+			<Info Descr="CAMBIO A REGULACION DE APERTURA" Turb="A"/>
 			<RemAddr Head="0" Mod="0" Ch="49"/>
 			<HMI Use="WO"/>
 		</Var>
-		<Var Tag="HMSM_REG_PWREG" ID="2000000011" Type="DI" FR="R">
-			<Info Descr="CAMBIO A REGULACION DE POTENCIA" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="50"/>
-			<HMI Use="WO"/>
-		</Var>
-		<Var Tag="HMSM_REG_OPREG" ID="2000000012" Type="DI" FR="R">
-			<Info Descr="CAMBIO A REGULACION DE APERTURA" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="51"/>
-			<HMI Use="WO"/>
-		</Var>
-		<Var Tag="HSM_REG_DFL" ID="2000000013" Type="DI" FR="R">
+		<Var Tag="HSM_REG_DFL" ID="2000000011" Type="DI" FR="R">
 			<Info Descr="ACTIVACION DEFLECTORES EN MANUAL" Turb="P"/>
-			<RemAddr Head="0" Mod="0" Ch="52"/>
+			<RemAddr Head="0" Mod="0" Ch="50"/>
 			<HMI Use="WO"/>
 		</Var>
 		<Var Tag="YA_REG_TRIP" ID="1000000000" Type="DO" FR="F">
 			<Info Descr="DISPARO DE EMERGENCIA" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="124"/>
+			<RemAddr Head="0" Mod="0" Ch="122"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="YA_REG_WDOG" ID="1000000001" Type="DO" FR="F">
 			<Info Descr="ERROR DE WATCHDOG" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="125"/>
+			<RemAddr Head="0" Mod="0" Ch="123"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="SAH_TUR_OVS" ID="1000000002" Type="DO" FR="F">
 			<Info Descr="ALARMA SOBREVELOCIDAD" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="126"/>
+			<RemAddr Head="0" Mod="0" Ch="124"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="SAHH_TUR_OVS" ID="1000000003" Type="DO" FR="F">
 			<Info Descr="DISPARO DE SOBREVELOCIDAD" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="127"/>
+			<RemAddr Head="0" Mod="0" Ch="125"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="SIS_TUR_SYNC" ID="1000000004" Type="DO" FR="F">
 			<Info Descr="VELOCIDAD DE SINCRONIZACION ALCANZADA" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="128"/>
+			<RemAddr Head="0" Mod="0" Ch="126"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="SIS_TUR_EXC" ID="1000000005" Type="DO" FR="F">
 			<Info Descr="VELOCIDAD DE EXCITACIÓN ALCANZADA" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="129"/>
+			<RemAddr Head="0" Mod="0" Ch="127"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="SIS_TUR_BRK" ID="1000000006" Type="DO" FR="F">
 			<Info Descr="VELOCIDAD DE FRENADO ALCANZADA" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="130"/>
+			<RemAddr Head="0" Mod="0" Ch="128"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="SIS_TUR_N0" ID="1000000007" Type="DO" FR="F">
 			<Info Descr="TURBINA PARADA" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="131"/>
+			<RemAddr Head="0" Mod="0" Ch="129"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="YA_REG_MA" ID="1000000008" Type="DO" FR="F">
 			<Info Descr="ALARMA FALLO MAYOR" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="132"/>
+			<RemAddr Head="0" Mod="0" Ch="130"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="YA_REG_ME" ID="1000000009" Type="DO" FR="F">
 			<Info Descr="ALARMA FALLO MENOR" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="133"/>
+			<RemAddr Head="0" Mod="0" Ch="131"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="Y_REG_AUTO" ID="1000000010" Type="DO" FR="F">
 			<Info Descr="REGULADOR EN AUTOMATICO" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="134"/>
+			<RemAddr Head="0" Mod="0" Ch="132"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="Y_REG_PWREG" ID="1000000011" Type="DO" FR="F">
 			<Info Descr="REGULACION EN POTENCIA" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="135"/>
+			<RemAddr Head="0" Mod="0" Ch="133"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="Y_REG_OPREG" ID="1000000012" Type="DO" FR="F">
 			<Info Descr="REGULACION EN APERTURA" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="136"/>
+			<RemAddr Head="0" Mod="0" Ch="134"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="Y_REG_LOC" ID="1000000013" Type="DO" FR="F">
 			<Info Descr="REGULADOR EN LOCAL" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="137"/>
+			<RemAddr Head="0" Mod="0" Ch="135"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="ZC_DFL" ID="1000000014" Type="DO" FR="F">
 			<Info Descr="ACTIVACION DEFLECTORES" Turb="A"/>
-			<RemAddr Head="0" Mod="0" Ch="138"/>
+			<RemAddr Head="0" Mod="0" Ch="136"/>
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="SE_TUR_F1" ID="18" Type="AI" FR="F">
 			<Info Descr="FRECUENCIA 1 TURBINA" Turb="A" Units="Hz"/>
-			<RemAddr Head="0" Mod="0" Ch="53"/>
+			<RemAddr Head="0" Mod="0" Ch="51"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="NaN"/>
 		</Var>
 		<Var Tag="SE_TUR_F2" ID="19" Type="AI" FR="F">
 			<Info Descr="FRECUENCIA 2 TURBINA" Turb="A" Units="Hz"/>
-			<RemAddr Head="0" Mod="0" Ch="54"/>
+			<RemAddr Head="0" Mod="0" Ch="52"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="NaN"/>
 		</Var>
 		<Var Tag="SE_TUR_PICK1" ID="20" Type="AI" FR="F">
 			<Info Descr="PULSOS PICKUP 1 TURBINA" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="55"/>
+			<RemAddr Head="0" Mod="0" Ch="53"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="NaN"/>
 		</Var>
 		<Var Tag="SE_TUR_PICK2" ID="21" Type="AI" FR="F">
 			<Info Descr="PULSOS PICKUP 2 TURBINA" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="56"/>
+			<RemAddr Head="0" Mod="0" Ch="54"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="NaN"/>
 		</Var>
 		<Var Tag="JE_GEN_P1" ID="22" Type="AI" FR="F">
 			<Info Descr="POTENCIA ACTIVA 1" Turb="A" Units="PARAM"/>
-			<RemAddr Head="0" Mod="0" Ch="57"/>
+			<RemAddr Head="0" Mod="0" Ch="55"/>
 			<HMI Use="RW"/>
 			<Range Min="NaN" Max="NaN"/>
 		</Var>
 		<Var Tag="JE_GEN_P2" ID="23" Type="AI" FR="F">
 			<Info Descr="POTENCIA ACTIVA 2" Turb="A" Units="PARAM"/>
-			<RemAddr Head="0" Mod="0" Ch="58"/>
+			<RemAddr Head="0" Mod="0" Ch="56"/>
 			<HMI Use="RW"/>
 			<Range Min="NaN" Max="NaN"/>
 		</Var>
 		<Var Tag="LE_TUR" ID="24" Type="AI" FR="F">
 			<Info Descr="SALTO DE AGUA" Turb="A" Units="m"/>
-			<RemAddr Head="0" Mod="0" Ch="59"/>
+			<RemAddr Head="0" Mod="0" Ch="57"/>
 			<HMI Use="RW"/>
 			<Range Min="NaN" Max="NaN"/>
 		</Var>
 		<Var Tag="SD_SYNC_ERR" ID="25" Type="AI" FR="F">
 			<Info Descr="SYNC ERROR" Turb="A" Units="Hz"/>
-			<RemAddr Head="0" Mod="0" Ch="60"/>
+			<RemAddr Head="0" Mod="0" Ch="58"/>
 			<HMI Use="RW"/>
 			<Range Min="NaN" Max="NaN"/>
 		</Var>
 		<Var Tag="FE_TUR" ID="26" Type="AI" FR="F">
 			<Info Descr="CAUDAL" Turb="A" Units="m3/s"/>
-			<RemAddr Head="0" Mod="0" Ch="61"/>
+			<RemAddr Head="0" Mod="0" Ch="59"/>
 			<HMI Use="RW"/>
 			<Range Min="NaN" Max="NaN"/>
 		</Var>
 		<Var Tag="Z_REG_PWSP" ID="27" Type="AI" FR="F">
 			<Info Descr="SET POINT DE POTENCIA" Turb="A" Units="PARAM"/>
-			<RemAddr Head="0" Mod="0" Ch="62"/>
+			<RemAddr Head="0" Mod="0" Ch="60"/>
 			<HMI Use="RW"/>
 			<Range Min="NaN" Max="NaN"/>
 		</Var>
 		<Var Tag="Z_REG_OPSP" ID="28" Type="AI" FR="F">
 			<Info Descr="SET POINT DE APERTURA" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="63"/>
+			<RemAddr Head="0" Mod="0" Ch="61"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="100"/>
 		</Var>
 		<Var Tag="Z_WGT_INY1" ID="29" Type="AI" FR="F">
 			<Info Descr="POSICIÓN DISTRIBUIDOR O APERTURA INYECTOR 1" Turb="F y K y P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="64"/>
+			<RemAddr Head="0" Mod="0" Ch="62"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="100"/>
 		</Var>
 		<Var Tag="Z_PAD_INY2" ID="30" Type="AI" FR="F">
 			<Info Descr="POSICIÓN ÁLABES O APERTURA INYECTOR 2" Turb="K y P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="65"/>
+			<RemAddr Head="0" Mod="0" Ch="63"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="100"/>
 		</Var>
 		<Var Tag="Z_INY3" ID="31" Type="AI" FR="F">
 			<Info Descr="APERTURA INYECTOR 3" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="66"/>
+			<RemAddr Head="0" Mod="0" Ch="64"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="100"/>
 		</Var>
 		<Var Tag="Z_INY4" ID="32" Type="AI" FR="F">
 			<Info Descr="APERTURA INYECTOR 4" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="67"/>
+			<RemAddr Head="0" Mod="0" Ch="65"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="100"/>
 		</Var>
 		<Var Tag="Z_INY5" ID="33" Type="AI" FR="F">
 			<Info Descr="APERTURA INYECTOR 5" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="68"/>
+			<RemAddr Head="0" Mod="0" Ch="66"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="100"/>
 		</Var>
 		<Var Tag="Z_INY6" ID="34" Type="AI" FR="F">
 			<Info Descr="APERTURA INYECTOR 6" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="69"/>
+			<RemAddr Head="0" Mod="0" Ch="67"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="100"/>
 		</Var>
-		<Var Tag="ZR_REG_PWSP" ID="2000000014" Type="AI" FR="R">
+		<Var Tag="ZR_REG_PWSP" ID="2000000012" Type="AI" FR="R">
 			<Info Descr="SET POINT DE POTENCIA" Turb="A" Units="PARAM"/>
-			<RemAddr Head="0" Mod="0" Ch="70"/>
+			<RemAddr Head="0" Mod="0" Ch="68"/>
 			<HMI Use="WO"/>
 			<Range Min="NaN" Max="NaN"/>
 		</Var>
-		<Var Tag="ZR_REG_OPSP" ID="2000000015" Type="AI" FR="R">
+		<Var Tag="ZR_REG_OPSP" ID="2000000013" Type="AI" FR="R">
 			<Info Descr="SET POINT DE APERTURA" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="71"/>
+			<RemAddr Head="0" Mod="0" Ch="69"/>
 			<HMI Use="WO"/>
 			<Range Min="0" Max="100"/>
 		</Var>
-		<Var Tag="C_REG_PID1_KP" ID="2000000016" Type="AI" FR="R">
+		<Var Tag="C_REG_PID1_KP" ID="2000000014" Type="AI" FR="R">
 			<Info Descr="KP DE PID1" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="70"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID1_KI" ID="2000000015" Type="AI" FR="R">
+			<Info Descr="KI DE PID1" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="71"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID1_KD" ID="2000000016" Type="AI" FR="R">
+			<Info Descr="KD DE PID1" Turb="A" Units="u"/>
 			<RemAddr Head="0" Mod="0" Ch="72"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
-		<Var Tag="C_REG_PID1_KI" ID="2000000017" Type="AI" FR="R">
-			<Info Descr="KI DE PID1" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="73"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID1_KD" ID="2000000018" Type="AI" FR="R">
-			<Info Descr="KD DE PID1" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="74"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID1_ST" ID="2000000019" Type="AI" FR="R">
+		<Var Tag="C_REG_PID1_ST" ID="2000000017" Type="AI" FR="R">
 			<Info Descr="ST DE PID1" Turb="A" Units="ms"/>
-			<RemAddr Head="0" Mod="0" Ch="75"/>
+			<RemAddr Head="0" Mod="0" Ch="73"/>
 			<HMI Use="RW"/>
 			<Range Min="20" Max="2000"/>
 		</Var>
-		<Var Tag="C_REG_PID1_DB" ID="2000000020" Type="AI" FR="R">
+		<Var Tag="C_REG_PID1_DB" ID="2000000018" Type="AI" FR="R">
 			<Info Descr="DB DE PID1" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="76"/>
+			<RemAddr Head="0" Mod="0" Ch="74"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="15"/>
 		</Var>
-		<Var Tag="C_REG_PID2_KP" ID="2000000021" Type="AI" FR="R">
+		<Var Tag="C_REG_PID2_KP" ID="2000000019" Type="AI" FR="R">
 			<Info Descr="KP DE PID2" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="75"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID2_KI" ID="2000000020" Type="AI" FR="R">
+			<Info Descr="KI DE PID2" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="76"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID2_KD" ID="2000000021" Type="AI" FR="R">
+			<Info Descr="KD DE PID2" Turb="A" Units="u"/>
 			<RemAddr Head="0" Mod="0" Ch="77"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
-		<Var Tag="C_REG_PID2_KI" ID="2000000022" Type="AI" FR="R">
-			<Info Descr="KI DE PID2" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="78"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID2_KD" ID="2000000023" Type="AI" FR="R">
-			<Info Descr="KD DE PID2" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="79"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID2_ST" ID="2000000024" Type="AI" FR="R">
+		<Var Tag="C_REG_PID2_ST" ID="2000000022" Type="AI" FR="R">
 			<Info Descr="ST DE PID2" Turb="A" Units="ms"/>
-			<RemAddr Head="0" Mod="0" Ch="80"/>
+			<RemAddr Head="0" Mod="0" Ch="78"/>
 			<HMI Use="RW"/>
 			<Range Min="20" Max="2000"/>
 		</Var>
-		<Var Tag="C_REG_PID2_DB" ID="2000000025" Type="AI" FR="R">
+		<Var Tag="C_REG_PID2_DB" ID="2000000023" Type="AI" FR="R">
 			<Info Descr="DB DE PID2" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="81"/>
+			<RemAddr Head="0" Mod="0" Ch="79"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="15"/>
 		</Var>
-		<Var Tag="C_REG_PID3_KP" ID="2000000026" Type="AI" FR="R">
+		<Var Tag="C_REG_PID3_KP" ID="2000000024" Type="AI" FR="R">
 			<Info Descr="KP DE PID3" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="80"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID3_KI" ID="2000000025" Type="AI" FR="R">
+			<Info Descr="KI DE PID3" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="81"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID3_KD" ID="2000000026" Type="AI" FR="R">
+			<Info Descr="KD DE PID3" Turb="A" Units="u"/>
 			<RemAddr Head="0" Mod="0" Ch="82"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
-		<Var Tag="C_REG_PID3_KI" ID="2000000027" Type="AI" FR="R">
-			<Info Descr="KI DE PID3" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="83"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID3_KD" ID="2000000028" Type="AI" FR="R">
-			<Info Descr="KD DE PID3" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="84"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID3_ST" ID="2000000029" Type="AI" FR="R">
+		<Var Tag="C_REG_PID3_ST" ID="2000000027" Type="AI" FR="R">
 			<Info Descr="ST DE PID3" Turb="A" Units="ms"/>
-			<RemAddr Head="0" Mod="0" Ch="85"/>
+			<RemAddr Head="0" Mod="0" Ch="83"/>
 			<HMI Use="RW"/>
 			<Range Min="20" Max="2000"/>
 		</Var>
-		<Var Tag="C_REG_PID3_DB" ID="2000000030" Type="AI" FR="R">
+		<Var Tag="C_REG_PID3_DB" ID="2000000028" Type="AI" FR="R">
 			<Info Descr="DB DE PID3" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="86"/>
+			<RemAddr Head="0" Mod="0" Ch="84"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="15"/>
 		</Var>
-		<Var Tag="C_REG_PID4_KP" ID="2000000031" Type="AI" FR="R">
+		<Var Tag="C_REG_PID4_KP" ID="2000000029" Type="AI" FR="R">
 			<Info Descr="KP DE PID4" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="85"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID4_KI" ID="2000000030" Type="AI" FR="R">
+			<Info Descr="KI DE PID4" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="86"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID4_KD" ID="2000000031" Type="AI" FR="R">
+			<Info Descr="KD DE PID4" Turb="A" Units="u"/>
 			<RemAddr Head="0" Mod="0" Ch="87"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
-		<Var Tag="C_REG_PID4_KI" ID="2000000032" Type="AI" FR="R">
-			<Info Descr="KI DE PID4" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="88"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID4_KD" ID="2000000033" Type="AI" FR="R">
-			<Info Descr="KD DE PID4" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="89"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID4_ST" ID="2000000034" Type="AI" FR="R">
+		<Var Tag="C_REG_PID4_ST" ID="2000000032" Type="AI" FR="R">
 			<Info Descr="ST DE PID4" Turb="A" Units="ms"/>
-			<RemAddr Head="0" Mod="0" Ch="90"/>
+			<RemAddr Head="0" Mod="0" Ch="88"/>
 			<HMI Use="RW"/>
 			<Range Min="20" Max="2000"/>
 		</Var>
-		<Var Tag="C_REG_PID4_DB" ID="2000000035" Type="AI" FR="R">
+		<Var Tag="C_REG_PID4_DB" ID="2000000033" Type="AI" FR="R">
 			<Info Descr="DB DE PID4" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="91"/>
+			<RemAddr Head="0" Mod="0" Ch="89"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="15"/>
 		</Var>
-		<Var Tag="C_REG_PID5_KP" ID="2000000036" Type="AI" FR="R">
+		<Var Tag="C_REG_PID5_KP" ID="2000000034" Type="AI" FR="R">
 			<Info Descr="KP DE PID5" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="90"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID5_KI" ID="2000000035" Type="AI" FR="R">
+			<Info Descr="KI DE PID5" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="91"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID5_KD" ID="2000000036" Type="AI" FR="R">
+			<Info Descr="KD DE PID5" Turb="A" Units="u"/>
 			<RemAddr Head="0" Mod="0" Ch="92"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
-		<Var Tag="C_REG_PID5_KI" ID="2000000037" Type="AI" FR="R">
-			<Info Descr="KI DE PID5" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="93"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID5_KD" ID="2000000038" Type="AI" FR="R">
-			<Info Descr="KD DE PID5" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="94"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID5_ST" ID="2000000039" Type="AI" FR="R">
+		<Var Tag="C_REG_PID5_ST" ID="2000000037" Type="AI" FR="R">
 			<Info Descr="ST DE PID5" Turb="A" Units="ms"/>
-			<RemAddr Head="0" Mod="0" Ch="95"/>
+			<RemAddr Head="0" Mod="0" Ch="93"/>
 			<HMI Use="RW"/>
 			<Range Min="20" Max="2000"/>
 		</Var>
-		<Var Tag="C_REG_PID5_DB" ID="2000000040" Type="AI" FR="R">
+		<Var Tag="C_REG_PID5_DB" ID="2000000038" Type="AI" FR="R">
 			<Info Descr="DB DE PID5" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="96"/>
+			<RemAddr Head="0" Mod="0" Ch="94"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="15"/>
 		</Var>
-		<Var Tag="C_REG_PID6_KP" ID="2000000041" Type="AI" FR="R">
+		<Var Tag="C_REG_PID6_KP" ID="2000000039" Type="AI" FR="R">
 			<Info Descr="KP DE PID6" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="95"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID6_KI" ID="2000000040" Type="AI" FR="R">
+			<Info Descr="KI DE PID6" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="96"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID6_KD" ID="2000000041" Type="AI" FR="R">
+			<Info Descr="KD DE PID6" Turb="A" Units="u"/>
 			<RemAddr Head="0" Mod="0" Ch="97"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
-		<Var Tag="C_REG_PID6_KI" ID="2000000042" Type="AI" FR="R">
-			<Info Descr="KI DE PID6" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="98"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID6_KD" ID="2000000043" Type="AI" FR="R">
-			<Info Descr="KD DE PID6" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="99"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID6_ST" ID="2000000044" Type="AI" FR="R">
+		<Var Tag="C_REG_PID6_ST" ID="2000000042" Type="AI" FR="R">
 			<Info Descr="ST DE PID6" Turb="A" Units="ms"/>
-			<RemAddr Head="0" Mod="0" Ch="100"/>
+			<RemAddr Head="0" Mod="0" Ch="98"/>
 			<HMI Use="RW"/>
 			<Range Min="20" Max="2000"/>
 		</Var>
-		<Var Tag="C_REG_PID6_DB" ID="2000000045" Type="AI" FR="R">
+		<Var Tag="C_REG_PID6_DB" ID="2000000043" Type="AI" FR="R">
 			<Info Descr="DB DE PID6" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="101"/>
+			<RemAddr Head="0" Mod="0" Ch="99"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="15"/>
 		</Var>
-		<Var Tag="C_REG_PID7_KP" ID="2000000046" Type="AI" FR="R">
+		<Var Tag="C_REG_PID7_KP" ID="2000000044" Type="AI" FR="R">
 			<Info Descr="KP DE PID7" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="100"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID7_KI" ID="2000000045" Type="AI" FR="R">
+			<Info Descr="KI DE PID7" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="101"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID7_KD" ID="2000000046" Type="AI" FR="R">
+			<Info Descr="KD DE PID7" Turb="A" Units="u"/>
 			<RemAddr Head="0" Mod="0" Ch="102"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
-		<Var Tag="C_REG_PID7_KI" ID="2000000047" Type="AI" FR="R">
-			<Info Descr="KI DE PID7" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="103"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID7_KD" ID="2000000048" Type="AI" FR="R">
-			<Info Descr="KD DE PID7" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="104"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID7_ST" ID="2000000049" Type="AI" FR="R">
+		<Var Tag="C_REG_PID7_ST" ID="2000000047" Type="AI" FR="R">
 			<Info Descr="ST DE PID7" Turb="A" Units="ms"/>
-			<RemAddr Head="0" Mod="0" Ch="105"/>
+			<RemAddr Head="0" Mod="0" Ch="103"/>
 			<HMI Use="RW"/>
 			<Range Min="20" Max="2000"/>
 		</Var>
-		<Var Tag="C_REG_PID7_DB" ID="2000000050" Type="AI" FR="R">
+		<Var Tag="C_REG_PID7_DB" ID="2000000048" Type="AI" FR="R">
 			<Info Descr="DB DE PID7" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="106"/>
+			<RemAddr Head="0" Mod="0" Ch="104"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="15"/>
 		</Var>
-		<Var Tag="C_REG_PID8_KP" ID="2000000051" Type="AI" FR="R">
+		<Var Tag="C_REG_PID8_KP" ID="2000000049" Type="AI" FR="R">
 			<Info Descr="KP DE PID8" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="105"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID8_KI" ID="2000000050" Type="AI" FR="R">
+			<Info Descr="KI DE PID8" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="106"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID8_KD" ID="2000000051" Type="AI" FR="R">
+			<Info Descr="KD DE PID8" Turb="A" Units="u"/>
 			<RemAddr Head="0" Mod="0" Ch="107"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
-		<Var Tag="C_REG_PID8_KI" ID="2000000052" Type="AI" FR="R">
-			<Info Descr="KI DE PID8" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="108"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID8_KD" ID="2000000053" Type="AI" FR="R">
-			<Info Descr="KD DE PID8" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="109"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID8_ST" ID="2000000054" Type="AI" FR="R">
+		<Var Tag="C_REG_PID8_ST" ID="2000000052" Type="AI" FR="R">
 			<Info Descr="ST DE PID8" Turb="A" Units="ms"/>
-			<RemAddr Head="0" Mod="0" Ch="110"/>
+			<RemAddr Head="0" Mod="0" Ch="108"/>
 			<HMI Use="RW"/>
 			<Range Min="20" Max="2000"/>
 		</Var>
-		<Var Tag="C_REG_PID8_DB" ID="2000000055" Type="AI" FR="R">
+		<Var Tag="C_REG_PID8_DB" ID="2000000053" Type="AI" FR="R">
 			<Info Descr="DB DE PID8" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="111"/>
+			<RemAddr Head="0" Mod="0" Ch="109"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="15"/>
 		</Var>
-		<Var Tag="C_REG_PID9_KP" ID="2000000056" Type="AI" FR="R">
+		<Var Tag="C_REG_PID9_KP" ID="2000000054" Type="AI" FR="R">
 			<Info Descr="KP DE PID9" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="110"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID9_KI" ID="2000000055" Type="AI" FR="R">
+			<Info Descr="KI DE PID9" Turb="A" Units="u"/>
+			<RemAddr Head="0" Mod="0" Ch="111"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="Inf"/>
+		</Var>
+		<Var Tag="C_REG_PID9_KD" ID="2000000056" Type="AI" FR="R">
+			<Info Descr="KD DE PID9" Turb="A" Units="u"/>
 			<RemAddr Head="0" Mod="0" Ch="112"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
-		<Var Tag="C_REG_PID9_KI" ID="2000000057" Type="AI" FR="R">
-			<Info Descr="KI DE PID9" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="113"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID9_KD" ID="2000000058" Type="AI" FR="R">
-			<Info Descr="KD DE PID9" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="114"/>
-			<HMI Use="RW"/>
-			<Range Min="0" Max="Inf"/>
-		</Var>
-		<Var Tag="C_REG_PID9_ST" ID="2000000059" Type="AI" FR="R">
+		<Var Tag="C_REG_PID9_ST" ID="2000000057" Type="AI" FR="R">
 			<Info Descr="ST DE PID9" Turb="A" Units="ms"/>
-			<RemAddr Head="0" Mod="0" Ch="115"/>
+			<RemAddr Head="0" Mod="0" Ch="113"/>
 			<HMI Use="RW"/>
 			<Range Min="20" Max="2000"/>
 		</Var>
-		<Var Tag="C_REG_PID9_DB" ID="2000000060" Type="AI" FR="R">
+		<Var Tag="C_REG_PID9_DB" ID="2000000058" Type="AI" FR="R">
 			<Info Descr="DB DE PID9" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="116"/>
+			<RemAddr Head="0" Mod="0" Ch="114"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="15"/>
 		</Var>
-		<Var Tag="C_REG_OPLIMIT" ID="2000000061" Type="AI" FR="R">
+		<Var Tag="C_REG_OPLIMIT" ID="2000000059" Type="AI" FR="R">
 			<Info Descr="LIMITE DE APERTURA" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="117"/>
+			<RemAddr Head="0" Mod="0" Ch="115"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="100"/>
 		</Var>
-		<Var Tag="ZRC_REG_WGT_INY1" ID="2000000062" Type="AI" FR="R">
+		<Var Tag="ZRC_REG_WGT_INY1" ID="2000000060" Type="AI" FR="R">
 			<Info Descr="REG SERVO DISTRIBUIDOR O INYECTOR 1 MANUAL" Turb="F y K y P" Units="%"/>
+			<RemAddr Head="0" Mod="0" Ch="116"/>
+			<HMI Use="WO"/>
+			<Range Min="-10" Max="10"/>
+		</Var>
+		<Var Tag="ZRC_REG_PAD_INY2" ID="2000000061" Type="AI" FR="R">
+			<Info Descr="REG SERVO ALABES O  INYECTOR 2 MANUAL" Turb="K y P" Units="%"/>
+			<RemAddr Head="0" Mod="0" Ch="117"/>
+			<HMI Use="WO"/>
+			<Range Min="-10" Max="10"/>
+		</Var>
+		<Var Tag="ZRC_REG_INY3" ID="2000000062" Type="AI" FR="R">
+			<Info Descr="REG SERVO INYECTOR 3 MANUAL" Turb="P" Units="%"/>
 			<RemAddr Head="0" Mod="0" Ch="118"/>
 			<HMI Use="WO"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
-		<Var Tag="ZRC_REG_PAD_INY2" ID="2000000063" Type="AI" FR="R">
-			<Info Descr="REG SERVO ALABES O  INYECTOR 2 MANUAL" Turb="K y P" Units="%"/>
+		<Var Tag="ZRC_REG_INY4" ID="2000000063" Type="AI" FR="R">
+			<Info Descr="REG SERVO INYECTOR 4 MANUAL" Turb="P" Units="%"/>
 			<RemAddr Head="0" Mod="0" Ch="119"/>
 			<HMI Use="WO"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
-		<Var Tag="ZRC_REG_INY3" ID="2000000064" Type="AI" FR="R">
-			<Info Descr="REG SERVO INYECTOR 3 MANUAL" Turb="P" Units="%"/>
+		<Var Tag="ZRC_REG_INY5" ID="2000000064" Type="AI" FR="R">
+			<Info Descr="REG SERVO INYECTOR 5 MANUAL" Turb="P" Units="%"/>
 			<RemAddr Head="0" Mod="0" Ch="120"/>
 			<HMI Use="WO"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
-		<Var Tag="ZRC_REG_INY4" ID="2000000065" Type="AI" FR="R">
-			<Info Descr="REG SERVO INYECTOR 4 MANUAL" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="121"/>
-			<HMI Use="WO"/>
-			<Range Min="-10" Max="10"/>
-		</Var>
-		<Var Tag="ZRC_REG_INY5" ID="2000000066" Type="AI" FR="R">
-			<Info Descr="REG SERVO INYECTOR 5 MANUAL" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="122"/>
-			<HMI Use="WO"/>
-			<Range Min="-10" Max="10"/>
-		</Var>
-		<Var Tag="ZRC_REG_INY6" ID="2000000067" Type="AI" FR="R">
+		<Var Tag="ZRC_REG_INY6" ID="2000000065" Type="AI" FR="R">
 			<Info Descr="REG SERVO INYECTOR 6 MANUAL" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="123"/>
+			<RemAddr Head="0" Mod="0" Ch="121"/>
 			<HMI Use="WO"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
 		<Var Tag="SE_PICK1_RST" ID="1000000015" Type="AO" FR="F">
 			<Info Descr="VALOR DE REINICIO DE PICKUP1" Turb="A" Units="u "/>
-			<RemAddr Head="0" Mod="0" Ch="139"/>
+			<RemAddr Head="0" Mod="0" Ch="137"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
 		<Var Tag="SE_PICK2_RST" ID="1000000016" Type="AO" FR="F">
 			<Info Descr="VALOR DE REINICIO DE PICKUP2" Turb="A" Units="u"/>
-			<RemAddr Head="0" Mod="0" Ch="140"/>
+			<RemAddr Head="0" Mod="0" Ch="138"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="Inf"/>
 		</Var>
 		<Var Tag="ZC_REG_PWSP" ID="1000000017" Type="AO" FR="F">
 			<Info Descr="VALOR DE CONSIGNA DE POTENCIA" Turb="A" Units="PARAM"/>
-			<RemAddr Head="0" Mod="0" Ch="141"/>
+			<RemAddr Head="0" Mod="0" Ch="139"/>
 			<HMI Use="RW"/>
 			<Range Min="NaN" Max="NaN"/>
 		</Var>
 		<Var Tag="ZC_REG_OPSP" ID="1000000018" Type="AO" FR="F">
 			<Info Descr="VALOR DE CONSIGNA DE APERTURA" Turb="A" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="142"/>
+			<RemAddr Head="0" Mod="0" Ch="140"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="100"/>
 		</Var>
 		<Var Tag="ZC_REG_SSP" ID="1000000019" Type="AO" FR="F">
 			<Info Descr="VALOR DE CONSIGNA DE FRECUENCIA" Turb="A" Units="Hz"/>
-			<RemAddr Head="0" Mod="0" Ch="143"/>
+			<RemAddr Head="0" Mod="0" Ch="141"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="NaN"/>
 		</Var>
 		<Var Tag="ZC_WGT_INY1" ID="1000000020" Type="AO" FR="F">
 			<Info Descr="REG SERVO DISTRIBUIDOR O INYECTOR 1" Turb="F y K y P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="144"/>
+			<RemAddr Head="0" Mod="0" Ch="142"/>
 			<HMI Use="RW"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
 		<Var Tag="ZC_PAD_INY2" ID="1000000021" Type="AO" FR="F">
 			<Info Descr="REG SERVO ALABES O  INYECTOR 2" Turb="K y P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="145"/>
+			<RemAddr Head="0" Mod="0" Ch="143"/>
 			<HMI Use="RW"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
 		<Var Tag="ZC_INY3" ID="1000000022" Type="AO" FR="F">
 			<Info Descr="REG SERVO INYECTOR 3" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="146"/>
+			<RemAddr Head="0" Mod="0" Ch="144"/>
 			<HMI Use="RW"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
 		<Var Tag="ZC_INY4" ID="1000000023" Type="AO" FR="F">
 			<Info Descr="REG SERVO INYECTOR 4" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="147"/>
+			<RemAddr Head="0" Mod="0" Ch="145"/>
 			<HMI Use="RW"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
 		<Var Tag="ZC_INY5" ID="1000000024" Type="AO" FR="F">
 			<Info Descr="REG SERVO INYECTOR 5" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="148"/>
+			<RemAddr Head="0" Mod="0" Ch="146"/>
 			<HMI Use="RW"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
 		<Var Tag="ZC_INY6" ID="1000000025" Type="AO" FR="F">
 			<Info Descr="REG SERVO INYECTOR 6" Turb="P" Units="%"/>
-			<RemAddr Head="0" Mod="0" Ch="149"/>
+			<RemAddr Head="0" Mod="0" Ch="147"/>
 			<HMI Use="RW"/>
 			<Range Min="-10" Max="10"/>
 		</Var>
 		<Var Tag="Y_REG_STATE" ID="3000000000" Type="AO" FR="R">
 			<Info Descr="ESTADO ACTUAL REGULADOR" Turb="A" Units="N/A"/>
-			<RemAddr Head="0" Mod="0" Ch="150"/>
+			<RemAddr Head="0" Mod="0" Ch="148"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="7"/>
 		</Var>
 		<Var Tag="SE_REG_F1" ID="3000000001" Type="AO" FR="R">
 			<Info Descr="MEDIDA DE FRECUENCIA 1" Turb="A" Units="Hz"/>
-			<RemAddr Head="0" Mod="0" Ch="151"/>
+			<RemAddr Head="0" Mod="0" Ch="149"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="NaN"/>
 		</Var>
 		<Var Tag="SE_REG_F2" ID="3000000002" Type="AO" FR="R">
 			<Info Descr="MEDIDA DE FRECUENCIA 2" Turb="A" Units="Hz"/>
-			<RemAddr Head="0" Mod="0" Ch="152"/>
+			<RemAddr Head="0" Mod="0" Ch="150"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="NaN"/>
 		</Var>
 		<Var Tag="SE_REG_F3" ID="3000000003" Type="AO" FR="R">
 			<Info Descr="MEDIDA DE FRECUENCIA 3" Turb="A" Units="Hz"/>
-			<RemAddr Head="0" Mod="0" Ch="153"/>
+			<RemAddr Head="0" Mod="0" Ch="151"/>
 			<HMI Use="RW"/>
 			<Range Min="0" Max="NaN"/>
 		</Var>

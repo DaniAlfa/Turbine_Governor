@@ -12,3 +12,6 @@ QLabel[state = "on"]{
 	background-color: rgb(0, 107, 0);
 }
 
+QLineEdit[objectName^="dpl"] {
+font: 87 31pt "Noto Sans";
+}
