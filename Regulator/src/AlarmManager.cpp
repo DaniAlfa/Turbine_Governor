@@ -6,8 +6,8 @@
 
 
 AlarmManager::AlarmManager(IOImage & ioImg) : mtIOImg(ioImg), mbWithErrors(false){
-	muiNumLogicErrorInts = (std::uint32_t) ceil((NUM_ALARMS) / 32); 
-	muiNumFieldQStatesInts = (std::uint32_t) ceil(((FLD_IN_VARS + FLD_OUT_VARS) * 2) / 32);
+	muiNumLogicErrorInts = (std::uint32_t) ceil((NUM_ALARMS) / (float) 32); 
+	muiNumFieldQStatesInts = (std::uint32_t) ceil(((FLD_IN_VARS + FLD_OUT_VARS) * 2) / (float) 32);
 	mpuiLogicErrors = new std::uint32_t[muiNumLogicErrorInts];
 	mpuiFieldQStates = new std::uint32_t[muiNumFieldQStatesInts];
 	mpuiAlarmLevels = new std::uint8_t[NUM_ALARMS];

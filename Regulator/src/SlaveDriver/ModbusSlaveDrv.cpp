@@ -25,7 +25,7 @@
 #define MAX_NUM_MASTERS 5
 #define WAITING_FOR_DATA_MILLIS 30
 
-
+#define POOLING_DELAY_MILLIS 10
 
 using namespace std;
 
@@ -102,6 +102,7 @@ void ModbusSlaveDrv::driverLoop(){
 						mtDrvState = COMError;
 					}
 				}else{
+					this_thread::sleep_for(chrono::milliseconds(POOLING_DELAY_MILLIS));
 					mtReadset = mtRefset;
 					timeval tTimeOut;
 					tTimeOut.tv_sec = 0;

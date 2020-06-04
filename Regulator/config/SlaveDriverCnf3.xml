@@ -27,7 +27,7 @@
   Prec CDATA #REQUIRED>
 ]>
 
-<SlaveDriver IP="192.168.1.40" Port="-1" NumROInts = "1" NumIOVars="150">
+<SlaveDriver IP="192.168.1.33" Port="-1" NumROInts = "1" NumIOVars="150">
  	<FieldVars>
  		<FieldVar ID="1000000017">
  			<Addr Head="0" Mod="0" Ch="139" Prec="0"/>

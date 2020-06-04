@@ -16,8 +16,10 @@ public:
 	void updateControl();
 
 private:
-	IOImage* io;
+	IOImage& io;
 	AlarmManager* mpAlMan;
+
+	bool state, button;
 
 };
 

@@ -12,7 +12,7 @@
 
 #include <signal.h>
 
-#define SCAN_TIME 40
+#define SCAN_TIME 5
 
 static IOSlaveDrv *pSlaveDrv = nullptr;
 static IOFieldDrv *pFieldDrv = nullptr;
@@ -79,7 +79,7 @@ int main(int argc, char* argv[]){
 
 		ioImage.updateOutputs();
 		++uiTotalCycles;
-		std::cout << "Ciclo " << uiTotalCycles << std::endl;
+		//std::cout << "Ciclo " << uiTotalCycles << std::endl;
 	}
 	
 	exitReg(0);
