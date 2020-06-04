@@ -7,13 +7,13 @@
 QMAKE_CXXFLAGS += -Wno-deprecated-copy
 
 ####Modulos QT requeridos
-QT += widgets
+QT += widgets xml
 
 ####Recursos comunes todas las distribuciones
 RESOURCES  = HMI.qrc
 
 ####Configuraciones comunes todas las distribuciones
-INCLUDEPATH += ../includes
+INCLUDEPATH += ../includes ./src/MasterDriver
 TARGET = HMI
 
 CONFIG(debug, debug|release) {
@@ -74,17 +74,21 @@ SOURCES += \
     ./src/AlarmsWdg.cpp \
     ./src/TurbineViewWdg.cpp \
     ./src/TendencyWdg.cpp \
-    ./src/VarsViewWdg.cpp
+    ./src/VarsViewWdg.cpp \
+    ./src/RegImage.cpp
 
 HEADERS += \
     ./src/MainWindow.h \
+    ./src/CommonHMITypes.h \
     ./src/MasterDriver/ModbusMasterDrv.h \
     ./src/ControlWdg.h \
     ./src/ControlOptWdg.h \
     ./src/AlarmsWdg.h \
     ./src/TurbineViewWdg.h \
     ./src/TendencyWdg.h \
-    ./src/VarsViewWdg.h
+    ./src/VarsViewWdg.h \
+    ./src/IOMasterDrv.h \
+    ./src/RegImage.h 
 
 FORMS += \
     ./src/MainWindow.ui \

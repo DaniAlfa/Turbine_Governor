@@ -37,7 +37,7 @@ private:
 	bool mbRegInLoc;
 
 	void setRegState(RegState st);
-	void changeLabelProperty(QString const& strPr, QString const& strPrVal);
+	void changeLabelProperty(QLabel* label, char const* strPr, char const* strPrVal);
 	void updateSPDisplayTxt();
 	void updateSPState();
 	void updateRegChangeButtons();

@@ -9,15 +9,15 @@
 
 #define IMAGE_UPDATE_MILLIS 200
 
-MainWindow::MainWindow(RegImage & regImg, QWidget *parent) : QMainWindow(parent), mpRegImg(&img){
+MainWindow::MainWindow(RegImage & regImg, QWidget *parent) : QMainWindow(parent), mpRegImg(&regImg){
     setupUi(this);
     
     StkWidget->insertWidget(0, new ControlWdg(regImg, this));
-    StkWidget->insertWidget(1, new ControlOptWdg(regImg, this));
-    StkWidget->insertWidget(2, new TurbineViewWdg(regImg, this));
-    StkWidget->insertWidget(3, new AlarmsWdg(regImg, this));
-    StkWidget->insertWidget(4, new TendencyWdg(regImg, this));
-    StkWidget->insertWidget(5, new VarsViewWdg(regImg, this));
+    StkWidget->insertWidget(1, new ControlOptWdg(this));
+    StkWidget->insertWidget(2, new TurbineViewWdg(this));
+    StkWidget->insertWidget(3, new AlarmsWdg(this));
+    StkWidget->insertWidget(4, new TendencyWdg(this));
+    StkWidget->insertWidget(5, new VarsViewWdg(this));
     StkWidget->setCurrentIndex(0);
 
     mMainBtnGrp.addButton(cmdControl, 0);
@@ -43,7 +43,7 @@ MainWindow::~MainWindow(){
     mpRegImg->stop();
 }
 
-void MainWindow::timerEvent(QTimerEvent *event){
+void MainWindow::timerEvent(QTimerEvent *){
 	mpRegImg->updateImage();
 }
 

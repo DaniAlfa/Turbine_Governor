@@ -274,8 +274,8 @@ bool ModbusSlaveDrv::read(IOVar & var){
 	unique_lock<mutex> mutexIOMap(mtIOMapMutex);
 	if(uiNumVar < 1 || uiNumVar > muiNumIOVars || mtDrvState == UnInit) return false;
 	var.setCurrentVal(getCurrentVal(uiNumVar));
-	if(mtDrvState == COMError) var.setQState(QState::ComError);
-	else var.setQState(QState::OK);
+	if(mtDrvState == COMError) var.setQState(QuState::ComError);
+	else var.setQState(QuState::OK);
 	mutexIOMap.unlock();
 	var.setTimeS(getMsSinceEpoch());
 	return true;
@@ -316,9 +316,10 @@ bool ModbusSlaveDrv::writeRO(std::uint32_t iVal, IOAddr addr){
 		else ++pVal;
 		++pMap;
 	}
+	return true;
 }
 
-void ModbusSlaveDrv::setQState(QState tState, std::uint8_t uiVar){
+void ModbusSlaveDrv::setQState(QuState tState, std::uint8_t uiVar){
 	std::uint8_t* pDi = (mpMBmapping->tab_input_bits + ((uiVar * DIOFFSET) - DIOFFSET));
 	std::uint8_t uiVal = tState;
 	std::uint8_t uiOffset = DIOFFSET - 1;

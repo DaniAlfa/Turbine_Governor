@@ -14,8 +14,8 @@
 #include <libxml/tree.h>
 #include <libmodbus/modbus.h>
 
-#include "CommonHMITypes.h"
-#include "IOMasterDrv.h"
+#include "../CommonHMITypes.h"
+#include "../IOMasterDrv.h"
 
 
 class ModbusMasterDrv : public IOMasterDrv {
@@ -33,8 +33,8 @@ public:
 
 	bool read(VarImage & var, IOAddr const tAddr); //Para leer variables fisicas y modbus
 
-	bool write(float const val, IOAddr const& tAddr, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut); //Para escribr en variables modbus o fisicas representadas como solo escritura
-	bool force(float const fVal, IOAddr const& tAddr, bool bForceBitVal, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut);
+	bool write(float const val, IOAddr const& tAddr, std::function<void(IOAddr)> const& timeOut, std::uint32_t tWriteTimeOut, std::function<void(IOAddr)> const& writeSuccess); //Para escribr en variables modbus o fisicas representadas como solo escritura
+	bool force(float const fVal, IOAddr const& tAddr, bool bForceBitVal, std::function<void(IOAddr)> const& timeOut, std::uint32_t tWriteTimeOut, std::function<void(IOAddr)>const& writeSuccess);
 	
 	bool read(std::uint32_t & uiVal, IOAddr const tAddr); //Lectura de enteros con bitstrings
 
@@ -48,7 +48,7 @@ private:
 		std::int64_t miTimeS;
 		float mfTrueVal;
 		float mfForcedVal;
-		QState mtQState;
+		QuState mtQState;
 		bool mbForced;
 		bool mbForceChangeDetection = true;
 	};
@@ -58,7 +58,7 @@ private:
 		std::int64_t miTimeS;
 		float mfCurrentVal;
 		std::uint32_t muiCurrentVal;
-		QState mtQState;
+		QuState mtQState;
 		bool mbForceChangeDetection = true;
 	};
 
@@ -69,8 +69,8 @@ private:
 		bool mbForcedVal;
 		float mfWriteVal;
 		std::uint32_t mtWriteTimeOut;
-		std::function<void(IOAddr)>* mpfWriteSuccess;
-		std::function<void(IOAddr)>* mpfWriteTimeOut;
+		std::function<void(IOAddr)> mfWriteSuccess;
+		std::function<void(IOAddr)> mfWriteTimeOut;
 		std::int64_t mTimeS;
 		bool operator<(WriteReq const& other) const {
 			return mtWriteTimeOut < other.mtWriteTimeOut;
@@ -136,7 +136,7 @@ private:
 	void readFieldVar(VarImage & var, std::unordered_map<IOAddr, FieldData*>::const_iterator it);
 	void getTimeS(std::int64_t & iReadTs, std::uint16_t const uiTS[4]) const;
 	std::uint32_t getInt(std::uint16_t const uiInt[2]) const;
-	QState getQState(std::uint8_t const uiQstate[2]) const;
+	QuState getQState(std::uint8_t const uiQstate[2]) const;
 	static std::int64_t getMsSinceEpoch();
 
 

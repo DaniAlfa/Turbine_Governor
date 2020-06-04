@@ -1,5 +1,4 @@
 #include "EtherDevice.h"
-#include "CommonTypes.h"
 #include <cstdint>
 #include <chrono>
 #include "EthercatDrv.h"
@@ -86,7 +85,7 @@ bool EtherDevice::isModuleOk(IOAddr const& addr) const{
 	return mtDrv->isModuleOk(addr);
 }
 
-void EtherDevice::newVarError(IOAddr const& addr, QState eState){
+void EtherDevice::newVarError(IOAddr const& addr, QuState eState){
 	mtDrv->newVarError(addr, eState);
 }
 

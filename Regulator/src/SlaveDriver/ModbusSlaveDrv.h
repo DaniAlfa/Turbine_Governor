@@ -12,8 +12,8 @@
 #include <libxml/tree.h>
 #include <libmodbus/modbus.h>
 
-#include <CommonTypes.h>
-#include <IOSlaveDrv.h>
+#include "../CommonRegTypes.h"
+#include "../IOSlaveDrv.h"
 
 //Especificos de linux
 #include <sys/select.h>
@@ -81,7 +81,7 @@ private:
 	bool getForced(std::uint8_t uiVar);
 	void setForced(std::uint8_t uiVar, bool bState);
 	void setCurrentVal(float fVal, std::uint8_t uiVar);
-	void setQState(QState tState, std::uint8_t uiVar);
+	void setQState(QuState tState, std::uint8_t uiVar);
 	void setTimeS(std::int64_t const& iTimeS, std::uint8_t uiVar);
 	static std::int64_t getMsSinceEpoch();
 

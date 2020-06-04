@@ -2,7 +2,7 @@
 #include <Alarms.h>
 #include <cmath>
 #include <IDVarList.h>
-#include <CommonTypes.h>
+#include "IOImage.h"
 
 
 AlarmManager::AlarmManager(IOImage & ioImg) : mtIOImg(ioImg), mbWithErrors(false){
@@ -35,14 +35,14 @@ void AlarmManager::checkDriverErrors(){
 		DrvState fldState = mtIOImg.getFieldDrvState();
 		DrvState slvState = mtIOImg.getSlaveDrvState();
 		if(slvState == COMError){
-			setError(AL_MASTERCOM);
+			setAlarm(AL_MASTERCOM);
 		}
 		if(fldState == COMError){
-			setError(AL_FIELDCOM);
+			setAlarm(AL_FIELDCOM);
 		}
 		else if(fldState == VarError){
 			mbWithErrors = true;
-			setError(AL_FIELDVARS);
+			setAlarm(AL_FIELDVARS);
 			mtIOImg.getFldErrors(mMLastFldErrors);
 			if(!mMLastFldErrors.empty()){
 				clearFldStates();
@@ -61,7 +61,7 @@ void AlarmManager::checkDriverErrors(){
 }
 
 void AlarmManager::clearFldStates(){
-	for(int i = 0; i < muiNumFieldQStatesInts; ++i){
+	for(std::uint32_t i = 0; i < muiNumFieldQStatesInts; ++i){
 		mpuiFieldQStates[i] = 0;
 	}
 }
@@ -69,27 +69,27 @@ void AlarmManager::clearFldStates(){
 void AlarmManager::setFldStates(){
 	for(auto it : mMLastFldErrors){
 		std::uint32_t uiFldInt, uiStartBit;
-		if(it->first >= FLD_IN_LOW_RANGE && it->first <= FLD_IN_HIGH_RANGE){
-			uiStartBit = (it->first - FLD_IN_LOW_RANGE) * 2;
+		if(it.first >= FLD_IN_LOW_RANGE && it.first <= FLD_IN_HIGH_RANGE){
+			uiStartBit = (it.first - FLD_IN_LOW_RANGE) * 2;
 		}
-		else if(it->first >= FLD_OUT_LOW_RANGE && it->first <= FLD_OUT_HIGH_RANGE){
-			uiStartBit = (it->first - FLD_OUT_LOW_RANGE + FLD_IN_VARS) * 2;
+		else if(it.first >= FLD_OUT_LOW_RANGE && it.first <= FLD_OUT_HIGH_RANGE){
+			uiStartBit = (it.first - FLD_OUT_LOW_RANGE + FLD_IN_VARS) * 2;
 		}
 		else continue;
 		uiFldInt = uiStartBit / 32;
 		mpuiFieldQStates[uiFldInt] = mpuiFieldQStates[uiFldInt] & (~(0x3 << (31 - uiStartBit)));
-		mpuiFieldQStates[uiFldInt] = mpuiFieldQStates[uiFldInt] | (((std::uint32_t) (it->second)) << (31 - uiStartBit));
+		mpuiFieldQStates[uiFldInt] = mpuiFieldQStates[uiFldInt] | (((std::uint32_t) (it.second)) << (31 - uiStartBit));
 	}
 }
 
 void AlarmManager::clearAlarms(){
-	for(int i = 0; i < muiNumLogicErrorInts; ++i){
+	for(std::uint32_t i = 0; i < muiNumLogicErrorInts; ++i){
 		mpuiLogicErrors[i] = 0;
 	}
 }
 
-void AlarmManager::isAlarmSet(std::uint32_t uiError) const{
-	if(uiError >= NUM_ALARMS) return;
+bool AlarmManager::isAlarmSet(std::uint32_t uiError) const{
+	if(uiError >= NUM_ALARMS) return false;
 	std::uint32_t uiErrorInt = (std::uint32_t) (uiError / 32);
 	std::uint32_t uiMask = 0;
 	uiMask = 0x1 << (31 - (std::uint32_t) (uiError % 32));
@@ -98,16 +98,16 @@ void AlarmManager::isAlarmSet(std::uint32_t uiError) const{
 
 void AlarmManager::setAlarm(std::uint32_t uiError){
 	if(uiError >= NUM_ALARMS) return;
-	setErrorBit(uiError);
+	setAlarmBit(uiError);
 
 	if(mpuiAlarmLevels[uiError] == 1){
-		setErrorBit(AL_MAYOR);
-		if(AL_TRIPEXT != uiError) setErrorBit(AL_TRIPINT);
+		setAlarmBit(AL_MAYOR);
+		if(AL_TRIPEXT != uiError) setAlarmBit(AL_TRIPINT);
 		mtIOImg[YA_REG_MA].setCurrentVal(0);
 		mtIOImg[YA_REG_TRIP].setCurrentVal(0);
 	} 
 	else{
-		setErrorBit(AL_MINOR);
+		setAlarmBit(AL_MINOR);
 		mtIOImg[YA_REG_ME].setCurrentVal(0);
 	}
 }

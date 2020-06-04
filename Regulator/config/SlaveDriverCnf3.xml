@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE SlaveDriver [
+<!ELEMENT SlaveDriver (FieldVars)>
+<!ATTLIST SlaveDriver
+  xmlns CDATA #FIXED ''
+  IP NMTOKEN #REQUIRED
+  NumIOVars CDATA #REQUIRED
+  NumROInts CDATA #REQUIRED
+  Port CDATA #REQUIRED>
+
+<!ELEMENT FieldVars (FieldVar)+>
+<!ATTLIST FieldVars
+  xmlns CDATA #FIXED ''>
+
+<!ELEMENT FieldVar (Addr)>
+<!ATTLIST FieldVar
+  xmlns CDATA #FIXED ''
+  ID CDATA #REQUIRED>
+
+<!ELEMENT Addr EMPTY>
+<!ATTLIST Addr
+  xmlns CDATA #FIXED ''
+  Ch CDATA #REQUIRED
+  Head CDATA #REQUIRED
+  Mod CDATA #REQUIRED
+  Prec CDATA #REQUIRED>
+]>
+
+<SlaveDriver IP="192.168.1.40" Port="-1" NumROInts = "1" NumIOVars="150">
+ 	<FieldVars>
+ 		<FieldVar ID="1000000017">
+ 			<Addr Head="0" Mod="0" Ch="139" Prec="0"/>
+ 		</FieldVar>
+    <FieldVar ID="1000000018">
+      <Addr Head="0" Mod="0" Ch="140" Prec="0"/>
+    </FieldVar>
+    <FieldVar ID="1000000019">
+      <Addr Head="0" Mod="0" Ch="141" Prec="0"/>
+    </FieldVar>
+    <FieldVar ID="1000000013">
+      <Addr Head="0" Mod="0" Ch="135" Prec="0"/>
+    </FieldVar>
+    <FieldVar ID="1000000007">
+      <Addr Head="0" Mod="0" Ch="129" Prec="0"/>
+    </FieldVar>
+    <FieldVar ID="1000000006">
+      <Addr Head="0" Mod="0" Ch="128" Prec="0"/>
+    </FieldVar>
+    <FieldVar ID="1000000005">
+      <Addr Head="0" Mod="0" Ch="127" Prec="0"/>
+    </FieldVar>
+    <FieldVar ID="1000000004">
+      <Addr Head="0" Mod="0" Ch="126" Prec="0"/>
+    </FieldVar>
+    <FieldVar ID="1000000003">
+      <Addr Head="0" Mod="0" Ch="125" Prec="0"/>
+    </FieldVar>
+    <FieldVar ID="1000000002">
+      <Addr Head="0" Mod="0" Ch="124" Prec="0"/>
+    </FieldVar>
+ 	</FieldVars>
+</SlaveDriver> 

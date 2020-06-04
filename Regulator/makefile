@@ -12,7 +12,7 @@ RUNTIME_PATH = -Wl,-rpath,../libs
 LIB_PATH = -L../libs
 LIBS = -lsoem -lmodbus -lxml2 -lz -llzma -lm -lpthread
 INCLUDES = -I../includes -I./src/FieldDriver -I./src/SlaveDriver
-PROG   = regulator
+PROG   = reg
 CC = g++
 LD = g++
 

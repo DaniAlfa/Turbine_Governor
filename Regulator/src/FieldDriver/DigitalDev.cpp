@@ -1,6 +1,6 @@
 #include "DigitalDev.h"
 #include <chrono>
-#include "CommonTypes.h"
+#include "../CommonRegTypes.h"
 
 DigitalDev::DigitalDev(EthercatDrv & drv, int iPulseMeasureOpt) : EtherDevice(drv), miPulseMeasureOpt(iPulseMeasureOpt){
 	if(miPulseMeasureOpt < -1) miPulseMeasureOpt = -1;
@@ -26,9 +26,9 @@ bool DigitalDev::write(IOVar const& var){
 
 void DigitalDev::updateDevice(IOAddr const& addr){
 	if(!isModuleOk(addr)){
-		if(!mbInError) newVarError(addr, QState::ComError);
+		if(!mbInError) newVarError(addr, QuState::ComError);
 		mbInError = true;
-		mtLastQState = QState::ComError;
+		mtLastQState = QuState::ComError;
 		return;
 	}
 	else if(mbInError){

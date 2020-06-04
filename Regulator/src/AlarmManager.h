@@ -2,8 +2,9 @@
 #define ALARMMANAGER_H
 #include <cstdint>
 #include <unordered_map>
+#include <atomic>
+#include "CommonRegTypes.h"
 
-//Declaraciones adelantadas
 class IOImage;
 
 class AlarmManager{
@@ -16,11 +17,14 @@ public:
 
 	void clearAlarms();
 	void setAlarm(std::uint32_t uiError);
-	void isAlarmSet(std::uint32_t uiError) const;
+	bool isAlarmSet(std::uint32_t uiError) const;
+
+	std::uint32_t getNoLogicErrors() const{return muiNumLogicErrorInts;}
+	std::uint32_t const* getLogicErrors() const{ return mpuiLogicErrors;}
 
 private:
-	IOImage& mtIOImg;
-	bool mbWithErrors; //Hay errores sin limpiar
+	IOImage & mtIOImg;
+	std::atomic<bool> mbWithErrors; //Hay errores sin limpiar
 
 	std::uint32_t* mpuiLogicErrors;
 	std::uint32_t muiNumLogicErrorInts;
@@ -30,7 +34,7 @@ private:
 
 	std::uint8_t* mpuiAlarmLevels;
 
-	std::unordered_map<std::uint32_t, QState> mMLastFldErrors;
+	std::unordered_map<std::uint32_t, QuState> mMLastFldErrors;
 
 	void setAlarmBit(std::uint32_t uiError);
 	void setFldStates();

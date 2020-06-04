@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 #include "EtherDevice.h"
-#include "CommonTypes.h"
+#include "../CommonRegTypes.h"
 
 //Declaraciones adelantadas
 class EthercatDrv;
@@ -41,7 +41,7 @@ protected:
 
 	float scaleValue(float fDestMin, float fDestMax, float fOriginMin, float fOriginMax, float fVal);
 
-	QState getVarQState(StatusWord const& stByte);
+	QuState getVarQState(StatusWord const& stByte);
 
 };
 

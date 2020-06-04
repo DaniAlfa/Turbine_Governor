@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RegIOInfo>
+	<Vars>
+		<Var Tag="HMSM_REG_STR" ID="2000000000" Type="DI" FR="R">
+			<Info Descr="ORDEN ARRANQUE" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="39"/>
+			<HMI Use="WO"/>
+		</Var>
+		<Var Tag="HMSM_REG_SPOK" ID="2000000008" Type="DI" FR="R">
+			<Info Descr="CONFIRMACION DE CONSIGNA" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="47"/>
+			<HMI Use="WO"/>
+		</Var>
+		<Var Tag="HMSM_REG_PWREG" ID="2000000009" Type="DI" FR="R">
+			<Info Descr="CAMBIO A REGULACION DE POTENCIA" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="48"/>
+			<HMI Use="WO"/>
+		</Var>
+		<Var Tag="HMSM_REG_OPREG" ID="2000000010" Type="DI" FR="R">
+			<Info Descr="CAMBIO A REGULACION DE APERTURA" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="49"/>
+			<HMI Use="WO"/>
+		</Var>
+		<Var Tag="SAH_TUR_OVS" ID="1000000002" Type="DO" FR="F">
+			<Info Descr="ALARMA SOBREVELOCIDAD" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="124"/>
+			<HMI Use="RW"/>
+		</Var>
+		<Var Tag="SAHH_TUR_OVS" ID="1000000003" Type="DO" FR="F">
+			<Info Descr="DISPARO DE SOBREVELOCIDAD" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="125"/>
+			<HMI Use="RW"/>
+		</Var>
+		<Var Tag="SIS_TUR_SYNC" ID="1000000004" Type="DO" FR="F">
+			<Info Descr="VELOCIDAD DE SINCRONIZACION ALCANZADA" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="126"/>
+			<HMI Use="RW"/>
+		</Var>
+		<Var Tag="SIS_TUR_EXC" ID="1000000005" Type="DO" FR="F">
+			<Info Descr="VELOCIDAD DE EXCITACIÓN ALCANZADA" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="127"/>
+			<HMI Use="RW"/>
+		</Var>
+		<Var Tag="SIS_TUR_BRK" ID="1000000006" Type="DO" FR="F">
+			<Info Descr="VELOCIDAD DE FRENADO ALCANZADA" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="128"/>
+			<HMI Use="RW"/>
+		</Var>
+		<Var Tag="SIS_TUR_N0" ID="1000000007" Type="DO" FR="F">
+			<Info Descr="TURBINA PARADA" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="129"/>
+			<HMI Use="RW"/>
+		</Var>
+		<Var Tag="Y_REG_LOC" ID="1000000013" Type="DO" FR="F">
+			<Info Descr="REGULADOR EN LOCAL" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="135"/>
+			<HMI Use="RW"/>
+		</Var>
+		<Var Tag="ZR_REG_PWSP" ID="2000000012" Type="AI" FR="R">
+			<Info Descr="SET POINT DE POTENCIA" Turb="A" Units="PARAM"/>
+			<RemAddr Head="0" Mod="0" Ch="68"/>
+			<HMI Use="WO"/>
+			<Range Min="NaN" Max="NaN"/>
+		</Var>
+		<Var Tag="ZR_REG_OPSP" ID="2000000013" Type="AI" FR="R">
+			<Info Descr="SET POINT DE APERTURA" Turb="A" Units="%"/>
+			<RemAddr Head="0" Mod="0" Ch="69"/>
+			<HMI Use="WO"/>
+			<Range Min="0" Max="100"/>
+		</Var>
+		<Var Tag="ZC_REG_PWSP" ID="1000000017" Type="AO" FR="F">
+			<Info Descr="VALOR DE CONSIGNA DE POTENCIA" Turb="A" Units="PARAM"/>
+			<RemAddr Head="0" Mod="0" Ch="139"/>
+			<HMI Use="RW"/>
+			<Range Min="NaN" Max="NaN"/>
+		</Var>
+		<Var Tag="ZC_REG_OPSP" ID="1000000018" Type="AO" FR="F">
+			<Info Descr="VALOR DE CONSIGNA DE APERTURA" Turb="A" Units="%"/>
+			<RemAddr Head="0" Mod="0" Ch="140"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="100"/>
+		</Var>
+		<Var Tag="ZC_REG_SSP" ID="1000000019" Type="AO" FR="F">
+			<Info Descr="VALOR DE CONSIGNA DE FRECUENCIA" Turb="A" Units="Hz"/>
+			<RemAddr Head="0" Mod="0" Ch="141"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="NaN"/>
+		</Var>
+		<Var Tag="Y_REG_STATE" ID="3000000000" Type="AO" FR="R">
+			<Info Descr="ESTADO ACTUAL REGULADOR" Turb="A" Units="N/A"/>
+			<RemAddr Head="0" Mod="0" Ch="148"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="7"/>
+		</Var>
+		<Var Tag="SE_REG_F1" ID="3000000001" Type="AO" FR="R">
+			<Info Descr="MEDIDA DE FRECUENCIA 1" Turb="A" Units="Hz"/>
+			<RemAddr Head="0" Mod="0" Ch="149"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="NaN"/>
+		</Var>
+		<Var Tag="SE_REG_F2" ID="3000000002" Type="AO" FR="R">
+			<Info Descr="MEDIDA DE FRECUENCIA 2" Turb="A" Units="Hz"/>
+			<RemAddr Head="0" Mod="0" Ch="150"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="NaN"/>
+		</Var>
+		<Var Tag="SE_REG_F3" ID="3000000003" Type="AO" FR="R">
+			<Info Descr="MEDIDA DE FRECUENCIA 3" Turb="A" Units="Hz"/>
+			<RemAddr Head="0" Mod="0" Ch="151"/>
+			<HMI Use="RW"/>
+			<Range Min="0" Max="NaN"/>
+		</Var>
+	</Vars>
+</RegIOInfo>

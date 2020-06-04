@@ -1,7 +1,5 @@
 #include "RegImage.h"
-#include "ModbusMasterDrv.h"
-#include <unordered_set>
-#include <QtXml>
+#include <ModbusMasterDrv.h>
 #include <QFile>
 #include <Alarms.h>
 #include <RegIDS.h>
@@ -30,6 +28,25 @@ bool RegImage::init(QString const& regIOInfo, QString const& regConfigFile, QStr
 		return false;
 	}
 
+	mumSlaveVars[SE_REG_F1]->setUnits("Hz");
+	mumSlaveVars[SE_REG_F1]->setEguMin(0);
+	mumSlaveVars[SE_REG_F1]->setEguMax(60);
+	mumSlaveVars[SE_REG_F2]->setUnits("Hz");
+	mumSlaveVars[SE_REG_F2]->setEguMin(0);
+	mumSlaveVars[SE_REG_F2]->setEguMax(60);
+	mumSlaveVars[SE_REG_F3]->setUnits("Hz");
+	mumSlaveVars[SE_REG_F3]->setEguMin(0);
+	mumSlaveVars[SE_REG_F3]->setEguMax(60);
+
+	mumFieldVars[ZC_REG_SSP]->setUnits("Hz");
+	mumFieldVars[ZC_REG_PWSP]->setUnits("MW");
+	mumFieldVars[ZC_REG_OPSP]->setUnits("%");
+
+	mumSlaveVars[ZR_REG_PWSP]->setEguMin(0);
+	mumSlaveVars[ZR_REG_PWSP]->setEguMax(5000);
+	mumSlaveVars[ZR_REG_OPSP]->setEguMin(0);
+	mumSlaveVars[ZR_REG_OPSP]->setEguMax(100);
+
 	if(!parseRegConfigFile(regConfigFile)){
 		if(strErrorInfo != nullptr) *strErrorInfo = "Error en el archivo de configuracion del regulador";
 		deleteRegVars();
@@ -37,15 +54,16 @@ bool RegImage::init(QString const& regIOInfo, QString const& regConfigFile, QStr
 	}
 
 	muiNumLogicErrorInts = (std::uint32_t) ceil((NUM_ALARMS) / 32); 
-	muiNumFieldQStatesInts = (std::uint32_t) ceil(((FLD_IN_VARS + FLD_OUT_VARS) * 2) / 32);
+	//muiNumFieldQStatesInts = (std::uint32_t) ceil(((FLD_IN_VARS + FLD_OUT_VARS) * 2) / 32);
+	muiNumFieldQStatesInts = 0;
 
-	for(int i = 1; i <= muiNumFieldQStatesInts + muiNumLogicErrorInts; ++i){ //Se añaden los enteros de informacion del regulador para actualizar
+	for(std::uint32_t i = 1; i <= muiNumFieldQStatesInts + muiNumLogicErrorInts; ++i){ //Se añaden los enteros de informacion del regulador para actualizar
 		IOAddr tAddr;
 		tAddr.uiChannel = i;
 		usSlaveVarsToUpdate.insert(tAddr);
 	}
 
-	if(!mMasterDrv->init(masterDrvConfig.toStdString(), usSlaveVarsToUpdate, usFieldVarsToUpdate, RegImage::driverComError, RegImage::driverRecovered)){
+	if(!mMasterDrv->init(masterDrvConfig.toStdString(), usSlaveVarsToUpdate, usFieldVarsToUpdate, [this](){this->driverComError();}, [this](){this->driverRecovered();})){
 		if(strErrorInfo != nullptr) *strErrorInfo = "Error en la inicializacion del driver";
 		deleteRegVars();
 		return false;
@@ -95,17 +113,17 @@ void RegImage::updateImage(){
 }
 
 void RegImage::processUncompletedWrites(){
-	unique_lock<mutex> mutexButtonWrt(mtButtonWritesMtx);
+	std::unique_lock<std::mutex> mutexButtonWrt(mtButtonWritesMtx);
 	while(!mqUncompletedButtonWrites.empty()){ //Las escrituras de boton no completadas en segunda fase se procesan ahora
 		std::pair<IOAddr, bool> butWrite = mqUncompletedButtonWrites.front();
-		if(mMasterDrv->write((butWrite.second ? 1 : 0), butWrite.first, RegImage::driverWriteSuccess, RegImage::driverWriteTimeOut, DEFAULT_WRITE_TIMEOUT)){
+		if(mMasterDrv->write((butWrite.second ? 1 : 0), butWrite.first, [this](IOAddr addr){this->driverWriteTimeOut(addr);}, DEFAULT_WRITE_TIMEOUT, [this](IOAddr addr){this->driverWriteSuccess(addr);})){
 			mqUncompletedButtonWrites.pop();
 		}
 		else break;
 	}
 }
 
-void RegImage::newVarUpdated(IOAddr tAddr);{
+void RegImage::newVarUpdated(IOAddr tAddr){
 	if(usLastVarChanges != nullptr){
 		usLastVarChanges->insert(tAddr);
 		if(usLastVarChanges->size() == mumVars.size() + muiNumFieldQStatesInts + muiNumLogicErrorInts){
@@ -153,25 +171,25 @@ QString RegImage::getVarUnits(std::uint32_t const varID) const{
 bool RegImage::writeVar(std::uint32_t const varID, float val){
 	auto it = mumSlaveVars.find(varID);
 	if(it == mumSlaveVars.end()) return false;
-	return mMasterDrv->write(val, it->second->getAddr(), nullptr, RegImage::driverWriteTimeOut, DEFAULT_WRITE_TIMEOUT);
+	return mMasterDrv->write(val, it->second->getAddr(), [this](IOAddr addr){this->driverWriteTimeOut(addr);}, DEFAULT_WRITE_TIMEOUT);
 }
 
 bool RegImage::forceVar(std::uint32_t const varID, float forceVal, bool forceBit){
 	auto it = mumFieldVars.find(varID);
 	if(it == mumFieldVars.end()) return false;
-	return mMasterDrv->force(forceVal, it->second->getAddr(), forceBit, nullptr, RegImage::driverWriteTimeOut, DEFAULT_WRITE_TIMEOUT);
+	return mMasterDrv->force(forceVal, it->second->getAddr(), forceBit, [this](IOAddr addr){this->driverWriteTimeOut(addr);}, DEFAULT_WRITE_TIMEOUT);
 }
 
 bool RegImage::writeVarAsButton(std::uint32_t const varID, bool val){
 	auto it = mumSlaveVars.find(varID);
 	if(it == mumSlaveVars.end()) return false;
 	IOAddr tAddr = it->second->getAddr();
-	unique_lock<mutex> mutexButtonWrt(mtButtonWritesMtx);
+	std::unique_lock<std::mutex> mutexButtonWrt(mtButtonWritesMtx);
 	if(mumButtonWritesToClean.count(tAddr) <= 0 && mumButtonWrites.insert({tAddr, val}).second){
-		if(mMasterDrv->write((val ? 1 : 0), tAddr, RegImage::driverWriteSuccess, RegImage::driverWriteTimeOut, DEFAULT_WRITE_TIMEOUT)){
+		if(mMasterDrv->write((val ? 1 : 0), tAddr, [this](IOAddr addr){this->driverWriteTimeOut(addr);}, DEFAULT_WRITE_TIMEOUT, [this](IOAddr addr){this->driverWriteSuccess(addr);})){
 			return true;
 		}
-		mumButtonWrites.erase(res.first);
+		mumButtonWrites.erase(tAddr);
 	}
 	return false;
 }
@@ -180,7 +198,7 @@ void RegImage::driverWriteTimeOut(IOAddr tAddr){
 	auto it = mumVars.find(tAddr);
 	if(it != mumVars.end()){
 		std::unordered_map<IOAddr, bool>::iterator it1;
-		unique_lock<mutex> mutexButtonWrt(mtButtonWritesMtx);
+		std::unique_lock<std::mutex> mutexButtonWrt(mtButtonWritesMtx);
 		if(!mumButtonWrites.empty() && ((it1 = mumButtonWrites.find(tAddr)) != mumButtonWrites.end())){ //Si es timeout por primera fase de escritura de boton
 			mumButtonWrites.erase(tAddr);
 			mutexButtonWrt.unlock();
@@ -197,13 +215,13 @@ void RegImage::driverWriteTimeOut(IOAddr tAddr){
 }
 
 void RegImage::driverWriteSuccess(IOAddr tAddr){
-	unique_lock<mutex> mutexButtonWrt(mtButtonWritesMtx);
+	std::unique_lock<std::mutex> mutexButtonWrt(mtButtonWritesMtx);
 	auto it = mumButtonWrites.find(tAddr);
 	if(it != mumButtonWrites.end()){ //Si tiene exito la primera fase de escritura de boton
 		bool bPreviousVal = it->second;
 		mumButtonWrites.erase(it);
 		mumButtonWritesToClean.insert({tAddr, !bPreviousVal});
-		if(!mMasterDrv->write((bPreviousVal ? 0 : 1), tAddr, RegImage::driverWriteSuccess, RegImage::driverWriteTimeOut, DEFAULT_WRITE_TIMEOUT)){
+		if(!mMasterDrv->write((bPreviousVal ? 0 : 1), tAddr, [this](IOAddr addr){this->driverWriteTimeOut(addr);}, DEFAULT_WRITE_TIMEOUT, [this](IOAddr addr){this->driverWriteSuccess(addr);})){
 			mqUncompletedButtonWrites.push({tAddr, !bPreviousVal});
 		}
 	}
@@ -222,11 +240,11 @@ bool RegImage::parseRegIOInfo(QString const& regIOInfo, std::unordered_set<IOAdd
 
 	QXmlStreamReader xmlReader(&infoF);
 
-	if(reader.readNextStartElement() && reader.name() == "RegIOInfo"){
-		if(reader.readNextStartElement() && reader.name() == "Vars"){
-			while(reader.readNextStartElement()){
-				if(reader.name() == "Var"){
-					if(!parseXmlVar(reader)){
+	if(xmlReader.readNextStartElement() && xmlReader.name() == "RegIOInfo"){
+		if(xmlReader.readNextStartElement() && xmlReader.name() == "Vars"){
+			while(xmlReader.readNextStartElement()){
+				if(xmlReader.name() == "Var"){
+					if(!parseXmlVar(xmlReader, slaveVarsToUpdate, fieldVarsToUpdate)){
 						infoF.close();
 						deleteRegVars();
 						return false;
@@ -242,7 +260,7 @@ bool RegImage::parseRegIOInfo(QString const& regIOInfo, std::unordered_set<IOAdd
 	return false;
 }
 
-bool RegImage::parseXmlVar(QXmlStreamReader reader, std::unordered_set<IOAddr> & slaveVarsToUpdate, std::unordered_set<IOAddr> & fieldVarsToUpdate){
+bool RegImage::parseXmlVar(QXmlStreamReader & reader, std::unordered_set<IOAddr> & slaveVarsToUpdate, std::unordered_set<IOAddr> & fieldVarsToUpdate){
 	if(reader.attributes().hasAttribute("ID") && reader.attributes().hasAttribute("FR")){
 		std::uint32_t uiId = reader.attributes().value("ID").toUInt();
 		QString strFr = reader.attributes().value("FR").toString();
@@ -293,6 +311,7 @@ bool RegImage::parseXmlVar(QXmlStreamReader reader, std::unordered_set<IOAddr> &
 bool RegImage::parseRegConfigFile(QString const& regConfigFile){
 	//Se leen los limites de las variables y sus unidades
 	//Se leen las configuraciones del regulador
+	return true;
 }
 
 

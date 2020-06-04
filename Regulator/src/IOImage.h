@@ -1,6 +1,6 @@
 #ifndef IOIMAGE_H
 #define IOIMAGE_H
-#include <CommonTypes.h>
+#include "CommonRegTypes.h"
 #include <IDVarList.h>
 #include <unordered_map>
 #include <string>
@@ -8,11 +8,14 @@
 //Declaraciones adelantadas
 class IOFieldDrv;
 class IOSlaveDrv;
+class AlarmManager;
 
 class IOImage {
 public:
-	IOImage(std::string const& strConfigPath, IOFieldDrv & ptFieldDrv, IOSlaveDrv & ptSlaveDrv);
+	IOImage(IOFieldDrv & ptFieldDrv, IOSlaveDrv & ptSlaveDrv);
 	~IOImage();
+
+	bool init(std::string const& strConfigPath);
 
 	void updateInputs();
 	void updateOutputs();
@@ -30,7 +33,9 @@ public:
     DrvState getFieldDrvState() const;
     DrvState getSlaveDrvState() const;
 
-    void getFldErrors(std::unordered_map<std::uint32_t, QState> & mErrors);
+    void getFldErrors(std::unordered_map<std::uint32_t, QuState> & mErrors);
+
+    void setAlarmManager(AlarmManager & alMan);
 
 private:
 	IOFieldDrv* mptFieldDrv;
@@ -43,7 +48,9 @@ private:
 
 	std::unordered_map<IOAddr, IOVar*> mMFieldAddrIndex;
 
-}
+	AlarmManager* mpAlMan;
+
+};
 
 
 

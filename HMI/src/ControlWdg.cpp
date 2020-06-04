@@ -1,6 +1,7 @@
 #include "ControlWdg.h"
 #include "RegIDS.h"
 #include <cstdint>
+#include <QStyle>
 
 ControlWdg::ControlWdg(RegImage & regImg, QWidget *parent) : QWidget(parent), mpRegImg(&regImg){
     setupUi(this);
@@ -38,7 +39,7 @@ ControlWdg::ControlWdg(RegImage & regImg, QWidget *parent) : QWidget(parent), mp
 
     cmdP1->setChecked(true);
     mPwWdgGrp.addButton(cmdP1, 0);
-    if(getNoOfPowerSensors() > 1){
+    if(mpRegImg->getNoOfPowerSensors() > 1){
     	mPwWdgGrp.addButton(cmdP2, 1);
     }else{
     	cmdP2->setVisible(false);
@@ -112,27 +113,27 @@ void ControlWdg::varChanged(VarImage const& var){
 		updateSPDisplayTxt();
 		break;
 	case JE_GEN_P1: //Medida de potencia 1
-		dplP1->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplP1->setText(QString::number(fCurrVal, 'f', 1) + var.getUnits());
 		dplP1P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
 		break;
 	case JE_GEN_P2:
-		dplP2->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplP2->setText(QString::number(fCurrVal, 'f', 1) + var.getUnits());
 		dplP2P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
 		break;
 	case SE_REG_F1: //Medida de frecuencia 1
-		dplF1->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplF1->setText(QString::number(fCurrVal, 'f', 1) + var.getUnits());
 		dplF1P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
 		dplN1->setText(QString::number(fCurrVal * 60, 'f', 1) + "Rmp");
 		dplN1P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
 		break;
 	case SE_REG_F2: //Medida de frecuencia 2
-		dplF2->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplF2->setText(QString::number(fCurrVal, 'f', 1) + var.getUnits());
 		dplF2P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
 		dplN2->setText(QString::number(fCurrVal * 60, 'f', 1) + "Rmp");
 		dplN2P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
 		break;
 	case SE_REG_F3: //Medida de frecuencia 3
-		dplF3->setText(QString::number(fCurrVal, 'f', 1) + var.getVarUnits());
+		dplF3->setText(QString::number(fCurrVal, 'f', 1) + var.getUnits());
 		dplF3P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
 		dplN3->setText(QString::number(fCurrVal * 60, 'f', 1) + "Rmp");
 		dplN3P->setText(QString::number(var.getCurrentValLin(), 'f', 1) + "%");
@@ -180,12 +181,12 @@ void ControlWdg::updateSPDisplayTxt(){
 }
 void ControlWdg::updateSPState(){
 	bool enableSPSend = (mtLastRegSt > 5) && !mbRegInLoc;
-	txtSPIn->setEnabled(enableSPSend);
+	spSPIn->setEnabled(enableSPSend);
 	cmdSendSP->setEnabled(enableSPSend);
 	if(enableSPSend){
-		std::uint32_t spVarID = ZC_REG_PWSP;
+		std::uint32_t spVarID = ZR_REG_PWSP;
 		if(mtLastRegSt == RegApertura){
-			spVarID = ZC_REG_OPSP;
+			spVarID = ZR_REG_OPSP;
 		}
 		spSPIn->setMinimum(mpRegImg->getVarMinVal(spVarID));
 		spSPIn->setMaximum(mpRegImg->getVarMaxVal(spVarID));
@@ -193,7 +194,7 @@ void ControlWdg::updateSPState(){
 	}
 }
 
-void updateRegChangeButtons(){
+void ControlWdg::updateRegChangeButtons(){
 	cmdRegTypeA->setEnabled(!mbRegInLoc);
 	cmdRegTypeP->setEnabled(!mbRegInLoc);
 	if(!mbRegInLoc){
@@ -226,7 +227,7 @@ void ControlWdg::setRegState(RegState st){
 	updateRegChangeButtons();
 }
 
-void ControlWdg::changeLabelProperty(QLabel* label, QString const& strPr, QString const& strPrVal){
+void ControlWdg::changeLabelProperty(QLabel* label, char const* strPr, char const* strPrVal){
 	label->setProperty(strPr, strPrVal);
 	label->style()->unpolish(label);
 	label->style()->polish(label);

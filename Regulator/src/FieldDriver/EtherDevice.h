@@ -2,7 +2,7 @@
 #define ETHERDEVICE_H
 #include <cstdint>
 #include <string>
-#include <CommonTypes.h>
+#include "../CommonRegTypes.h"
 
 //Declaraciones anticipadas
 class EthercatDrv;
@@ -19,21 +19,21 @@ public:
 	enum BitRepr{Signed, Unsigned, HalfSigned, Invalid};
 	static EtherDevice::BitRepr getBitRepr(std::string strRepr);
 
-	QState getCurrentQState() const {return mtLastQState};
+	QuState getCurrentQState() const {return mtLastQState;}
 
 private:
 	EthercatDrv* mtDrv;
 
 protected:
 	bool mbInError;
-	QState mtLastQState;
+	QuState mtLastQState;
 
 	bool writeDevice(IOAddr const& addr, std::uint32_t uiVal);
 	bool writeDeviceSync(IOAddr const& addr, std::uint32_t uiVal, std::uint32_t tTimeOut);
 	bool readDevice(IOAddr const& addr, std::uint32_t & uiVal);
 
 	bool isModuleOk(IOAddr const& addr) const;
-	void newVarError(IOAddr const& addr, QState eState);
+	void newVarError(IOAddr const& addr, QuState eState);
 	void clearVarError(IOAddr const& addr);
 	
 	static std::int64_t getMsSinceEpoch();

@@ -2,7 +2,7 @@
 #define PULSEDEV_H
 #include <cstdint>
 #include "EtherDevice.h"
-#include "CommonTypes.h"
+#include "../CommonRegTypes.h"
 
 //Declaraciones adelantadas
 class EthercatDrv;

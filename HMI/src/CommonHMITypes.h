@@ -1,13 +1,16 @@
 #ifndef COMMONHMITYPES_H 
 #define COMMONHMITYPES_H
 
-#include <string>
+#include <QMetaType>
+#include <QString>
 #include <CommonTypes.h>
+
 Q_DECLARE_METATYPE(IOAddr)
 
 class VarImage{
 public:
 	VarImage(std::uint32_t uiVarId) : muiVarId(uiVarId), mtQState(OK), mbForcedVal(0) {}
+	VarImage() : muiVarId(-1), mtQState(OK), mbForcedVal(0) {}
 
 	std::uint32_t getID() const {return muiVarId;}
 	void setCurrentVal(float fCurrentVal) { mfTrueVal = fCurrentVal; }
@@ -25,12 +28,12 @@ public:
 	float getEguMax() const {return mfEguMax;}
 	void setEguMin(float fVal) {mfEguMin = fVal;}
 	void setEguMax(float fVal) {mfEguMax = fVal;}
-	void setQState(QState tState){mtQState = tState;}
-	QState getQState() const {return mtQState;}
+	void setQState(QuState tState){mtQState = tState;}
+	QuState getQState() const {return mtQState;}
 	void setForced(bool bForced) {mbForcedVal = bForced;}
 	bool getForced() const {return mbForcedVal;}
-	void setUnits(std::string strUnits) {mstrUnits = strUnits;}
-	std::string getUnits() const {return mstrUnits;}
+	void setUnits(QString strUnits) {mstrUnits = strUnits;}
+	QString getUnits() const {return mstrUnits;}
 
 private:
 	std::uint32_t muiVarId;
@@ -39,9 +42,9 @@ private:
 	float mfForcedVal;
 	float mfEguMin;
 	float mfEguMax;
-	QState mtQState;
+	QuState mtQState;
 	bool mbForcedVal;
-	std::string mstrUnits;
+	QString mstrUnits;
 };
 Q_DECLARE_METATYPE(VarImage)
 
@@ -55,15 +58,15 @@ public:
 	float getEguMax() const {return mfEguMax;}
 	void setEguMin(float fVal) {mfEguMin = fVal;}
 	void setEguMax(float fVal) {mfEguMax = fVal;}
-	void setUnits(std::string strUnits) {mstrUnits = strUnits;}
-	std::string getUnits() const {return mstrUnits;}
+	void setUnits(QString strUnits) {mstrUnits = strUnits;}
+	QString getUnits() const {return mstrUnits;}
 
 private:
 	std::uint32_t muiVarId;
 	float mfEguMin;
 	float mfEguMax;
 	IOAddr mtAddr;
-	std::string mstrUnits;
+	QString mstrUnits;
 };
 
 

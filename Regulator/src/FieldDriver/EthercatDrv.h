@@ -12,8 +12,8 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-#include <CommonTypes.h>
-#include <IOFieldDrv.h>
+#include "../CommonRegTypes.h"
+#include "../IOFieldDrv.h"
 
 //Declaraciones adelantadas
 class EtherDevice;
@@ -33,7 +33,7 @@ public:
 
 	bool read(IOVar & var);
 	bool write(IOVar const& var);
-	void getVarErrors(std::unordered_map<IOAddr, QState> & mErrors);
+	void getVarErrors(std::unordered_map<IOAddr, QuState> & mErrors);
 	void updateQState(IOVar & var);
 
 protected:
@@ -44,13 +44,13 @@ protected:
 	bool readDevice(IOAddr const& addr, std::uint32_t & uiVal);
 
 	bool isModuleOk(IOAddr const& addr) const;
-	void newVarError(IOAddr const& addr, QState eState);
+	void newVarError(IOAddr const& addr, QuState eState);
 	void clearVarError(IOAddr const& addr);
 
 private:
 	char mcIOmap[IOMAP_DEFAULT_SIZE];
 	std::unordered_map<IOAddr, EtherDevice*> mDevices;
-	std::unordered_map<IOAddr, QState> mVarErrors;
+	std::unordered_map<IOAddr, QuState> mVarErrors;
 	std::unordered_set<std::uint8_t> mModuleErrors;
 	std::vector<std::uint8_t> mSlavesComTrys; //Intentos realizados para restablecer la conexion por fallo en sincronizacion 
 

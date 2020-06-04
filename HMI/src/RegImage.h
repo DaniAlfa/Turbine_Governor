@@ -4,12 +4,15 @@
 #include <QObject>
 #include <QString>
 #include <cstdint>
+#include <queue>
 #include <mutex>
+#include <unordered_set>
 #include <unordered_map>
+#include <QtXml>
 #include "IOMasterDrv.h"
 #include "CommonHMITypes.h"
 
-class RegImage : QObject{
+class RegImage : public QObject{
 	Q_OBJECT
 public:
 	RegImage();
@@ -53,7 +56,7 @@ private:
 	std::unordered_map<std::uint32_t, RegVar*> mumFieldVars;
 
 
-	td::uint32_t muiNumLogicErrorInts;
+	std::uint32_t muiNumLogicErrorInts;
 	std::uint32_t muiNumFieldQStatesInts;
 
 	std::unordered_set<IOAddr>* usLastVarChanges; //Para saber cuando se han leido todas las variables 1 vez
@@ -66,6 +69,9 @@ private:
 	std::queue<std::pair<IOAddr, bool>> mqUncompletedButtonWrites; //Tabla para guadar las escrituras de segunda fase incompletas y realizarlas en otro momento
 
 	void deleteRegVars();
+	bool parseRegIOInfo(QString const& regIOInfo, std::unordered_set<IOAddr> & slaveVarsToUpdate, std::unordered_set<IOAddr> & fieldVarsToUpdate);
+	bool parseXmlVar(QXmlStreamReader & reader, std::unordered_set<IOAddr> & slaveVarsToUpdate, std::unordered_set<IOAddr> & fieldVarsToUpdate);
+	bool parseRegConfigFile(QString const& regConfigFile);
 
 	void driverComError();
 	void driverRecovered();

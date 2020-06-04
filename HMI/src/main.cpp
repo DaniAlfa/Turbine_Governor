@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     RegImage img;
     QString strError;
     if(!img.init("RegIOInfo.xml", "RegConfig.xml", "MasterDriverCnf.xml", &strError)){
-    	std::cout << "Error la inicializacion: " << strError << std::endl;
+    	std::cout << "Error la inicializacion: " << strError.toLatin1().data() << std::endl;
     	return -1;
     }
     MainWindow w(img);

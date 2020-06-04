@@ -169,7 +169,7 @@ void EthercatDrv::checkSlavesWKC(int iWorkCounter){
 	} 
 }
 
-void EthercatDrv::getVarErrors(std::unordered_map<IOAddr, QState> & mErrors){
+void EthercatDrv::getVarErrors(std::unordered_map<IOAddr, QuState> & mErrors){
 	unique_lock<mutex> mutexVarError(mtVarErrorsMutex);
 	mErrors = mVarErrors;
 }
@@ -190,7 +190,7 @@ bool EthercatDrv::write(IOVar const& var){
 	return it->second->write(var);
 }
 
-void updateQState(IOVar & var){
+void EthercatDrv::updateQState(IOVar & var){
 	if(mtDrvState == UnInit) return;
 	auto it = mDevices.find(var.getAddr());
 	if(it == mDevices.end()) return;
@@ -309,7 +309,7 @@ bool EthercatDrv::isModuleOk(IOAddr const& addr) const{
 	return mModuleErrors.find(uiModule) == mModuleErrors.end();
 }
 
-void EthercatDrv::newVarError(IOAddr const& addr, QState eState){
+void EthercatDrv::newVarError(IOAddr const& addr, QuState eState){
 	unique_lock<mutex> mutexVarError(mtVarErrorsMutex);
 	mVarErrors[addr] = eState;
 }

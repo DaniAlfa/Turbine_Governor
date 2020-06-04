@@ -2,7 +2,7 @@
 #include "DigitalDev.h"
 #include "AnalogDev.h"
 #include "PulseDev.h"
-#include "CommonTypes.h"
+#include "../CommonRegTypes.h"
 #include <string>
 
 DeviceFactory::DeviceFactory(){

@@ -206,7 +206,7 @@ bool ModbusMasterDrv::processRead(IOAddr tAddr, FieldData* pFieldVar){
 	}
 	float fTrueVal = modbus_get_float_abcd(uiVals);
 	float fForcedVal = modbus_get_float_abcd(uiVals + 2);
-	QState tqstate = getQState(uiQstate);
+	QuState tqstate = getQState(uiQstate);
 	bool bForced = (uiForced >= 1);
 	if(pFieldVar->mbForceChangeDetection || fTrueVal != pFieldVar->mfTrueVal || pFieldVar->mfForcedVal != fForcedVal || tqstate != pFieldVar->mtQState || pFieldVar->mbForced != bForced){
 		unique_lock<mutex> mutexChagesSet(mtChagesSetMutex);
@@ -224,7 +224,7 @@ bool ModbusMasterDrv::processRead(IOAddr tAddr, FieldData* pFieldVar){
 
 bool ModbusMasterDrv::processRead(IOAddr tAddr, ModbusData* pMBVar){
 	if(tAddr.uiChannel >= 1 && tAddr.uiChannel <= muiNumROInts){
-		int varAddr = (IRADDRESS + ((uiNumVar - 1) * 2));
+		int varAddr = (IRADDRESS + ((tAddr.uiChannel - 1) * 2));
 		std::uint16_t uiROInt[2];
 		unsigned iNumTrys = 0; 
 		while(iNumTrys++ < MAX_TRANSMISSION_TRYS && modbus_read_input_registers(mpMBCtx, varAddr, 2, uiROInt) == -1) 
@@ -294,14 +294,14 @@ std::uint32_t ModbusMasterDrv::getInt(std::uint16_t const uiInt[2]) const{
 	return iVal;
 }
 
-QState ModbusMasterDrv::getQState(std::uint8_t const uiQstate[2]) const{
+QuState ModbusMasterDrv::getQState(std::uint8_t const uiQstate[2]) const{
 	std::uint8_t const* pDi = uiQstate;
 	std::uint8_t uiVal = 0;
 	std::uint8_t uiOffset = DIOFFSET - 1;
 	for(int i = 0; i < DIOFFSET; ++i, --uiOffset, ++pDi){
 		uiVal = uiVal | ((*pDi) << uiOffset);
 	}
-	return (QState) uiVal;
+	return (QuState) uiVal;
 }
 
 bool ModbusMasterDrv::processNextWrite(){
@@ -331,9 +331,7 @@ bool ModbusMasterDrv::processNextWrite(){
 		return false;
 	}
 	mPendingWrites.pop();
-	if(writeReq->mpfWriteSuccess != nullptr){
-		*(writeReq->mpfWriteSuccess)(writeReq->mtAddr);
-	}
+	writeReq->mfWriteSuccess(writeReq->mtAddr);
 	delete writeReq;
 	return true;
 }
@@ -345,9 +343,7 @@ void ModbusMasterDrv::cleanWriteRequests(bool bAll){
 		writeReq = mPendingWrites.top();
 		if(iTimeS - writeReq->mTimeS > writeReq->mtWriteTimeOut || bAll){
 			mPendingWrites.pop();
-			if(writeReq->mpfWriteTimeOut != nullptr){
-				*(writeReq->mpfWriteTimeOut)(writeReq->mtAddr);
-			}
+			writeReq->mfWriteTimeOut(writeReq->mtAddr);
 			delete writeReq;
 		} 
 		else break;
@@ -385,12 +381,12 @@ bool ModbusMasterDrv::init(std::string const& strConfigPath, std::unordered_set<
 
 	for(IOAddr addr : slaveVarsToUpdate){
 		if(addr.uiChannel < 1 || addr.uiChannel > muiNumIOVars + muiNumROInts) continue;
-		mModbusVars.insert({newAddr, new ModbusData()});
+		mModbusVars.insert({addr, new ModbusData()});
 	}
 
 	for(IOAddr addr : fieldVarsToUpdate){
 		if(addr.uiChannel <= muiNumROInts || addr.uiChannel > muiNumIOVars + muiNumROInts) continue;
-		mFieldVars.insert({newAddr, new FieldData()});
+		mFieldVars.insert({addr, new FieldData()});
 	}
 
 
@@ -443,7 +439,7 @@ void ModbusMasterDrv::readFieldVar(VarImage & var, std::unordered_map<IOAddr, Fi
 }
 
 bool ModbusMasterDrv::read(std::uint32_t & uiVal, IOAddr tAddt){
-	auto it = mModbusVars.find(var.getAddr());
+	auto it = mModbusVars.find(tAddt);
 	if(it == mModbusVars.cend()){
 		return false;
 	}
@@ -453,7 +449,7 @@ bool ModbusMasterDrv::read(std::uint32_t & uiVal, IOAddr tAddt){
 	return true;
 }
 
-bool ModbusMasterDrv::write(float const fVal, IOAddr const& tAddr, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut){
+bool ModbusMasterDrv::write(float const fVal, IOAddr const& tAddr, std::function<void(IOAddr)> const& timeOut, std::uint32_t tWriteTimeOut, std::function<void(IOAddr)> const& writeSuccess){
 	std::uint8_t uiNumVar = tAddr.uiChannel;
 	if(uiNumVar <= muiNumROInts || uiNumVar > muiNumIOVars + muiNumROInts) return false;
 	WriteReq* writeReq = new WriteReq();
@@ -461,8 +457,8 @@ bool ModbusMasterDrv::write(float const fVal, IOAddr const& tAddr, std::function
 	writeReq->mbForce = false;
 	writeReq->mfWriteVal = fVal;
 	writeReq->mtWriteTimeOut = tWriteTimeOut;
-	writeReq->mpfWriteSuccess = writeSuccess;
-	writeReq->mpfWriteTimeOut = timeOut;
+	writeReq->mfWriteSuccess = writeSuccess;
+	writeReq->mfWriteTimeOut = timeOut;
 	writeReq->mTimeS = getMsSinceEpoch();
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	if(mtDrvState != Stopped && mtDrvState != UnInit){
@@ -473,17 +469,17 @@ bool ModbusMasterDrv::write(float const fVal, IOAddr const& tAddr, std::function
 	return false;
 }
 
-bool ModbusMasterDrv::force(float const fVal, IOAddr const& tAddr, bool bForceBitVal, std::function<void(IOAddr)>* writeSuccess, std::function<void(IOAddr)>* timeOut, std::uint32_t tWriteTimeOut){
+bool ModbusMasterDrv::force(float const fVal, IOAddr const& tAddr, bool bForceBitVal, std::function<void(IOAddr)> const& timeOut, std::uint32_t tWriteTimeOut, std::function<void(IOAddr)>const& writeSuccess){
 	std::uint8_t uiNumVar = tAddr.uiChannel;
 	if(uiNumVar <= muiNumROInts || uiNumVar > muiNumIOVars + muiNumROInts) return false;
 	WriteReq* writeReq = new WriteReq();
-	writeReq->mtAddr = var.getAddr();
+	writeReq->mtAddr = tAddr;
 	writeReq->mbForce = true;
 	writeReq->mfWriteVal = fVal;
 	writeReq->mbForcedVal = bForceBitVal;
 	writeReq->mtWriteTimeOut = tWriteTimeOut;
-	writeReq->mpfWriteSuccess = writeSuccess;
-	writeReq->mpfWriteTimeOut = timeOut;
+	writeReq->mfWriteSuccess = writeSuccess;
+	writeReq->mfWriteTimeOut = timeOut;
 	writeReq->mTimeS = getMsSinceEpoch();
 	unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 	if(mtDrvState != Stopped && mtDrvState != UnInit){

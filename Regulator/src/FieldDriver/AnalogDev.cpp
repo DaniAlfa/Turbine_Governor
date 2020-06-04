@@ -51,7 +51,7 @@ bool AnalogDev::write(IOVar const& var){
 }
 	
 void AnalogDev::updateDevice(IOAddr const& addr){
-	QState currState = OK;
+	QuState currState = OK;
 	if(!isModuleOk(addr)){
 		currState = ComError;
 	}
@@ -81,7 +81,7 @@ float AnalogDev::scaleValue(float fDestMin, float fDestMax, float fOriginMin, fl
 	return ((fVal - fOriginMin) / (fOriginMax - fOriginMin)) * (fDestMax - fDestMin) + fDestMin;
 }
 
-QState AnalogDev::getVarQState(StatusWord const& stWord){
+QuState AnalogDev::getVarQState(StatusWord const& stWord){
 	if(!StatusWord::StatusWordOk(stWord)) 
 		return ComError;
 	std::uint32_t statusWord;

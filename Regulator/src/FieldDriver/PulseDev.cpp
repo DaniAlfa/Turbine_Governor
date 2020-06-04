@@ -34,9 +34,9 @@ bool PulseDev::parametersOk(ControlWord const& control){
 
 void PulseDev::updateDevice(IOAddr const& addr){
 	if(!isModuleOk(addr)){
-		if(!mbInError) newVarError(addr, QState::ComError);
+		if(!mbInError) newVarError(addr, QuState::ComError);
 		mbInError = true;
-		mtLastQState = QState::ComError;
+		mtLastQState = QuState::ComError;
 		return;
 	}
 	else if(mbInError){
