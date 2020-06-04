@@ -7,7 +7,7 @@
 #include "VarsViewWdg.h"
 
 
-#define IMAGE_UPDATE_MILLIS 200
+#define IMAGE_UPDATE_MILLIS 15
 
 MainWindow::MainWindow(RegImage & regImg, QWidget *parent) : QMainWindow(parent), mpRegImg(&regImg){
     setupUi(this);

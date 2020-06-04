@@ -7,8 +7,11 @@
 #include <QMetaType>
 #include "CommonHMITypes.h"
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
+    if(argc != 4){
+        std::cout << "Argumentos insuficientes" << std::endl;
+        return -1;
+    }
     QApplication app(argc, argv);
     qRegisterMetaType<VarImage>("VarImage");
 
@@ -20,7 +23,7 @@ int main(int argc, char *argv[])
 
     RegImage img;
     QString strError;
-    if(!img.init("RegIOInfo.xml", "RegConfig.xml", "MasterDriverCnf.xml", &strError)){
+    if(!img.init(argv[1], argv[2], argv[3], &strError)){
     	std::cout << "Error la inicializacion: " << strError.toLatin1().data() << std::endl;
     	return -1;
     }

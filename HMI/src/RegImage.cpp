@@ -5,6 +5,7 @@
 #include <RegIDS.h>
 #include <cmath>
 #include <utility>
+#include <QTextStream>
 
 #define DEFAULT_WRITE_TIMEOUT 1000
 
@@ -53,7 +54,7 @@ bool RegImage::init(QString const& regIOInfo, QString const& regConfigFile, QStr
 		return false;
 	}
 
-	muiNumLogicErrorInts = (std::uint32_t) ceil((NUM_ALARMS) / 32); 
+	muiNumLogicErrorInts = (std::uint32_t) ceil((NUM_ALARMS) / (float) 32);
 	//muiNumFieldQStatesInts = (std::uint32_t) ceil(((FLD_IN_VARS + FLD_OUT_VARS) * 2) / 32);
 	muiNumFieldQStatesInts = 0;
 
@@ -68,6 +69,7 @@ bool RegImage::init(QString const& regIOInfo, QString const& regConfigFile, QStr
 		deleteRegVars();
 		return false;
 	}
+	muiVarsToUpdate = usSlaveVarsToUpdate.size() + usFieldVarsToUpdate.size();
 	usLastVarChanges = new std::unordered_set<IOAddr>();
 
 	return true;
@@ -85,6 +87,7 @@ void RegImage::updateImage(){
 	std::unordered_set<IOAddr> usChanges;
 	if(mMasterDrv->getState() != Running) return;
 	processUncompletedWrites();
+
 	mMasterDrv->getChangedVars(usChanges);
 	std::uint32_t ioInts = muiNumFieldQStatesInts + muiNumLogicErrorInts;
 	for(IOAddr tAddr : usChanges){
@@ -126,7 +129,7 @@ void RegImage::processUncompletedWrites(){
 void RegImage::newVarUpdated(IOAddr tAddr){
 	if(usLastVarChanges != nullptr){
 		usLastVarChanges->insert(tAddr);
-		if(usLastVarChanges->size() == mumVars.size() + muiNumFieldQStatesInts + muiNumLogicErrorInts){
+		if(usLastVarChanges->size() == muiVarsToUpdate){
 			emit allVarsUpdated();
 			delete usLastVarChanges;
 			usLastVarChanges = nullptr;
@@ -221,9 +224,7 @@ void RegImage::driverWriteSuccess(IOAddr tAddr){
 		bool bPreviousVal = it->second;
 		mumButtonWrites.erase(it);
 		mumButtonWritesToClean.insert({tAddr, !bPreviousVal});
-		if(!mMasterDrv->write((bPreviousVal ? 0 : 1), tAddr, [this](IOAddr addr){this->driverWriteTimeOut(addr);}, DEFAULT_WRITE_TIMEOUT, [this](IOAddr addr){this->driverWriteSuccess(addr);})){
-			mqUncompletedButtonWrites.push({tAddr, !bPreviousVal});
-		}
+		mqUncompletedButtonWrites.push({tAddr, !bPreviousVal});
 	}
 	else{
 		auto it2 = mumButtonWritesToClean.find(tAddr);
@@ -239,10 +240,11 @@ bool RegImage::parseRegIOInfo(QString const& regIOInfo, std::unordered_set<IOAdd
 	if(!infoF.open(QFile::ReadOnly | QFile::Text)) return false;
 
 	QXmlStreamReader xmlReader(&infoF);
-
+	QXmlStreamReader::TokenType tType;
 	if(xmlReader.readNextStartElement() && xmlReader.name() == "RegIOInfo"){
 		if(xmlReader.readNextStartElement() && xmlReader.name() == "Vars"){
-			while(xmlReader.readNextStartElement()){
+			while((tType = xmlReader.readNext()) != QXmlStreamReader::Invalid){
+			    if(tType == QXmlStreamReader::StartElement){
 				if(xmlReader.name() == "Var"){
 					if(!parseXmlVar(xmlReader, slaveVarsToUpdate, fieldVarsToUpdate)){
 						infoF.close();
@@ -250,6 +252,7 @@ bool RegImage::parseRegIOInfo(QString const& regIOInfo, std::unordered_set<IOAdd
 						return false;
 					}
 				}
+			      }
 			}
 			infoF.close();
 			return true;
@@ -268,8 +271,10 @@ bool RegImage::parseXmlVar(QXmlStreamReader & reader, std::unordered_set<IOAddr>
 		QString strUse;
 		IOAddr tAddr;
 		bool bUseReaded = false;
-		bool bAddrReaded = false; 
-		while(reader.readNextStartElement()){
+		bool bAddrReaded = false;
+		QXmlStreamReader::TokenType tType;
+		while((tType = reader.readNext()) != QXmlStreamReader::Invalid && (!bUseReaded || !bAddrReaded)){
+		    if(tType == QXmlStreamReader::StartElement){
 			if(reader.name() == "HMI"){
 				if(reader.attributes().hasAttribute("Use")){
 					strUse = reader.attributes().value("Use").toString();
@@ -285,6 +290,7 @@ bool RegImage::parseXmlVar(QXmlStreamReader & reader, std::unordered_set<IOAddr>
 					bAddrReaded = true;
 				}
 			}
+		      }
 		}
 		if(bUseReaded && bAddrReaded && strUse != "NO"){
 			RegVar* var = new RegVar(uiId, tAddr);

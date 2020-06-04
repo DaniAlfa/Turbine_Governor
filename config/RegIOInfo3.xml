@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <RegIOInfo>
 	<Vars>
 		<Var Tag="HMSM_REG_STR" ID="2000000000" Type="DI" FR="R">
@@ -37,7 +38,7 @@
 			<HMI Use="RW"/>
 		</Var>
 		<Var Tag="SIS_TUR_EXC" ID="1000000005" Type="DO" FR="F">
-			<Info Descr="VELOCIDAD DE EXCITACIÓN ALCANZADA" Turb="A"/>
+			<Info Descr="VELOCIDAD DE EXCITACIÃ“N ALCANZADA" Turb="A"/>
 			<RemAddr Head="0" Mod="0" Ch="127"/>
 			<HMI Use="RW"/>
 		</Var>

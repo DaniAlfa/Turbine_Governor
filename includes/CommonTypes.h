@@ -9,7 +9,7 @@ enum QuState{ OK = 0, OverRange = 1, UnderRange = 2, ComError = 3};
 
 class IOAddr{
 public:
-
+	IOAddr() : uiHeader(0), uiModule(0), uiChannel(0), uiNumBits(0){}
 	std::uint8_t uiHeader;
 	std::uint8_t uiModule;
 	std::uint8_t uiChannel;

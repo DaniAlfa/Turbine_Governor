@@ -58,12 +58,14 @@ private:
 
 	std::uint32_t muiNumLogicErrorInts;
 	std::uint32_t muiNumFieldQStatesInts;
+	std::uint32_t muiVarsToUpdate;
 
 	std::unordered_set<IOAddr>* usLastVarChanges; //Para saber cuando se han leido todas las variables 1 vez
 
 
 	//Estructuras para gestionar la escritura como boton (escribo 1 y luego la imagen se encarga de escribir el 0 cuando termine)
 	std::mutex mtButtonWritesMtx;
+
 	std::unordered_map<IOAddr, bool> mumButtonWrites; //Tabla para marcar la escritura de primera fase
 	std::unordered_map<IOAddr, bool> mumButtonWritesToClean; //Tabla para marcar la escritura de segunda fase
 	std::queue<std::pair<IOAddr, bool>> mqUncompletedButtonWrites; //Tabla para guadar las escrituras de segunda fase incompletas y realizarlas en otro momento
