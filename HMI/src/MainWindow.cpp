@@ -13,8 +13,8 @@ MainWindow::MainWindow(RegImage & regImg, QWidget *parent) : QMainWindow(parent)
     setupUi(this);
     
     StkWidget->insertWidget(0, new ControlWdg(regImg, this));
-    StkWidget->insertWidget(1, new ControlOptWdg(this));
-    StkWidget->insertWidget(2, new TurbineViewWdg(this));
+    StkWidget->insertWidget(1, new ControlOptWdg(regImg, this));
+    StkWidget->insertWidget(2, new TurbineViewWdg(regImg, this));
     StkWidget->insertWidget(3, new AlarmsWdg(this));
     StkWidget->insertWidget(4, new TendencyWdg(this));
     StkWidget->insertWidget(5, new VarsViewWdg(this));

@@ -137,7 +137,7 @@ void RegImage::newVarUpdated(IOAddr tAddr){
 	}
 }
 
-float RegImage::getVarMinVal(std::uint32_t const varID) const{
+float RegImage::getVarMin(std::uint32_t const varID) const{
 	float fMin = 0;
 	auto it = mumSlaveVars.find(varID);
 	if(it == mumSlaveVars.end()){
@@ -148,7 +148,7 @@ float RegImage::getVarMinVal(std::uint32_t const varID) const{
 	return fMin;
 }
 
-float RegImage::getVarMaxVal(std::uint32_t const varID) const{
+float RegImage::getVarMax(std::uint32_t const varID) const{
 	float fMax = 0;
 	auto it = mumSlaveVars.find(varID);
 	if(it == mumSlaveVars.end()){

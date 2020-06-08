@@ -188,18 +188,18 @@ void ControlWdg::updateSPState(){
 		if(mtLastRegSt == RegApertura){
 			spVarID = ZR_REG_OPSP;
 		}
-		spSPIn->setMinimum(mpRegImg->getVarMinVal(spVarID));
-		spSPIn->setMaximum(mpRegImg->getVarMaxVal(spVarID));
-		spSPIn->setValue(mpRegImg->getVarMinVal(spVarID));
+		spSPIn->setMinimum(mpRegImg->getVarMin(spVarID));
+		spSPIn->setMaximum(mpRegImg->getVarMax(spVarID));
+		spSPIn->setValue(mpRegImg->getVarMin(spVarID));
 	}
 }
 
 void ControlWdg::updateRegChangeButtons(){
-	cmdRegTypeA->setEnabled(!mbRegInLoc);
-	cmdRegTypeP->setEnabled(!mbRegInLoc);
+	cmdRegTypeA->setEnabled(!mbRegInLoc && mtLastRegSt > 5);
+	cmdRegTypeP->setEnabled(!mbRegInLoc && mtLastRegSt > 5);
 	if(!mbRegInLoc){
-		cmdRegTypeA->setChecked(mtLastRegSt == RegPotencia);
-		cmdRegTypeP->setChecked(mtLastRegSt == RegApertura);
+		cmdRegTypeA->setChecked(mtLastRegSt != RegPotencia);
+		cmdRegTypeP->setChecked(mtLastRegSt != RegApertura);
 	}
 	
 }

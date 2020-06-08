@@ -1,7 +1,8 @@
 #include "TurbineViewWdg.h"
+#include "RegImage.h"
 
 
-TurbineViewWdg::TurbineViewWdg(QWidget *parent) : QWidget(parent){
+TurbineViewWdg::TurbineViewWdg(RegImage & regImg, QWidget *parent) : QWidget(parent), mpRegImg(&regImg){
     setupUi(this);
 
 }

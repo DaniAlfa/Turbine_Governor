@@ -75,7 +75,8 @@ SOURCES += \
     ./src/TurbineViewWdg.cpp \
     ./src/TendencyWdg.cpp \
     ./src/VarsViewWdg.cpp \
-    ./src/RegImage.cpp
+    ./src/RegImage.cpp \
+    ./src/PIDTableModel.cpp
 
 HEADERS += \
     ./src/MainWindow.h \
@@ -88,7 +89,8 @@ HEADERS += \
     ./src/TendencyWdg.h \
     ./src/VarsViewWdg.h \
     ./src/IOMasterDrv.h \
-    ./src/RegImage.h 
+    ./src/RegImage.h \
+    ./src/PIDTableModel.h
 
 FORMS += \
     ./src/MainWindow.ui \

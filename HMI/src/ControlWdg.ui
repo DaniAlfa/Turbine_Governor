@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>970</width>
-    <height>582</height>
+    <width>1037</width>
+    <height>611</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,13 +21,13 @@
     <number>2</number>
    </property>
    <property name="leftMargin">
-    <number>2</number>
+    <number>0</number>
    </property>
    <property name="topMargin">
     <number>2</number>
    </property>
    <property name="rightMargin">
-    <number>2</number>
+    <number>0</number>
    </property>
    <property name="bottomMargin">
     <number>2</number>
@@ -299,6 +299,12 @@
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QGridLayout" name="gridLayout" rowstretch="0,0">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
       <item row="0" column="2">
        <widget class="QFrame" name="frame_9">
         <property name="maximumSize">
@@ -468,8 +474,14 @@
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="label_11">
+               <property name="minimumSize">
+                <size>
+                 <width>89</width>
+                 <height>0</height>
+                </size>
+               </property>
                <property name="text">
-                <string>Potencia Activa 2</string>
+                <string>Potencia A. 2</string>
                </property>
               </widget>
              </item>
@@ -694,7 +706,7 @@
               <widget class="QLabel" name="label_9">
                <property name="minimumSize">
                 <size>
-                 <width>112</width>
+                 <width>89</width>
                  <height>0</height>
                 </size>
                </property>
@@ -773,7 +785,7 @@
               <widget class="QLabel" name="label_10">
                <property name="minimumSize">
                 <size>
-                 <width>112</width>
+                 <width>89</width>
                  <height>0</height>
                 </size>
                </property>
@@ -1067,7 +1079,7 @@
               <widget class="QLabel" name="label_7">
                <property name="minimumSize">
                 <size>
-                 <width>112</width>
+                 <width>89</width>
                  <height>0</height>
                 </size>
                </property>
@@ -1152,7 +1164,7 @@
               <widget class="QLabel" name="label_8">
                <property name="minimumSize">
                 <size>
-                 <width>112</width>
+                 <width>89</width>
                  <height>0</height>
                 </size>
                </property>
@@ -1264,20 +1276,7 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <item row="0" column="1">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="2">
+      <item row="1" column="2">
        <widget class="QWidget" name="widget_3" native="true">
         <layout class="QGridLayout" name="gridLayout_5">
          <property name="leftMargin">
@@ -1438,19 +1437,6 @@
            </layout>
           </widget>
          </item>
-         <item row="1" column="2">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
          <item row="1" column="0">
           <spacer name="horizontalSpacer_3">
            <property name="orientation">
@@ -1464,10 +1450,117 @@
            </property>
           </spacer>
          </item>
+         <item row="0" column="2" rowspan="2">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
        </widget>
       </item>
-      <item row="0" column="0">
+      <item row="2" column="0" colspan="4">
+       <widget class="QFrame" name="frame_2">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>1</number>
+         </property>
+         <property name="leftMargin">
+          <number>1</number>
+         </property>
+         <property name="topMargin">
+          <number>1</number>
+         </property>
+         <property name="rightMargin">
+          <number>1</number>
+         </property>
+         <property name="bottomMargin">
+          <number>1</number>
+         </property>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="cmdStart">
+           <property name="text">
+            <string>Arranque</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="cmdStop">
+           <property name="text">
+            <string>Parada</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="cmdUnl">
+           <property name="text">
+            <string>Descarga</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="cmdTrip">
+           <property name="text">
+            <string>Disparo</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="0">
        <widget class="QGroupBox" name="groupBox_7">
         <property name="maximumSize">
          <size>
@@ -1554,86 +1647,18 @@
         </layout>
        </widget>
       </item>
-      <item row="1" column="0" colspan="4">
-       <widget class="QFrame" name="frame_2">
-        <property name="maximumSize">
+      <item row="0" column="0">
+       <spacer name="verticalSpacer_7">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>16777215</width>
+          <width>20</width>
           <height>40</height>
          </size>
         </property>
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <property name="spacing">
-          <number>1</number>
-         </property>
-         <property name="leftMargin">
-          <number>1</number>
-         </property>
-         <property name="topMargin">
-          <number>1</number>
-         </property>
-         <property name="rightMargin">
-          <number>1</number>
-         </property>
-         <property name="bottomMargin">
-          <number>1</number>
-         </property>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cmdStart">
-           <property name="text">
-            <string>Arranque</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cmdStop">
-           <property name="text">
-            <string>Parada</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cmdUnl">
-           <property name="text">
-            <string>Descarga</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="cmdTrip">
-           <property name="text">
-            <string>Disparo</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+       </spacer>
       </item>
      </layout>
     </widget>

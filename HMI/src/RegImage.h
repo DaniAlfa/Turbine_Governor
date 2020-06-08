@@ -23,8 +23,8 @@ public:
 
 	void updateImage();
 	
-	float getVarMinVal(std::uint32_t const varID) const;
-	float getVarMaxVal(std::uint32_t const varID) const;
+	float getVarMin(std::uint32_t const varID) const;
+	float getVarMax(std::uint32_t const varID) const;
 	QString getVarUnits(std::uint32_t const varID) const;
 
 	bool writeVar(std::uint32_t const varID, float val);
