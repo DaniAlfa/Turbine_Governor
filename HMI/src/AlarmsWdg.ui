@@ -37,13 +37,13 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="page1" native="true">
+     <widget class="QWidget" name="page1">
       <attribute name="title">
        <string>Alarmas Activas</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_7">
        <item row="0" column="0">
-        <widget class="QTextEdit" name="textEdit">
+        <widget class="QPlainTextEdit" name="txtEditActive">
          <property name="readOnly">
           <bool>true</bool>
          </property>
@@ -53,13 +53,22 @@
      </widget>
      <widget class="QWidget" name="page2">
       <attribute name="title">
-       <string>Utimas Alarmas</string>
+       <string>Últimas Alarmas</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QTextEdit" name="textEdit_2">
+        <widget class="QPlainTextEdit" name="txtEditLastAl">
          <property name="readOnly">
           <bool>true</bool>
+         </property>
+         <property name="plainText">
+          <string/>
+         </property>
+         <property name="maximumBlockCount">
+          <number>80</number>
+         </property>
+         <property name="centerOnScroll">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -135,7 +144,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_6">
+          <widget class="QPushButton" name="cmdRepo">
            <property name="text">
             <string>Repo</string>
            </property>

@@ -192,6 +192,12 @@ void IOImage::updateOutputs(){
 			tAddr.uiChannel = i+1;
 			mptSlaveDrv->writeRO(mpLogicErrors[i], tAddr);
 		}
+		std::uint32_t const* mpFieldStInts = mpAlMan->getFieldStInts();
+		for(std::uint32_t i = 0; i < mpAlMan->getNoFieldStInts(); ++i){
+			IOAddr tAddr;
+			tAddr.uiChannel = mpAlMan->getNoLogicErrors() + i + 1;
+			mptSlaveDrv->writeRO(mpFieldStInts[i], tAddr);
+		}
 	}
 }
 

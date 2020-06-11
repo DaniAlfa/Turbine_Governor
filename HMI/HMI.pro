@@ -76,7 +76,8 @@ SOURCES += \
     ./src/TendencyWdg.cpp \
     ./src/VarsViewWdg.cpp \
     ./src/RegImage.cpp \
-    ./src/PIDTableModel.cpp
+    ./src/PIDTableModel.cpp \
+    ./src/PositionCtrlWdg.cpp
 
 HEADERS += \
     ./src/MainWindow.h \
@@ -90,7 +91,8 @@ HEADERS += \
     ./src/VarsViewWdg.h \
     ./src/IOMasterDrv.h \
     ./src/RegImage.h \
-    ./src/PIDTableModel.h
+    ./src/PIDTableModel.h \
+    ./src/PositionCtrlWdg.h
 
 FORMS += \
     ./src/MainWindow.ui \
@@ -99,7 +101,8 @@ FORMS += \
     ./src/AlarmsWdg.ui \
     ./src/TurbineViewWdg.ui \
     ./src/TendencyWdg.ui \
-    ./src/VarsViewWdg.ui
+    ./src/VarsViewWdg.ui \
+    ./src/PositionCtrlWdg.ui
 
 
 

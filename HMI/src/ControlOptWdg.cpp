@@ -8,6 +8,13 @@ ControlOptWdg::ControlOptWdg(RegImage & regImg, QWidget *parent) : QWidget(paren
    tvPIDS->setModel(mpTableModel);
    tvPIDS->setSelectionBehavior(QAbstractItemView::SelectRows);
    tvPIDS->setSelectionMode(QAbstractItemView::SingleSelection);
+   tvPIDS->horizontalHeader()->resizeSection(0,30);
+   tvPIDS->horizontalHeader()->resizeSection(1,500);
+   tvPIDS->horizontalHeader()->resizeSection(2,130);
+   tvPIDS->horizontalHeader()->resizeSection(3,130);
+   tvPIDS->horizontalHeader()->resizeSection(4,130);
+   tvPIDS->horizontalHeader()->resizeSection(5,130);
+   tvPIDS->horizontalHeader()->resizeSection(6,130);
    frSelection->setVisible(false);
 
    spOpLim->setMinimum(mpRegImg->getVarMin(C_REG_OPLIMIT));

@@ -26,6 +26,8 @@ public:
 	float getVarMin(std::uint32_t const varID) const;
 	float getVarMax(std::uint32_t const varID) const;
 	QString getVarUnits(std::uint32_t const varID) const;
+	QString getVarTag(std::uint32_t const varID) const;
+	QString getVarDesc(std::uint32_t const varID) const;
 
 	bool writeVar(std::uint32_t const varID, float val);
 	bool forceVar(std::uint32_t const varID, float forceVal, bool forceBit = true);
@@ -35,6 +37,10 @@ public:
 
 	int getNoOfSpeedSensors() const{ return 3;}
 	int getNoOfPowerSensors() const{ return 2;}
+	TurbType getTurbineType() const {return Pelton;} 
+	int getNoPeltonInyec() const {return 6;}
+	std::uint32_t getNumLogicErrorInts() const {return muiNumLogicErrorInts;}
+	std::uint32_t getNumFieldStInts() const {return muiNumFieldQStatesInts;}
 
 signals:
 	void allVarsUpdated(); //Indica al inicio cuando se han leido todas las variables al menos una vez

@@ -60,6 +60,10 @@ public:
 	void setEguMax(float fVal) {mfEguMax = fVal;}
 	void setUnits(QString strUnits) {mstrUnits = strUnits;}
 	QString getUnits() const {return mstrUnits;}
+	void setTag(QString strTag) {mstrTag = strTag;}
+	QString getTag() const {return mstrTag;}
+	void setDesc(QString strDesc) {mstrDesc = strDesc;}
+	QString getDesc() const {return mstrDesc;}
 
 private:
 	std::uint32_t muiVarId;
@@ -67,6 +71,8 @@ private:
 	float mfEguMax;
 	IOAddr mtAddr;
 	QString mstrUnits;
+	QString mstrTag;
+	QString mstrDesc;
 };
 
 

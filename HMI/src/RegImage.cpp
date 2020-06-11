@@ -55,8 +55,8 @@ bool RegImage::init(QString const& regIOInfo, QString const& regConfigFile, QStr
 	}
 
 	muiNumLogicErrorInts = (std::uint32_t) ceil((NUM_ALARMS) / (float) 32);
-	//muiNumFieldQStatesInts = (std::uint32_t) ceil(((FLD_IN_VARS + FLD_OUT_VARS) * 2) / 32);
-	muiNumFieldQStatesInts = 0;
+	muiNumFieldQStatesInts = (std::uint32_t) ceil(((FLD_IN_VARS + FLD_OUT_VARS) * 2) / 32);
+	//muiNumFieldQStatesInts = 0;
 
 	for(std::uint32_t i = 1; i <= muiNumFieldQStatesInts + muiNumLogicErrorInts; ++i){ //Se añaden los enteros de informacion del regulador para actualizar
 		IOAddr tAddr;
@@ -168,6 +168,28 @@ QString RegImage::getVarUnits(std::uint32_t const varID) const{
 	}
 	else strUnits = it->second->getUnits();
 	return strUnits;
+}
+
+QString RegImage::getVarTag(std::uint32_t const varID) const{
+	QString strTag;
+	auto it = mumFieldVars.find(varID);
+	if(it == mumFieldVars.end()){
+		auto it2 = mumSlaveVars.find(varID);
+		if(it2 != mumSlaveVars.end()) strTag = it2->second->getTag();
+	}
+	else strTag = it->second->getTag();
+	return strTag;
+}
+
+QString RegImage::getVarDesc(std::uint32_t const varID) const{
+	QString strDesc;
+	auto it = mumFieldVars.find(varID);
+	if(it == mumFieldVars.end()){
+		auto it2 = mumSlaveVars.find(varID);
+		if(it2 != mumSlaveVars.end()) strDesc = it2->second->getDesc();
+	}
+	else strDesc = it->second->getDesc();
+	return strDesc;
 }
 
 

@@ -165,6 +165,21 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
          <item>
           <widget class="QLabel" name="pidLabel">
            <property name="sizePolicy">
@@ -213,7 +228,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>KI:</string>
+            <string> KI:</string>
            </property>
           </widget>
          </item>
@@ -239,7 +254,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>KD:</string>
+            <string> KD:</string>
            </property>
           </widget>
          </item>
@@ -265,7 +280,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>TS:</string>
+            <string> TS:</string>
            </property>
           </widget>
          </item>
@@ -291,7 +306,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>BM:</string>
+            <string> BM:</string>
            </property>
           </widget>
          </item>

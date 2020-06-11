@@ -13,8 +13,8 @@ class PositionCtrlWdg : public QWidget, private Ui::PositionCtrlWdgUi{
 
 public:
     PositionCtrlWdg(QString const& strTitle, std::uint32_t uiReadID, std::uint32_t uiWriteID, RegImage & regImg, QWidget *parent = nullptr);
-    void setManual(bool bManual);
-    void setWriteLimits(float fMin, float fMax);
+
+    QSize sizeHint() const override;
 
 private slots:
 	void varChanged(VarImage const& var);
@@ -33,6 +33,8 @@ private:
 	float mfMinLimit;
 	float mfMaxLimit;
 	float mfLastSpeedVal;
+
+	void setManual(bool bManual);
 
 };
 #endif // POSITIONCTRLWDG_H

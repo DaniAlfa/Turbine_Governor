@@ -2,7 +2,7 @@
 #include "RegIDS.h"
 
 QString PIDTableModel::mStrHeaders[MODEL_COLUMNS] = {"Nº", "Aplicación", "KP", "KI", "KD", "Tiempo de Scan", "Banda Muerta"};
-QString PIDTableModel::mPIDDomains[MODEL_PIDS] = {"Reg.Vacio", "Reg.Isla", "Reg.Potencia", "Dist-Iny1", "Alabes-Iny2", "Iny3", "Iny4", "Iny5", "Iny6"};
+QString PIDTableModel::mPIDDomains[MODEL_PIDS] = {"Regución en vacio", "Regulación en isla", "Regulación en potencia", "Distribuidor/Inyector 1", "Álabes/Inyector 2", "Inyector 3", "Inyector 4", "Inyector 5", "Inyector 6"};
 
 
 PIDTableModel::PIDTableModel(RegImage & regImg, QObject *parent) : QAbstractTableModel(parent){
