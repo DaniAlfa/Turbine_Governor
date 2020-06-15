@@ -7,7 +7,8 @@
 #include "VarsViewWdg.h"
 
 
-#define IMAGE_UPDATE_MILLIS 15
+//#define IMAGE_UPDATE_MILLIS 15
+#define IMAGE_UPDATE_MILLIS 50
 
 MainWindow::MainWindow(RegImage & regImg, QWidget *parent) : QMainWindow(parent), mpRegImg(&regImg){
     setupUi(this);
@@ -16,7 +17,7 @@ MainWindow::MainWindow(RegImage & regImg, QWidget *parent) : QMainWindow(parent)
     StkWidget->insertWidget(1, new ControlOptWdg(regImg, this));
     StkWidget->insertWidget(2, new TurbineViewWdg(regImg, this));
     StkWidget->insertWidget(3, new AlarmsWdg(regImg, this));
-    StkWidget->insertWidget(4, new TendencyWdg(this));
+    StkWidget->insertWidget(4, new TendencyWdg(regImg, this));
     StkWidget->insertWidget(5, new VarsViewWdg(this));
     StkWidget->setCurrentIndex(0);
 

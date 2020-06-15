@@ -34,12 +34,12 @@
    </property>
    <item>
     <widget class="QTabWidget" name="TabWidget">
-     <widget class="QWidget" name="indTabWidgetPage1" native="true">
+     <widget class="QWidget" name="frecTab">
       <attribute name="title">
        <string>Frecuencia</string>
       </attribute>
      </widget>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="pwTab">
       <attribute name="title">
        <string>Potencia Activa</string>
       </attribute>

@@ -102,7 +102,7 @@ void ModbusSlaveDrv::driverLoop(){
 						mtDrvState = COMError;
 					}
 				}else{
-					this_thread::sleep_for(chrono::milliseconds(POOLING_DELAY_MILLIS));
+					//this_thread::sleep_for(chrono::milliseconds(POOLING_DELAY_MILLIS));
 					mtReadset = mtRefset;
 					timeval tTimeOut;
 					tTimeOut.tv_sec = 0;

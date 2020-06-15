@@ -77,7 +77,9 @@ SOURCES += \
     ./src/VarsViewWdg.cpp \
     ./src/RegImage.cpp \
     ./src/PIDTableModel.cpp \
-    ./src/PositionCtrlWdg.cpp
+    ./src/PositionCtrlWdg.cpp \
+    ./src/RTPlotWdg.cpp \
+    ./src/RTMeasurer.cpp 
 
 HEADERS += \
     ./src/MainWindow.h \
@@ -92,7 +94,9 @@ HEADERS += \
     ./src/IOMasterDrv.h \
     ./src/RegImage.h \
     ./src/PIDTableModel.h \
-    ./src/PositionCtrlWdg.h
+    ./src/PositionCtrlWdg.h \
+    ./src/RTPlotWdg.h \
+    ./src/RTMeasurer.h
 
 FORMS += \
     ./src/MainWindow.ui \

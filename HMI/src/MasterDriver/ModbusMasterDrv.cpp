@@ -101,9 +101,9 @@ void ModbusMasterDrv::driverLoop(){
 						mtDrvState = COMError;
 					}
 				}else{
-					mutexDrvState.unlock();
-					this_thread::sleep_for(chrono::milliseconds(POOLING_DELAY_MILLIS));
-					mutexDrvState.lock();
+					//mutexDrvState.unlock();
+					//this_thread::sleep_for(chrono::milliseconds(POOLING_DELAY_MILLIS));
+					//mutexDrvState.lock();
 					if(mtDrvState != Running) break;
 					bool bOk = true;
 					if(bLastOpRead && !mPendingWrites.empty()){
