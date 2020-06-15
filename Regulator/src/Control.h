@@ -19,7 +19,8 @@ private:
 	IOImage& io;
 	AlarmManager* mpAlMan;
 
-	bool state, button;
+	bool button;
+	int iState;
 
 };
 

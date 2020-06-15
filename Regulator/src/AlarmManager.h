@@ -21,8 +21,8 @@ public:
 
 	std::uint32_t getNoLogicErrors() const{return muiNumLogicErrorInts;}
 	std::uint32_t const* getLogicErrors() const{ return mpuiLogicErrors;}
-	std::uint32_t getNoFieldStInts() const{return muiNumFieldQStatesInts;}
-	std::uint32_t const* getFieldStInts() const{ return mpuiFieldQStates;}
+	std::uint32_t getNoFieldSt() const{return muiNumFieldQStatesInts;}
+	std::uint32_t const* getFieldSt() const{ return mpuiFieldQStates;}
 
 private:
 	IOImage & mtIOImg;

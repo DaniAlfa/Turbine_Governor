@@ -28,6 +28,18 @@ bool IOImage::init(std::string const& strConfigPath){
 	mSlaveIn[2000000000 - SLV_IN_LOW_RANGE] = ordenArranque;
 	mptSlaveDrv->write(*ordenArranque);
 
+	tAddr.uiChannel = 42;
+	IOVar* trip = new IOVar(2000000003, tAddr);
+	trip->setCurrentVal(1);
+	mSlaveIn[2000000003 - SLV_IN_LOW_RANGE] = trip;
+	mptSlaveDrv->write(*trip);
+
+	tAddr.uiChannel = 43;
+	IOVar* alrep = new IOVar(2000000004, tAddr);
+	alrep->setCurrentVal(0);
+	mSlaveIn[2000000004 - SLV_IN_LOW_RANGE] = alrep;
+	mptSlaveDrv->write(*alrep);
+
 	tAddr.uiChannel = 47;
 	IOVar* confirCons = new IOVar(2000000008, tAddr);
 	confirCons->setCurrentVal(0);
@@ -192,11 +204,11 @@ void IOImage::updateOutputs(){
 			tAddr.uiChannel = i+1;
 			mptSlaveDrv->writeRO(mpLogicErrors[i], tAddr);
 		}
-		std::uint32_t const* mpFieldStInts = mpAlMan->getFieldStInts();
-		for(std::uint32_t i = 0; i < mpAlMan->getNoFieldStInts(); ++i){
+		std::uint32_t const* mpFieldSt = mpAlMan->getFieldSt();
+		for(std::uint32_t i = 0; i < mpAlMan->getNoFieldSt(); ++i){
 			IOAddr tAddr;
-			tAddr.uiChannel = mpAlMan->getNoLogicErrors() + i + 1;
-			mptSlaveDrv->writeRO(mpFieldStInts[i], tAddr);
+			tAddr.uiChannel = i + 1 + mpAlMan->getNoLogicErrors();
+			mptSlaveDrv->writeRO(mpFieldSt[i], tAddr);
 		}
 	}
 }

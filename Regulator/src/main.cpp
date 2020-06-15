@@ -12,7 +12,7 @@
 
 #include <signal.h>
 
-#define SCAN_TIME 5
+#define SCAN_TIME 10
 
 static IOSlaveDrv *pSlaveDrv = nullptr;
 static IOFieldDrv *pFieldDrv = nullptr;
@@ -72,6 +72,7 @@ int main(int argc, char* argv[]){
 	std::uint32_t uiTotalCycles = 0;
 	while(true){
 		std::this_thread::sleep_for(std::chrono::milliseconds(SCAN_TIME));
+		
 		ioImage.updateInputs();
 		alMan.checkDriverErrors();
 
