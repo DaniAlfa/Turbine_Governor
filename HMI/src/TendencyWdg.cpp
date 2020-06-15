@@ -27,7 +27,7 @@ TendencyWdg::TendencyWdg(RegImage & regImg, QWidget *parent) : QWidget(parent), 
 	plotCnf.iAxisXPrecission = 0;
 
 
-    RTPlotWdg* mpSpeedPlot = new RTPlotWdg(mRTMeasurer, plotCnf, this);
+    mpSpeedPlot = new RTPlotWdg(mRTMeasurer, plotCnf, this);
     int iNoSSensors = regImg.getNoOfSpeedSensors();
     if(iNoSSensors >= 1){
     	mpSpeedPlot->addPlot("Medida 1", [this](){return this->mumLastMeasures[SE_REG_F1];}, Qt::darkRed);
@@ -54,7 +54,7 @@ TendencyWdg::TendencyWdg(RegImage & regImg, QWidget *parent) : QWidget(parent), 
 	plotCnf.iAxisXPrecission = 0;
 
 
-	RTPlotWdg* mpPWPlot = new RTPlotWdg(mRTMeasurer, plotCnf, this);
+	mpPWPlot = new RTPlotWdg(mRTMeasurer, plotCnf, this);
 	int iNoPWSensors = regImg.getNoOfPowerSensors();
     if(iNoPWSensors >= 1){
     	mpPWPlot->addPlot("Medida 1", [this](){return this->mumLastMeasures[JE_GEN_P1];}, Qt::darkRed);
@@ -75,6 +75,7 @@ TendencyWdg::TendencyWdg(RegImage & regImg, QWidget *parent) : QWidget(parent), 
 }
 
 TendencyWdg::~TendencyWdg(){
+	QMetaObject::invokeMethod(&mRTMeasurer, "stopMeasures", Qt::BlockingQueuedConnection);
 	mMeasurerThread.quit();
 }
 

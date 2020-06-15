@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <utility>
 #include <errno.h>
+#include <algorithm>
 
 #define DIOFFSET 2
 #define DIADDRESS 10001
@@ -20,11 +21,12 @@
 #define COM_ERROR_MIN_TIMEOUT 500
 #define MAX_COM_ERROR_TRYS 3
 
-#define POOLING_DELAY_MILLIS 10
+#define DELAY_BETWEEN_READS 10
+#define DELAY_BETWEEN_WRITES 20
 
 using namespace std;
 
-ModbusMasterDrv::ModbusMasterDrv() : mpMBCtx(NULL), bConnected(false), bLastOpRead(false), mbDrvEnd(false), mtDrvState(UnInit){
+ModbusMasterDrv::ModbusMasterDrv() : mpMBCtx(NULL), bConnected(false), mbDrvEnd(false), mtDrvState(UnInit), mbInWriteCycle(false), mbInReadCycle(false){
 	std::uint32_t iNum = 1;
     std::uint8_t *pNum = (std::uint8_t*)&iNum;
     mbArchLittleEnd = (*pNum == 1);
@@ -69,6 +71,9 @@ bool ModbusMasterDrv::start(){
 	if(mtDrvState == Stopped){
 		unique_lock<mutex> mutexDrvState(mtDrvStateMutex);
 		mtDrvState = Running;
+		mLastTimePoint = chrono::time_point_cast<chrono::milliseconds>(chrono::high_resolution_clock::now());
+		mMillisToWriteCycle = chrono::milliseconds(0);
+		mMillisToReadCycle = chrono::milliseconds(0);
 		mtWaitingStart.notify_one();
 	}
 	return true;
@@ -101,20 +106,39 @@ void ModbusMasterDrv::driverLoop(){
 						mtDrvState = COMError;
 					}
 				}else{
-					//mutexDrvState.unlock();
-					//this_thread::sleep_for(chrono::milliseconds(POOLING_DELAY_MILLIS));
-					//mutexDrvState.lock();
-					if(mtDrvState != Running) break;
-					bool bOk = true;
-					if(bLastOpRead && !mPendingWrites.empty()){
-						bOk = processNextWrite();
-						bLastOpRead = false;
+					auto currentTimePoint = chrono::time_point_cast<chrono::milliseconds>(chrono::high_resolution_clock::now());
+					std::chrono::milliseconds elapsed = currentTimePoint - mLastTimePoint;
+					mLastTimePoint = currentTimePoint;
+					std::chrono::milliseconds sleepTime(0);
+					if(!mbInWriteCycle) {
+						mMillisToWriteCycle -= elapsed;
+						if(mMillisToWriteCycle.count() <= 0) mbInWriteCycle = true;
+						else sleepTime = mMillisToWriteCycle;
 					}
-        			else {
-        				bOk = processNextRead();
-        				bLastOpRead = true;
-        			}
-        			if(!bOk){
+					if(!mbInReadCycle){ 
+						mMillisToReadCycle -= elapsed;
+						if(mMillisToReadCycle.count() <= 0) mbInReadCycle = true;
+						else sleepTime = min(sleepTime, mMillisToReadCycle);
+					}
+					if(!mbInWriteCycle && !mbInReadCycle){
+						mutexDrvState.unlock();
+						this_thread::sleep_for(sleepTime);
+						break;
+					}
+					bool bOk = true;
+					if(mbInWriteCycle){
+						if(mPendingWrites.empty()){
+							mbInWriteCycle = false;
+							mMillisToWriteCycle = chrono::milliseconds(DELAY_BETWEEN_WRITES);
+						}
+						else{
+							bOk = processNextWrite();
+						}
+					}
+					else if(mbInReadCycle){
+						bOk = processNextRead();
+					}
+					if(!bOk){
 						mtDrvState = COMError;
         			}
 				}	
@@ -154,11 +178,6 @@ void ModbusMasterDrv::closeConnection(){
 }
 
 bool ModbusMasterDrv::processNextRead(){
-	if(mFieldIt == mFieldVars.end() && mModbusIt == mModbusVars.end()){
-		mFieldIt = mFieldVars.begin();
-		mModbusIt = mModbusVars.begin();
-		if(mFieldIt == mFieldVars.end() && mModbusIt == mModbusVars.end()) return true; //Si el driver no tiene variables para leer
-	}
 	if(mFieldIt != mFieldVars.end()){
 		if(processRead(mFieldIt->first, mFieldIt->second)){
 			++mFieldIt;
@@ -170,6 +189,13 @@ bool ModbusMasterDrv::processNextRead(){
 			++mModbusIt;
 			return true;
 		}
+	}
+	if(mFieldIt == mFieldVars.end() && mModbusIt == mModbusVars.end()){
+		mbInReadCycle = false;
+		mMillisToReadCycle = chrono::milliseconds(DELAY_BETWEEN_READS);
+		mFieldIt = mFieldVars.begin();
+		mModbusIt = mModbusVars.begin();
+		if(mFieldIt == mFieldVars.end() && mModbusIt == mModbusVars.end()) return true; //Si el driver no tiene variables para leer
 	}
 	return false;
 }
@@ -541,7 +567,7 @@ bool ModbusMasterDrv::loadXMLConfig(std::string const& strConfigPath){
 }
 
 
-bool ModbusMasterDrv::readXMLConfig(xmlDoc* pDocTree, xmlNode* pRoot){
+bool ModbusMasterDrv::readXMLConfig(xmlDoc*, xmlNode* pRoot){
 	xmlChar *strAttr;
 	if(pRoot && xmlStrcmp(pRoot->name, (const xmlChar *)"MasterDriver") == 0){
 		strAttr = xmlGetProp(pRoot, (const xmlChar *)"IP");

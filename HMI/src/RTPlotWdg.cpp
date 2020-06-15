@@ -57,7 +57,7 @@ RTPlotWdg::RTPlotWdg(RTMeasurer & measurer, RTPlotWdg::PlotConfig config, QWidge
 	muiPointsTillMove = 0;
 	muiTotalMeasures = 0;
 	mfTimeBetweenTics = mtConfig.iDisplayInterval / mtConfig.iMaxXNoTics;
-	this->startTimer(mtConfig.iMeasureRate / 2);
+	//this->startTimer(mtConfig.iMeasureRate / 2);
 }
 
 
@@ -76,7 +76,8 @@ bool RTPlotWdg::addPlot(QString strPlotName, std::function<float()> updateFunct,
 }
 
 void RTPlotWdg::startUpdateTimer(){
-	this->startTimer(mtConfig.iMeasureRate / 2);
+	int measureRate = mtConfig.iMeasureRate / 2;
+	this->startTimer(measureRate);
 }
 
 void RTPlotWdg::resizeEvent(QResizeEvent*) {
@@ -101,8 +102,9 @@ void RTPlotWdg::timerEvent(QTimerEvent *) {
 		mfStartInstant += mfTimeBetweenTics;
 	} 
 	else{
+	    if(muiTotalMeasures >= muiMaxBuffSize)
 		muiPointsTillMove -= (uTotalMeasures - muiTotalMeasures);
-		muiTotalMeasures = uTotalMeasures;
+	    muiTotalMeasures = uTotalMeasures;
 	} 
 	this->update();
 }
@@ -243,7 +245,12 @@ void RTPlotWdg::paintPlots(QPainter & painter) {
 		fX = mXLine.x1();
 		QPointF lastPoint;
 		QPointF actualPoint;
+		unsigned i = 0;
 		for (auto it = plot->lLastMeasures.cbegin(); it != plot->lLastMeasures.cend(); ++it) {
+			if(i < muiPointsTillMove){
+			    ++i;
+			    continue;
+			  }
 			actualPoint = QPointF(fX, mXLine.y1() - ((*it / fYIncrement) * fWidthBetweenYTics));
 			painter.drawPoint(actualPoint);
 			if (!lastPoint.isNull()) painter.drawLine(actualPoint, lastPoint);

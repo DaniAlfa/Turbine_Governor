@@ -24,7 +24,7 @@ int RTMeasurer::createMeasure(std::function<float()> f, unsigned uBufferSize, in
 		measureIDs.push_back(measureID);
 		QTimer* timer = new QTimer();
 		timer->moveToThread(this->thread());
-		QObject::connect(timer, &QTimer::timeout, [this, measureIDs](){
+		QObject::connect(timer, &QTimer::timeout, [this, &measureIDs](){
 			mLock.lock();
 	        for(auto id : measureIDs){
 	        	Measure& m = mvMeasures[id];
@@ -48,6 +48,14 @@ void RTMeasurer::startMeasures(){
 		it.second.first->start(it.first);
 	}
 	mLock.unlock();
+}
+
+void RTMeasurer::stopMeasures(){
+        mLock.lock();
+        for(auto it : mumTimers){
+                it.second.first->stop();
+        }
+        mLock.unlock();
 }
 
 unsigned RTMeasurer::getMeasures(int measureID, std::list<float> & fList){

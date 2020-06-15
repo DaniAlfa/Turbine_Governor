@@ -13,6 +13,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libmodbus/modbus.h>
+#include <chrono>
 
 #include "../CommonHMITypes.h"
 #include "../IOMasterDrv.h"
@@ -105,7 +106,6 @@ private:
     //Control de cliente
     modbus_t * mpMBCtx;
     bool bConnected;
-    bool bLastOpRead;
    	std::uint32_t uiComErrors;
    	std::function<void()> mfComErrorCallB;
    	std::function<void()> mfRecoveredFromErrorCallB;
@@ -114,6 +114,11 @@ private:
 	bool mbDrvEnd;
 	DrvState mtDrvState;
 	std::string mstrLastError;
+	std::chrono::milliseconds mMillisToWriteCycle;
+	std::chrono::milliseconds mMillisToReadCycle;
+	std::chrono::time_point<std::chrono::high_resolution_clock, std::chrono::milliseconds> mLastTimePoint;
+	bool mbInWriteCycle;
+	bool mbInReadCycle;
 
 	std::thread* mtDrvThread;
 	std::mutex mtDrvStateMutex, mtIOMapMutex, mtChagesSetMutex;

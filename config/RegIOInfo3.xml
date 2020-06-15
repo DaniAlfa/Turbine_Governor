@@ -22,6 +22,16 @@
 			<RemAddr Head="0" Mod="0" Ch="49"/>
 			<HMI Use="WO"/>
 		</Var>
+		<Var Tag="HMSM_REG_TRIP" ID="2000000003" Type="DI" FR="R">
+			<Info Descr="DISPARO EXTERNO" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="42"/>
+			<HMI Use="WO"/>
+		</Var>
+		<Var Tag="HMSM_REG_ALREP" ID="2000000004" Type="DI" FR="R">
+			<Info Descr="REPOSICION DE ALARMAS" Turb="A"/>
+			<RemAddr Head="0" Mod="0" Ch="43"/>
+			<HMI Use="WO"/>
+		</Var>
 		<Var Tag="SAH_TUR_OVS" ID="1000000002" Type="DO" FR="F">
 			<Info Descr="ALARMA SOBREVELOCIDAD" Turb="A"/>
 			<RemAddr Head="0" Mod="0" Ch="124"/>

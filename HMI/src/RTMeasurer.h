@@ -21,6 +21,7 @@ public:
 
 public slots:
 	void startMeasures();
+	void stopMeasures();
 
 protected:
 	class Measure{

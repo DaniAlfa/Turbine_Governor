@@ -8,7 +8,7 @@
 
 
 //#define IMAGE_UPDATE_MILLIS 15
-#define IMAGE_UPDATE_MILLIS 50
+#define IMAGE_UPDATE_MILLIS 20
 
 MainWindow::MainWindow(RegImage & regImg, QWidget *parent) : QMainWindow(parent), mpRegImg(&regImg){
     setupUi(this);

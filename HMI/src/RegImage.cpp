@@ -9,7 +9,6 @@
 
 #define DEFAULT_WRITE_TIMEOUT 1000
 
-
 RegImage::RegImage(){
 	mMasterDrv = new ModbusMasterDrv();
 	usLastVarChanges = nullptr;

@@ -5,6 +5,7 @@
 #include <QString>
 #include <iostream>
 #include <QMetaType>
+#include <cstdint>
 #include <QRect>
 #include <QDesktopWidget>
 #include "CommonHMITypes.h"
@@ -16,6 +17,7 @@ int main(int argc, char *argv[]){
     }
     QApplication app(argc, argv);
     qRegisterMetaType<VarImage>("VarImage");
+    qRegisterMetaType<std::uint32_t>("std::uint32_t");
 
     QFile fStyle(":/main_style");
     fStyle.open(QFile::ReadOnly);

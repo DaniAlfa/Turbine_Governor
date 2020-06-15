@@ -158,7 +158,7 @@ void ControlWdg::on_cmdStop_clicked(){
 }
 
 void ControlWdg::on_cmdTrip_clicked(){
-	mpRegImg->writeVarAsButton(HMSM_REG_TRIP, true);
+	mpRegImg->writeVarAsButton(HMSM_REG_TRIP, false);
 }
 
 void ControlWdg::on_cmdUnl_clicked(){
