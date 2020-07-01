@@ -103,12 +103,12 @@ void AlarmManager::setAlarm(std::uint32_t uiError){
 	if(mpuiAlarmLevels[uiError] == 1){
 		setAlarmBit(AL_MAYOR);
 		if(AL_TRIPEXT != uiError) setAlarmBit(AL_TRIPINT);
-		mtIOImg[YA_REG_MA].setCurrentVal(0);
-		mtIOImg[YA_REG_TRIP].setCurrentVal(0);
+		//mtIOImg[YA_REG_MA].setCurrentVal(0);
+		//mtIOImg[YA_REG_TRIP].setCurrentVal(0);
 	} 
 	else{
 		setAlarmBit(AL_MINOR);
-		mtIOImg[YA_REG_ME].setCurrentVal(0);
+		//mtIOImg[YA_REG_ME].setCurrentVal(0);
 	}
 }
 

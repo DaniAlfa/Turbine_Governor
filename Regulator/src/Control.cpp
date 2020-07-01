@@ -22,7 +22,7 @@ void Control::updateControl(){
 	if(iState == 0 && io[HMSM_REG_STR].getCurrentVal() == 1){
 		iState = 1;
 	}
-	/*
+	
 	if(io[HMSM_REG_TRIP].getCurrentVal() == 0){
 		mpAlMan->setAlarm(AL_TRIPEXT);
 	}else{
@@ -31,7 +31,7 @@ void Control::updateControl(){
 			mpAlMan->clearAlarms();
 		}
 	}
-	*/
+	
 	if(iState == 1 || iState == 4){
 		
 		float currentSpeed = io[SE_REG_F1].getCurrentVal();
