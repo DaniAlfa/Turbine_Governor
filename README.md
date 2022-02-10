@@ -50,4 +50,4 @@ Este proyecto lleva parado desde el 06/2020, pero se espera la continuación de 
 El proyecto ya tiene hecha toda la infraestructura principal, menos el módulo de configuración (los ficheros de configuración se generan a mano). También falta la lógica de control (proceso de arranque, sincronización de la turbina, etc). 
 
 En la última compilacion se probó toda la infraestructura, desde la lectura y escritura de valores digitales y analógicos con el modulo físico EtherCAT, hasta su presentación y control desde el HMI, tanto local como remotamente.
-La última compilación se llevó a cabo con Qt 5.12.4 y gcc 10.2.0. Ha sido probado en dos Manjaro Linux con kernel 5.12.0, aunque está pensado para ser multiplataforma y debería funcionar en Windows también.
+La última compilación se llevó a cabo con Qt 5.12.4 y g++ 10.2.0. Ha sido probado en dos Manjaro Linux con kernel 5.12.0, aunque está pensado para ser multiplataforma y debería funcionar en Windows también.
