@@ -33,9 +33,11 @@ El siguiente diagrama de bloques muestra como será el sistema de regulación:
 
 Para más información remitirse al documento de [descripción funcional](doc/Reg.Turbina_DescripcionFuncional.docx).
 
-El regulador de turbina ofrecerá entradas y salidas digitales y analógicas para la comunicación con los otros equipos. Esto se hará utilizando un módulo Ethercat, en concreto se utilizara el x, aunque la implementación será abierta al uso de otros módulos Ethercat. Se hará uso de la librería EtherCAT Master (SOEM) v1.4.0 (revisar versión y link), cuya licencia es GPLv2 compatible con GPLv3 en este caso al ser este un trabajo derivado.
+El regulador de turbina ofrecerá entradas y salidas digitales y analógicas para la comunicación con los otros equipos. Esto se hará utilizando un módulo EtherCAT, en concreto se utilizara el BECKHOFF EK1100, aunque la implementación será abierta al uso de otros módulos EtherCAT. Se hará uso de la librería [EtherCAT Master (SOEM)](https://openethercatsociety.github.io/) v1.4.0, cuya licencia es GPLv2 compatible con GPLv3 en este caso, al ser este un trabajo derivado.
 
-Para la comunicación con el sistema SCADA o DCS se utilizará el protocolo MODBUS/TCP usando una interfaz ethernet, tanto para controlar y recibir el estado del regulador como para configurar el mismo. Para ello se hará uso de la librería libmodbus (versión y link) LGPL v2.1, compatible con GPLv3.
+Para la comunicación con el sistema SCADA o DCS se utilizará el protocolo MODBUS/TCP usando una interfaz ethernet, tanto para controlar y recibir el estado del regulador como para configurar el mismo. Para ello se hará uso de la librería [libmodbus](https://www.libmodbus.org/) v3.1.6, con licencia LGPL v2.1, compatible con GPLv3.
+
+Para todo el sistema de configuración del regulador se utilizarán ficheros XML, los cuales serán manejados con la librería [libxml](http://www.xmlsoft.org/) v2.9.10, con licencia MIT. 
 
 Despues de estudiar el sistema se plantea la siguiente solución, dividida en módulos independientes, algunos de los cuales podrían estar en una maquina diferente a la del regulador:
 
@@ -44,5 +46,8 @@ Despues de estudiar el sistema se plantea la siguiente solución, dividida en m�
 
 Para más información consultar el documento de [arquitectura de software](doc/Reg.Turbina_ArquitecturaSoftware.docx).
 
-Este proyecto lleva parado desde x pero se espera la continuación de su desarrollo próximamente.
-La última compilación se llevó a cabo con Qt x y gcc x. Ha sido probado con Linux x y un módulo Ethercat, está pensado para poder ejecutarse en windows.
+Este proyecto lleva parado desde el 06/2020, pero se espera la continuación de su desarrollo próximamente.
+El proyecto ya tiene hecha toda la infraestructura principal, menos el módulo de configuración (los ficheros de configuración se generan a mano). También falta la lógica de control (proceso de arranque, sincronización de la turbina, etc). 
+
+En la última compilacion se probó toda la infraestructura, desde la lectura y escritura de valores digitales y analógicos con el modulo físico EtherCAT, hasta su presentación y control desde el HMI, tanto local como remotamente.
+La última compilación se llevó a cabo con Qt 5.12.4 y gcc 10.2.0. Ha sido probado en dos Manjaro Linux con kernel 5.12.0, aunque está pensado para ser multiplataforma y debería funcionar en Windows también.
